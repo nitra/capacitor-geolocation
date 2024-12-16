@@ -1,0 +1,11 @@
+{
+  "appId": "com.outsystems.exampleucapp.capacitor",
+  "appName": "ExampleUCApp",
+  "bundledWebRuntime": false,
+  "webDir": "dist",
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 0
+    }
+  }
+}
