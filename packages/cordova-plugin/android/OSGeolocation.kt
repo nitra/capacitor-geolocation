@@ -1,6 +1,5 @@
 package com.outsystems.cordova.plugins.geolocation
 
-import com.outsystems.plugins.osgeolocation.OSGeolocation;
 import org.apache.cordova.CallbackContext
 import org.apache.cordova.CordovaInterface
 import org.apache.cordova.CordovaPlugin
@@ -9,11 +8,9 @@ import org.apache.cordova.PluginResult
 import org.json.JSONArray
 import org.json.JSONObject
 
-class OSGeolocation: CordovaPlugin() {
+class OSGeolocation : CordovaPlugin() {
 
-    private val implementationLib = OSGeolocation()
-
-    override fun initialize(cordova: CordovaInterface, webView: CordovaWebView) {
+    override fun initialize(cordova: CordovaInterface?, webView: CordovaWebView?) {
         super.initialize(cordova, webView)
     }
 
@@ -22,39 +19,37 @@ class OSGeolocation: CordovaPlugin() {
         args: JSONArray,
         callbackContext: CallbackContext
     ): Boolean {
-        when(action) {
-            "ping" -> {
-                ping(args, callbackContext)
+
+        when (action) {
+            "getLocation" -> {
+                getLocation(args, callbackContext)
+            }
+
+            "addWatch" -> {
+                addWatch(args, callbackContext)
+            }
+
+            "clearWatch" -> {
+                clearWatch(args, callbackContext)
             }
         }
         return true
     }
 
-    /**
-     * Calls the openExternalBrowser method of OSIABEngine to open the url in the device's browser app
-     * @param args JSONArray that contains the parameters to parse (e.g. url to open)
-     * @param callbackContext CallbackContext the method should return to
-     */
-    private fun ping(args: JSONArray, callbackContext: CallbackContext) {
-        val value: String?
-
-        try {
-            val argumentsDictionary = args.getJSONObject(0)
-            value = argumentsDictionary.getString("value")
-            if(value.isNullOrEmpty()) throw IllegalArgumentException()
-        }
-        catch (e: Exception) {
-            sendError(callbackContext, Errors.INVALID_INPUT)
-            return
-        }
-
-        sendSuccess(callbackContext, JSONObject().apply {
-            put("value", implementationLib.ping(value))
-        })
+    private fun getLocation(args: JSONArray, callbackContext: CallbackContext) {
+        TODO("Not yet implemented")
     }
 
-    private fun sendSuccess(callbackContext: CallbackContext, passback: JSONObject) {
-        val pluginResult = PluginResult(PluginResult.Status.OK, passback)
+    private fun addWatch(args: JSONArray, callbackContext: CallbackContext) {
+        TODO("Not yet implemented")
+    }
+
+    private fun clearWatch(args: JSONArray, callbackContext: CallbackContext) {
+        TODO("Not yet implemented")
+    }
+
+    private fun sendSuccess(callbackContext: CallbackContext, result: JSONObject) {
+        val pluginResult = PluginResult(PluginResult.Status.OK, result)
         pluginResult.keepCallback = true
         callbackContext.sendPluginResult(pluginResult)
     }
@@ -83,7 +78,7 @@ object Errors {
     )
 
     val INVALID_INPUT = ErrorInfo(
-        code = formatErrorCode(5),
+        code = formatErrorCode(1),
         message = "The input parameters aren't valid."
     )
 }
