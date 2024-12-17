@@ -14,7 +14,6 @@ import com.google.gson.Gson
 import com.outsystems.plugins.osgeolocation.model.OSLocationOptions
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.launch
 
 /**
