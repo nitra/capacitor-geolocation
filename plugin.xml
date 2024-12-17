@@ -17,7 +17,11 @@
             <preference name="AndroidXEnabled" value="true"/>
         </config-file>
         
-        <config-file parent="/*" target="AndroidManifest.xml" />
+        <config-file target="AndroidManifest.xml" parent="/*">
+            <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+            <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+        </config-file>
+
         <source-file src="packages/cordova-plugin/android/OSGeolocation.kt" target-dir="app/src/main/kotlin/com/outsystems/cordova/plugins/osgeolocation" />
         <framework src="packages/cordova-plugin/android/build.gradle" custom="true" type="gradleReference" />
         
