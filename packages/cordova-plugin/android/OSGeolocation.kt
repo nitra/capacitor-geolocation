@@ -1,4 +1,4 @@
-package com.outsystems.cordova.plugins.geolocation
+package com.outsystems.cordova.plugins.osgeolocation
 
 import org.apache.cordova.CallbackContext
 import org.apache.cordova.CordovaInterface
