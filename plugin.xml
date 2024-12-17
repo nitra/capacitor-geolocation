@@ -30,7 +30,7 @@
             <preference name="SwiftVersion" value="5" />
         </config-file>
 
-        <source-file src="packages/cordova-plugin/ios/Geolocation.swift" />
+        <source-file src="packages/cordova-plugin/ios/OSGeolocation.swift" />
 
         <podspec>
             <config>
