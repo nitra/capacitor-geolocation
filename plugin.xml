@@ -37,7 +37,7 @@
                 <source url="https://cdn.cocoapods.org/"/>
             </config>
             <pods use-frameworks="true">
-                <pod name="OSGeolocationLib" path="../../../ios-lib" />
+                <pod name="OSGeolocationLib" path="packages/ios-lib" />
             </pods>
         </podspec> 
     </platform>
