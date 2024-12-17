@@ -4,7 +4,7 @@
     <description>Template cordova plugin with Synapse</description>
     <author>OutSystems Inc</author>
 
-    <js-module name="OSGeolocation" src="dist/plugin.js">
+    <js-module name="OSGeolocation" src="packages/cordova-plugin/dist/plugin.js">
         <clobbers target="cordova.plugins.OSGeolocation" />
     </js-module>
     <platform name="android">
