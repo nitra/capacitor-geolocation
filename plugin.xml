@@ -18,7 +18,7 @@
         </config-file>
         
         <config-file parent="/*" target="AndroidManifest.xml" />
-        <source-file src="packages/cordova-plugin/android/OSGeolocation.kt" target-dir="app/src/main/kotlin/com/outsystems/plugins/osgeolocation" />
+        <source-file src="packages/cordova-plugin/android/OSGeolocation.kt" target-dir="app/src/main/kotlin/com/outsystems/cordova/plugins/osgeolocation" />
         <framework src="packages/cordova-plugin/android/build.gradle" custom="true" type="gradleReference" />
         
     </platform>
