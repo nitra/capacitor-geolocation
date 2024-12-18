@@ -1,21 +1,36 @@
 package com.outsystems.plugins.osgeolocation.controller
 
+import android.app.Activity
 import android.location.Location
-import android.os.SystemClock
 import android.util.Log
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.IntentSenderRequest
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.GoogleApiAvailability
+import com.google.android.gms.common.api.ResolvableApiException
+import com.google.android.gms.location.CurrentLocationRequest
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.gms.location.Priority
+import com.outsystems.plugins.osgeolocation.model.OSLocationException
 import com.outsystems.plugins.osgeolocation.model.OSLocationOptions
 import com.outsystems.plugins.osgeolocation.model.OSLocationResult
-import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.withTimeout
 
 /**
  * Entry point in OSGeolocationLib-Android
  *
  */
-class OSGeolocationController(private val fusedLocationClient: FusedLocationProviderClient) {
+class OSGeolocationController(
+    private val fusedLocationClient: FusedLocationProviderClient,
+    private val activityLauncher: ActivityResultLauncher<IntentSenderRequest>
+) {
+
+    private lateinit var flow: MutableSharedFlow<Result<Unit>>
 
     /**
      * Obtains the device's location using FusedLocationProviderClient.
@@ -23,79 +38,162 @@ class OSGeolocationController(private val fusedLocationClient: FusedLocationProv
      * @param options OSLocationOptions object with the options to obtain the location with (e.g. timeout)
      * @return Result<OSLocationResult> object with either the location or an exception to be handled by the caller
      */
-    suspend fun getLocation(options: OSLocationOptions): Result<OSLocationResult> {
-
+    suspend fun getLocation(
+        activity: Activity,
+        options: OSLocationOptions
+    ): Result<OSLocationResult> {
         try {
-            // try to get the last known location
-            val lastLocation = getLastLocation(options.timeout)
-            val location = if (lastLocation != null && isLocationFresh(lastLocation, options.maximumAge)) {
-                lastLocation
-            } else {
-                // fallback to get a fresh location
-                getFreshLocation(options.timeout, options.enableHighAccuracy)
+
+            // check play services
+            val checkResult = checkGooglePlayServicesAvailable(activity)
+
+            if (checkResult.isFailure) {
+                return Result.failure(checkResult.exceptionOrNull() ?: NullPointerException())
             }
 
-            return Result.success(
-                OSLocationResult(
-                    location.latitude,
-                    location.longitude,
-                    location.altitude,
-                    location.accuracy,
-                    location.bearing,
-                    location.speed,
-                    location.time
-                )
-            )
+            // check timeout
+            if (options.timeout <= 0) {
+                return Result.failure(OSLocationException.OSLocationInvalidTimeoutException(
+                    message = "Timeout needs to be a positive value."
+                ))
+            }
 
-        } catch (exception: TimeoutCancellationException) {
-            Log.d(LOG_TAG, "Timed out while fetching location: ${exception.message}")
-            return Result.failure(exception)
+            flow = MutableSharedFlow()
+
+            if (checkLocationSettings(
+                activity,
+                options,
+                0 // 0 is used because we only want to do one location request
+            )) {
+                val location = getCurrentLocation(options)
+                return Result.success(
+                    OSLocationResult(
+                        location.latitude,
+                        location.longitude,
+                        location.altitude,
+                        location.accuracy,
+                        location.bearing,
+                        location.speed,
+                        location.time
+                    )
+                )
+            }
+
+            val result = flow.first()
+
+            if (result.isSuccess) {
+                val location = getCurrentLocation(options)
+                return Result.success(
+                    OSLocationResult(
+                        location.latitude,
+                        location.longitude,
+                        location.altitude,
+                        location.accuracy,
+                        location.bearing,
+                        location.speed,
+                        location.time
+                    )
+                )
+            } else {
+                return Result.failure(
+                    result.exceptionOrNull() ?: NullPointerException()
+                )
+            }
+
         } catch (exception: Exception) {
             Log.d(LOG_TAG, "Error fetching location: ${exception.message}")
             return Result.failure(exception)
         }
-
     }
 
-    /**
-     * Obtains the device's last registered location, or null if there is none.
-     * @param timeout maximum time to wait while obtaining the location
-     * @return Location object representing the location if successful, or null otherwise
-     */
-    private suspend fun getLastLocation(timeout: Long): Location? {
-        return try {
-            withTimeout(timeout) {
-                fusedLocationClient.lastLocation.await()
-            }
-        } catch (exception: TimeoutCancellationException) {
-            Log.d(LOG_TAG, "Timed out while fetching last location: ${exception.message}")
-            null
-        } catch (exception: Exception) {
-            Log.d(LOG_TAG, "Timed out while fetching location: ${exception.message}")
-            println("Error fetching last location: ${exception.message}")
-            null
+    suspend fun onResolvableExceptionResult(resultCode: Int) {
+        if (resultCode == Activity.RESULT_OK) {
+            flow.emit(Result.success(Unit))
+        } else {
+            flow.emit(
+                Result.failure(
+                    OSLocationException.OSLocationRequestDeniedException(
+                        message = "Request to enable location denied."
+                    )
+                )
+            )
         }
     }
 
     /**
      * Obtains a fresh device location.
-     * @param timeout maximum time to wait while obtaining the location
+     * @param options location request options to use
      * @return Location object representing the location
      */
-    private suspend fun getFreshLocation(timeout: Long, enableHighAccuracy: Boolean): Location {
-        return withTimeout(timeout) {
-            fusedLocationClient.getCurrentLocation(
-                if (enableHighAccuracy) Priority.PRIORITY_HIGH_ACCURACY else Priority.PRIORITY_BALANCED_POWER_ACCURACY,
-                null
-            ).await()
-        }
+    private suspend fun getCurrentLocation(options: OSLocationOptions): Location {
+
+        val locationRequest = CurrentLocationRequest.Builder()
+            .setPriority(if (options.enableHighAccuracy) Priority.PRIORITY_HIGH_ACCURACY else Priority.PRIORITY_BALANCED_POWER_ACCURACY)
+            .setMaxUpdateAgeMillis(options.maximumAge)
+            .setDurationMillis(options.timeout)
+            .build()
+
+        return fusedLocationClient.getCurrentLocation(
+            locationRequest,
+            null
+        ).await()
     }
 
-    private fun isLocationFresh(location: Location, maximumAge: Long): Boolean {
-        val ageInNanos = maximumAge * 1000000L
-        val currentTime = SystemClock.elapsedRealtime()
-        val locationTime = location.elapsedRealtimeNanos
-        return (currentTime - locationTime) <= ageInNanos
+    private suspend fun checkLocationSettings(activity: Activity, options: OSLocationOptions, interval: Long): Boolean {
+
+        val request = LocationRequest.Builder(
+            if (options.enableHighAccuracy) Priority.PRIORITY_HIGH_ACCURACY else Priority.PRIORITY_BALANCED_POWER_ACCURACY,
+            interval
+        ).build()
+
+        val builder = LocationSettingsRequest.Builder()
+        builder.addLocationRequest(request)
+        val client = LocationServices.getSettingsClient(activity)
+
+        try {
+            client.checkLocationSettings(builder.build()).await()
+            //flow.emit(Result.success(Unit))
+            return true
+        } catch (e: ResolvableApiException) {
+
+            // Show the dialog to enable location by calling startResolutionForResult(),
+            // and then handle the result in onActivityResult
+
+            val resolutionBuilder: IntentSenderRequest.Builder = IntentSenderRequest.Builder(e.resolution)
+            val resolution: IntentSenderRequest = resolutionBuilder.build()
+
+            activityLauncher.launch(resolution)
+
+        } catch (e: Exception) {
+            throw OSLocationException.OSLocationSettingsException(
+                message = "There is an error with the location settings.",
+                cause = e
+            )
+        }
+        return false
+    }
+
+    private fun checkGooglePlayServicesAvailable(activity: Activity): Result<Unit> {
+        val googleApiAvailability = GoogleApiAvailability.getInstance()
+        val status = googleApiAvailability.isGooglePlayServicesAvailable(activity)
+
+        return if (status != ConnectionResult.SUCCESS) {
+            if (googleApiAvailability.isUserResolvableError(status)) {
+                googleApiAvailability.getErrorDialog(activity, status, 1)?.show()
+                Result.failure(OSLocationException.OSLocationGoogleServicesException(
+                    resolvable = true,
+                    message = "Google Play Services error user resolvable."
+                ))
+            } else {
+                Result.failure(OSLocationException.OSLocationGoogleServicesException(
+                    resolvable = false,
+                    message = "Google Play Services error."
+                )
+                )
+            }
+        } else {
+            Result.success(Unit)
+        }
     }
 
     fun addWatch() {
