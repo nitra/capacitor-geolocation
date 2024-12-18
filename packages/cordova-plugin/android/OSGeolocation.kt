@@ -1,34 +1,57 @@
 package com.outsystems.cordova.plugins.osgeolocation
 
-import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import org.apache.cordova.CallbackContext
-import org.apache.cordova.CordovaInterface
-import org.apache.cordova.CordovaPlugin
-import org.apache.cordova.CordovaWebView
-import org.apache.cordova.PluginResult
-import org.json.JSONArray
-import org.json.JSONObject
-import com.outsystems.plugins.osgeolocation.controller.OSGeolocationController
 import com.google.gson.Gson
+import com.outsystems.plugins.osgeolocation.controller.OSGeolocationController
 import com.outsystems.plugins.osgeolocation.model.OSLocationOptions
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.apache.cordova.CallbackContext
+import org.apache.cordova.CordovaInterface
+import org.apache.cordova.CordovaPlugin
+import org.apache.cordova.CordovaWebView
+import org.apache.cordova.PermissionHelper
+import org.apache.cordova.PluginResult
+import org.json.JSONArray
+import org.json.JSONObject
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.activity.result.contract.ActivityResultContracts
+import com.outsystems.plugins.osgeolocation.model.OSLocationException
+import kotlinx.coroutines.flow.MutableSharedFlow
 
 /**
  * Cordova bridge, inherits from CordovaPlugin
  */
 class OSGeolocation : CordovaPlugin() {
 
-    private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var controller: OSGeolocationController
     private val gson by lazy { Gson() }
 
+    // for permissions
+    private lateinit var flow: MutableSharedFlow<OSGeolocationPermissionEvents>
+
+    companion object {
+        private const val LOCATION_PERMISSIONS_REQUEST_CODE = 22332
+    }
+
     override fun initialize(cordova: CordovaInterface, webView: CordovaWebView) {
         super.initialize(cordova, webView)
-        this.fusedLocationClient = LocationServices.getFusedLocationProviderClient(cordova.context)
-        this.controller = OSGeolocationController(fusedLocationClient)
+
+        val activityLauncher = cordova.activity.registerForActivityResult(
+            ActivityResultContracts.StartIntentSenderForResult()
+        ) { result ->
+            CoroutineScope(Dispatchers.Main).launch {
+                controller.onResolvableExceptionResult(result.resultCode)
+            }
+        }
+
+        this.controller = OSGeolocationController(
+            LocationServices.getFusedLocationProviderClient(cordova.context),
+            activityLauncher
+        )
+
     }
 
     override fun execute(
@@ -36,16 +59,13 @@ class OSGeolocation : CordovaPlugin() {
         args: JSONArray,
         callbackContext: CallbackContext
     ): Boolean {
-
         when (action) {
             "getLocation" -> {
                 getLocation(args, callbackContext)
             }
-
             "addWatch" -> {
                 addWatch(args, callbackContext)
             }
-
             "clearWatch" -> {
                 clearWatch(args, callbackContext)
             }
@@ -59,31 +79,59 @@ class OSGeolocation : CordovaPlugin() {
      * @param callbackContext CallbackContext the method should return to
      */
     private fun getLocation(args: JSONArray, callbackContext: CallbackContext) {
+        CoroutineScope(Dispatchers.IO).launch {
+            flow = MutableSharedFlow(replay = 1)
 
-        // validate parameters in args
-        // put parameters in object to send that object to getLocation
+            // first, we request permissions if necessary
+            if (hasLocationPermissions()) {
+                flow.emit(OSGeolocationPermissionEvents.Granted)
+            } else { // request necessary permissions
+                requestLocationPermissions()
+            }
 
-        val locationOptions = OSLocationOptions(args.getInt(2).toLong(), args.getInt(1).toLong(), args.getBoolean(0))
+            // collect the flow to handle permission request result
+            flow.collect { permissionEvent ->
+                if (permissionEvent == OSGeolocationPermissionEvents.Granted) {
+                    // validate parameters in args
+                    // put parameters in object to send that object to getLocation
+                    // the way we get the arguments may change
+                    val locationOptions = OSLocationOptions(args.getInt(2).toLong(), args.getInt(1).toLong(), args.getBoolean(0))
+                    // call getLocation method from controller
 
-        // call getLocation method from controller
+                    val locationResult = controller.getLocation(cordova.activity, locationOptions)
 
-        CoroutineScope(Dispatchers.Main).launch {
-            val locationResult = controller.getLocation(locationOptions)
-
-            if (locationResult.isSuccess) {
-                sendSuccess(callbackContext, JSONObject(gson.toJson(locationResult.getOrNull())))
-            } else {
-                // handle error accordingly
-                val exception = locationResult.exceptionOrNull()
-                val error = when (exception) {
-                    is Exception -> {
-                        Errors.GET_LOCATION_GENERAL
+                    if (locationResult.isSuccess) {
+                        callbackContext.sendSuccess(JSONObject(gson.toJson(locationResult.getOrNull())))
+                    } else {
+                        // handle error accordingly
+                        val exception = locationResult.exceptionOrNull()
+                        when (exception) {
+                            is OSLocationException.OSLocationRequestDeniedException -> {
+                                callbackContext.sendError(OSGeolocationErrors.LOCATION_ENABLE_REQUEST_DENIED)
+                            }
+                            is OSLocationException.OSLocationSettingsException -> {
+                                callbackContext.sendError(OSGeolocationErrors.GET_LOCATION_GENERAL)
+                            }
+                            is OSLocationException.OSLocationInvalidTimeoutException -> {
+                                callbackContext.sendError(OSGeolocationErrors.GET_LOCATION_GENERAL)
+                            }
+                            is OSLocationException.OSLocationGoogleServicesException -> {
+                                callbackContext.sendError(OSGeolocationErrors.GET_LOCATION_GENERAL)
+                            }
+                            is NullPointerException -> {
+                                callbackContext.sendError(OSGeolocationErrors.GET_LOCATION_GENERAL)
+                            }
+                            is Exception -> {
+                                callbackContext.sendError(OSGeolocationErrors.GET_LOCATION_GENERAL)
+                            }
+                            else -> {
+                                callbackContext.sendError(OSGeolocationErrors.GET_LOCATION_GENERAL)
+                            }
+                        }
                     }
-                    else -> {
-                        Errors.GET_LOCATION_GENERAL
-                    }
+                } else {
+                    callbackContext.sendError(OSGeolocationErrors.LOCATION_PERMISSIONS_DENIED)
                 }
-                sendError(callbackContext, error)
             }
         }
     }
@@ -107,22 +155,20 @@ class OSGeolocation : CordovaPlugin() {
     }
 
     /**
-     * Helper method to return a successful plugin result
-     * @param callbackContext CallbackContext the method should return to
+     * Extension function to return a successful plugin result
      * @param result JSONObject with the JSON content to return
      */
-    private fun sendSuccess(callbackContext: CallbackContext, result: JSONObject) {
+    private fun CallbackContext.sendSuccess(result: JSONObject) {
         val pluginResult = PluginResult(PluginResult.Status.OK, result)
         pluginResult.keepCallback = true
-        callbackContext.sendPluginResult(pluginResult)
+        this.sendPluginResult(pluginResult)
     }
 
     /**
-     * Helper method to return a unsuccessful plugin result
-     * @param callbackContext CallbackContext the method should return to
+     * Extension function to return a unsuccessful plugin result
      * @param error error class representing the error to return, containing a code and message
      */
-    private fun sendError(callbackContext: CallbackContext, error: Errors.ErrorInfo) {
+    private fun CallbackContext.sendError(error: OSGeolocationErrors.ErrorInfo) {
         val pluginResult = PluginResult(
             PluginResult.Status.ERROR,
             JSONObject().apply {
@@ -130,36 +176,44 @@ class OSGeolocation : CordovaPlugin() {
                 put("message", error.message)
             }
         )
-        callbackContext.sendPluginResult(pluginResult)
+        this.sendPluginResult(pluginResult)
     }
 
-}
-
-/**
- * Object with plugin errors
- */
-object Errors {
-    private fun formatErrorCode(number: Int): String {
-        return "OS-PLUG-GEO-" + number.toString().padStart(4, '0')
+    private fun hasLocationPermissions(): Boolean {
+        for (permission in listOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)) {
+            if (!PermissionHelper.hasPermission(this, permission)) {
+                return false
+            }
+        }
+        return true
     }
 
-    data class ErrorInfo(
-        val code: String,
-        val message: String
-    )
+    private fun requestLocationPermissions() {
+        PermissionHelper.requestPermissions(
+            this,
+            LOCATION_PERMISSIONS_REQUEST_CODE,
+            listOf(
+                Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION
+            ).toTypedArray()
+        )
+    }
 
-    val INVALID_INPUT = ErrorInfo(
-        code = formatErrorCode(1),
-        message = "The input parameters aren't valid."
-    )
+    override fun onRequestPermissionResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        if (requestCode == LOCATION_PERMISSIONS_REQUEST_CODE) {
+            CoroutineScope(Dispatchers.IO).launch {
+                flow.emit(
+                    if (grantResults.contains(PackageManager.PERMISSION_GRANTED)) {
+                        OSGeolocationPermissionEvents.Granted
+                    } else {
+                        OSGeolocationPermissionEvents.NotGranted
+                    }
+                )
+            }
+        }
+    }
 
-    val GET_LOCATION_TIMEOUT = ErrorInfo(
-        code = formatErrorCode(2),
-        message = "Could not obtain location in time. Try with a higher timeout."
-    )
-
-    val GET_LOCATION_GENERAL = ErrorInfo(
-        code = formatErrorCode(3),
-        message = "Could not obtain location in time. Try with a higher timeout."
-    )
 }
