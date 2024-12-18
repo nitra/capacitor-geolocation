@@ -11,6 +11,7 @@
         <config-file parent="/*" target="res/xml/config.xml">
             <feature name="OSGeolocation">
                 <param name="android-package" value="com.outsystems.plugins.osgeolocation.OSGeolocation" />
+                <param name="onload" value="true" />
             </feature>
             <preference name="GradlePluginKotlinEnabled" value="true" />
             <preference name="GradlePluginKotlinCodeStyle" value="official" />
