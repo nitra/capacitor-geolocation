@@ -34,6 +34,9 @@ class OSGeolocation : CordovaPlugin() {
 
     companion object {
         private const val LOCATION_PERMISSIONS_REQUEST_CODE = 22332
+        private const val TIMEOUT = "timeout"
+        private const val MAXIMUM_AGE = "maximumAge"
+        private const val ENABLE_HIGH_ACCURACY = "enableHighAccuracy"
     }
 
     override fun initialize(cordova: CordovaInterface, webView: CordovaWebView) {
@@ -59,9 +62,10 @@ class OSGeolocation : CordovaPlugin() {
         args: JSONArray,
         callbackContext: CallbackContext
     ): Boolean {
+        val parameters = args.getJSONObject(0)
         when (action) {
-            "getLocation" -> {
-                getLocation(args, callbackContext)
+            "getCurrentPosition" -> {
+                getCurrentPosition(parameters, callbackContext)
             }
             "addWatch" -> {
                 addWatch(args, callbackContext)
@@ -74,11 +78,11 @@ class OSGeolocation : CordovaPlugin() {
     }
 
     /**
-     * Calls the getLocation method of OSGeolocationController to get the device's geolocation
+     * Calls the getCurrentPosition method of OSGeolocationController to get the device's geolocation
      * @param args JSONArray that contains the parameters to parse (e.g. timeout)
      * @param callbackContext CallbackContext the method should return to
      */
-    private fun getLocation(args: JSONArray, callbackContext: CallbackContext) {
+    private fun getCurrentPosition(parameters: JSONObject, callbackContext: CallbackContext) {
         CoroutineScope(Dispatchers.IO).launch {
             flow = MutableSharedFlow(replay = 1)
 
@@ -95,10 +99,14 @@ class OSGeolocation : CordovaPlugin() {
                     // validate parameters in args
                     // put parameters in object to send that object to getLocation
                     // the way we get the arguments may change
-                    val locationOptions = OSLocationOptions(args.getInt(2).toLong(), args.getInt(1).toLong(), args.getBoolean(0))
-                    // call getLocation method from controller
 
-                    val locationResult = controller.getLocation(cordova.activity, locationOptions)
+                    val locationOptions = OSLocationOptions(
+                        parameters.getLong(TIMEOUT),
+                        parameters.getLong(MAXIMUM_AGE),
+                        parameters.getBoolean(ENABLE_HIGH_ACCURACY))
+
+                    // call getCurrentPosition method from controller
+                    val locationResult = controller.getCurrentPosition(cordova.activity, locationOptions)
 
                     if (locationResult.isSuccess) {
                         callbackContext.sendSuccess(JSONObject(gson.toJson(locationResult.getOrNull())))
