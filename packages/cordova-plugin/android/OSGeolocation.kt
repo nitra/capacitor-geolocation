@@ -1,4 +1,4 @@
-package com.outsystems.cordova.plugins.osgeolocation
+package com.outsystems.plugins.osgeolocation
 
 import com.google.android.gms.location.LocationServices
 import com.google.gson.Gson

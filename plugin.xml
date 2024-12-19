@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.outsystems.cordova.plugins.osgeolocation" version="1.0.0" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
+<widget id="com.outsystems.plugins.osgeolocation" version="1.0.0" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
     <name>OSGeolocationPlugin</name>
     <description>Template cordova plugin with Synapse</description>
     <author>OutSystems Inc</author>
@@ -23,7 +23,9 @@
             <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
         </config-file>
 
-        <source-file src="packages/cordova-plugin/android/OSGeolocation.kt" target-dir="app/src/main/kotlin/com/outsystems/cordova/plugins/osgeolocation" />
+        <source-file src="packages/cordova-plugin/android/OSGeolocation.kt" target-dir="app/src/main/kotlin/com/outsystems/plugins/osgeolocation" />
+        <source-file src="packages/cordova-plugin/android/OSGeolocationPermissionEvents.kt" target-dir="app/src/main/kotlin/com/outsystems/plugins/osgeolocation" />
+        <source-file src="packages/cordova-plugin/android/OSGeolocationErrors.kt" target-dir="app/src/main/kotlin/com/outsystems/plugins/osgeolocation/OSGeolocationErrors" />
         <framework src="packages/cordova-plugin/android/build.gradle" custom="true" type="gradleReference" />
         
     </platform>
