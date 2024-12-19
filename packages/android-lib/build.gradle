@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = "1.9.21"
+    ext.kotlin_version = "1.9.24"
     ext.jacocoVersion = '0.8.7'
     repositories {
         google()
@@ -40,12 +40,12 @@ apply plugin: "kotlin-android"
 apply plugin: "jacoco"
 
 android {
-    namespace "com.outsystems.plugins.osgeoloation"
+    namespace "com.outsystems.plugins.osgeolocation"
     compileSdk 34
 
     defaultConfig {
         minSdk 26
-        targetSdk 34
+        targetSdk 35
         versionCode 1
         versionName "1.0"
 
@@ -118,6 +118,9 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.6.4'
+    implementation 'com.google.android.gms:play-services-location:21.3.0'
+    implementation 'com.google.android.gms:play-services-base:18.5.0'
+    implementation 'androidx.activity:activity:1.6.0'
 
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.robolectric:robolectric:4.12.2'
