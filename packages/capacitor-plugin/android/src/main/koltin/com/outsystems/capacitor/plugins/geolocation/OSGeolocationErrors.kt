@@ -1,4 +1,5 @@
 package com.outsystems.capacitor.plugins.geolocation
+
 /**
  * Object with plugin errors
  */
@@ -51,6 +52,11 @@ object OSGeolocationErrors {
     val LOCATION_SETTINGS_ERROR = ErrorInfo(
         code = formatErrorCode(8),
         message = "Location settings error."
+    )
+
+    val LOCATION_DISABLED = ErrorInfo(
+        code = formatErrorCode(9),
+        message = "Location services are not enabled."
     )
 
 }
