@@ -1,10 +1,14 @@
 package com.outsystems.plugins.osgeolocation.controller
 
 import android.app.Activity
+import android.content.Context
 import android.location.Location
+import android.location.LocationManager
+import android.os.Build
 import android.util.Log
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
+import androidx.core.location.LocationManagerCompat
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.common.api.ResolvableApiException
@@ -72,6 +76,7 @@ class OSGeolocationController(
                         location.longitude,
                         location.altitude,
                         location.accuracy,
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) location.verticalAccuracyMeters else null,
                         location.bearing,
                         location.speed,
                         location.time
@@ -89,6 +94,7 @@ class OSGeolocationController(
                         location.longitude,
                         location.altitude,
                         location.accuracy,
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) location.verticalAccuracyMeters else null,
                         location.bearing,
                         location.speed,
                         location.time
@@ -106,6 +112,12 @@ class OSGeolocationController(
         }
     }
 
+    /**
+     * Function to be called by the client after returning from the activity
+     * that is launched when resolving the ResolvableApiException in checkLocationSettings,
+     * that prompts the user to enable the location if it is disabled.
+     * @param resultCode to determine if the user enabled the location when prompted
+     */
     suspend fun onResolvableExceptionResult(resultCode: Int) {
         if (resultCode == Activity.RESULT_OK) {
             flow.emit(Result.success(Unit))
@@ -118,6 +130,14 @@ class OSGeolocationController(
                 )
             )
         }
+    }
+
+    /**
+     * Checks if location services are enabled
+     * @param context Context to use when determining if location is enabled
+     */
+    fun areLocationServicesEnabled(context: Context): Boolean {
+        return LocationManagerCompat.isLocationEnabled(context.getSystemService(Context.LOCATION_SERVICE) as LocationManager)
     }
 
     /**
@@ -158,7 +178,6 @@ class OSGeolocationController(
 
             // Show the dialog to enable location by calling startResolutionForResult(),
             // and then handle the result in onActivityResult
-
             val resolutionBuilder: IntentSenderRequest.Builder = IntentSenderRequest.Builder(e.resolution)
             val resolution: IntentSenderRequest = resolutionBuilder.build()
 
