@@ -1,4 +1,4 @@
-package com.outsystems.cordova.plugins.osgeolocation
+package com.outsystems.plugins.osgeolocation
 
 /**
  * Object with plugin errors

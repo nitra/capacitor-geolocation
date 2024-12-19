@@ -106,7 +106,7 @@ class OSGeolocation : CordovaPlugin() {
                         parameters.getBoolean(ENABLE_HIGH_ACCURACY))
 
                     // call getCurrentPosition method from controller
-                    val locationResult = controller.getCurrentPosition(cordova.activity, locationOptions)
+                    val locationResult = controller.getLocation(cordova.activity, locationOptions)
 
                     if (locationResult.isSuccess) {
                         callbackContext.sendSuccess(JSONObject(gson.toJson(locationResult.getOrNull())))

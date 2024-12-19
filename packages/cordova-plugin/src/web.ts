@@ -24,7 +24,7 @@ function getCurrentPosition(options: PositionOptions, success: (output: Position
   }
 
 
-  exec(convertOnSuccess, error, 'OSGeolocation', 'getLocation', [options]);
+  exec(convertOnSuccess, error, 'OSGeolocation', 'getCurrentPosition', [options]);
 }
 
 function watchPosition(options: PositionOptions, success: (output: string) => void, error: (error: PluginError) => void): void {

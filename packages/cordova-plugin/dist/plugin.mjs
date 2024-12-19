@@ -55,8 +55,23 @@ const ClearWatchOptionsDefault = {
 };
 var exec = require2("cordova/exec");
 function getCurrentPosition(options, success, error) {
-  options = options || PositionOptionsDefault;
-  exec(success, error, "OSGeolocation", "getCurrentPosition", [options]);
+  options = { ...PositionOptionsDefault, ...options };
+  let convertOnSuccess = (position) => {
+    let convertedPosition = {
+      coords: {
+        latitude: position.latitude,
+        longitude: position.longitude,
+        altitude: position.altitude,
+        accuracy: position.accuracy,
+        heading: position.heading,
+        speed: position.speed,
+        altitudeAccuracy: position.accuracy
+      },
+      timestamp: position.timestamp
+    };
+    success(convertedPosition);
+  };
+  exec(convertOnSuccess, error, "OSGeolocation", "getCurrentPosition", [options]);
 }
 function watchPosition(options, success, error) {
   options = options || PositionOptionsDefault;
