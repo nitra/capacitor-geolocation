@@ -5,6 +5,7 @@ import android.content.Context
 import android.location.Location
 import android.location.LocationManager
 import android.os.Build
+import android.os.Looper
 import android.util.Log
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
@@ -14,14 +15,19 @@ import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.CurrentLocationRequest
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.gms.location.Priority
 import com.outsystems.plugins.osgeolocation.model.OSLocationException
 import com.outsystems.plugins.osgeolocation.model.OSLocationOptions
 import com.outsystems.plugins.osgeolocation.model.OSLocationResult
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.tasks.await
 
@@ -35,6 +41,9 @@ class OSGeolocationController(
 ) {
 
     private lateinit var flow: MutableSharedFlow<Result<Unit>>
+
+    private val locationCallbacks: MutableMap<String, LocationCallback> = mutableMapOf()
+    private val watchIdsBlacklist: MutableList<String> = mutableListOf()
 
     /**
      * Obtains the device's location using FusedLocationProviderClient.
@@ -65,10 +74,10 @@ class OSGeolocationController(
             flow = MutableSharedFlow()
 
             if (checkLocationSettings(
-                activity,
-                options,
-                0 // 0 is used because we only want to do one location request
-            )) {
+                    activity,
+                    options,
+                    0 // 0 is used because we only want to do one location request
+                )) {
                 val location = getCurrentLocation(options)
                 return Result.success(
                     OSLocationResult(
@@ -172,7 +181,6 @@ class OSGeolocationController(
 
         try {
             client.checkLocationSettings(builder.build()).await()
-            //flow.emit(Result.success(Unit))
             return true
         } catch (e: ResolvableApiException) {
 
@@ -215,12 +223,140 @@ class OSGeolocationController(
         }
     }
 
-    fun addWatch() {
-        //TODO
+    /**
+     * Creates a callback for location updates.
+     * @param options location request options to use
+     * @return Location object representing the location
+     */
+    fun addWatch(activity: Activity, options: OSLocationOptions): Flow<Result<List<OSLocationResult>>> = callbackFlow {
+
+        // check play services
+        val checkResult = checkGooglePlayServicesAvailable(activity)
+
+        if (checkResult.isFailure) {
+            trySend(Result.failure(checkResult.exceptionOrNull() ?: NullPointerException()))
+        }
+
+        flow = MutableSharedFlow()
+
+        if (checkLocationSettings(
+                activity,
+                options,
+                interval = options.timeout
+            )) {
+            locationCallbacks[options.id] = object : LocationCallback() {
+                override fun onLocationResult(location: LocationResult) {
+                    if (watchIdsBlacklist.contains(options.id)) {
+                        // received a location update but watch id is in blacklist, so the location updates should be removed
+                        val cleared = clearWatch(options.id, addToBlackList = false)
+                        if (cleared) {
+                            watchIdsBlacklist.remove(options.id)
+                        }
+                        return
+                    }
+                    val locations = location.locations.map { currentLocation ->
+                        OSLocationResult(
+                            currentLocation.latitude,
+                            currentLocation.longitude,
+                            currentLocation.altitude,
+                            currentLocation.accuracy,
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) currentLocation.verticalAccuracyMeters else null,
+                            currentLocation.bearing,
+                            currentLocation.speed,
+                            currentLocation.time
+                        )
+                    }
+                    trySend(Result.success(locations))
+                }
+            }
+            requestLocationUpdates(options)
+        }
+
+        val result = flow.first()
+        if (result.isSuccess) {
+            locationCallbacks[options.id] = object : LocationCallback() {
+                override fun onLocationResult(location: LocationResult) {
+                    if (watchIdsBlacklist.contains(options.id)) {
+                        // received a location update but watch id is in blacklist, so the location updates should be removed
+                        val cleared = clearWatch(options.id, addToBlackList = false)
+                        if (cleared) {
+                            watchIdsBlacklist.remove(options.id)
+                        }
+                        return
+                    }
+                    val locations = location.locations.map { currentLocation ->
+                        OSLocationResult(
+                            currentLocation.latitude,
+                            currentLocation.longitude,
+                            currentLocation.altitude,
+                            currentLocation.accuracy,
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) currentLocation.verticalAccuracyMeters else null,
+                            currentLocation.bearing,
+                            currentLocation.speed,
+                            currentLocation.time
+                        )
+                    }
+                    trySend(Result.success(locations))
+                }
+            }
+            requestLocationUpdates(options)
+        } else {
+            trySend(
+                Result.failure(
+                    result.exceptionOrNull() ?: NullPointerException()
+                )
+            )
+        }
+
+        awaitClose {
+            clearWatch(options.id)
+        }
     }
 
-    fun clearWatch() {
-        //TODO
+    private fun requestLocationUpdates(options: OSLocationOptions) {
+        val locationRequest = LocationRequest.Builder(options.timeout).apply {
+            setMaxUpdateAgeMillis(options.maximumAge)
+            setPriority(if (options.enableHighAccuracy) Priority.PRIORITY_HIGH_ACCURACY else Priority.PRIORITY_BALANCED_POWER_ACCURACY)
+            if (options.minUpdateInterval != null) {
+                setMinUpdateIntervalMillis(options.minUpdateInterval)
+            }
+        }.build()
+
+        locationCallbacks[options.id]?.let {
+            fusedLocationClient.requestLocationUpdates(
+                locationRequest,
+                it,
+                Looper.getMainLooper()
+            )
+        }
+    }
+
+    /**
+     * clears a watch by removing its location update request
+     * @param id the watch id
+     * @return true if watch was cleared, false if watch was not found
+     */
+    fun clearWatch(id: String): Boolean = clearWatch(id, addToBlackList = true)
+
+    /**
+     * clears a watch by removing its location update request
+     * @param id the watch id
+     * @param addToBlackList whether or not the watch id should go in blacklist if not found
+     * @return true if watch was cleared, false if watch was not found
+     */
+    private fun clearWatch(id: String, addToBlackList: Boolean): Boolean {
+        val locationCallback = locationCallbacks.remove(key = id)
+        return if (locationCallback != null) {
+            fusedLocationClient.removeLocationUpdates(locationCallback)
+            true
+        } else {
+            if (addToBlackList) {
+                // It is possible that clearWatch is being called before requestLocationUpdates is triggered (e.g. very low timeout on JavaScript side.)
+                //  add to a blacklist in order to remove the location callback in the future
+                watchIdsBlacklist.add(id)
+            }
+            false
+        }
     }
 
     companion object {
