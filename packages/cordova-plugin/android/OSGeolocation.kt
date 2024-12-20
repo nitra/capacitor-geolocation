@@ -19,6 +19,7 @@ import android.Manifest
 import android.content.pm.PackageManager
 import androidx.activity.result.contract.ActivityResultContracts
 import com.outsystems.plugins.osgeolocation.model.OSLocationException
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableSharedFlow
 
 /**
@@ -155,7 +156,67 @@ class OSGeolocation : CordovaPlugin() {
      * @param callbackContext CallbackContext the method should return to
      */
     private fun addWatch(args: JSONArray, callbackContext: CallbackContext) {
-        TODO("Not yet implemented")
+        coroutineScope.launch {
+            flow = MutableSharedFlow(replay = 1)
+
+            // first, we request permissions if necessary
+            if (hasLocationPermissions()) {
+                flow.emit(OSGeolocationPermissionEvents.Granted)
+            } else { // request necessary permissions
+                requestLocationPermissions()
+            }
+
+            // collect the flow to handle permission request result
+            flow.collect { permissionEvent ->
+
+                if (permissionEvent == OSGeolocationPermissionEvents.Granted) {
+                    val locationOptions = OSLocationOptions(
+                        id = args.getString(0),
+                        maximumAge = args.getLong(2),
+                        enableHighAccuracy = args.getBoolean(1),
+                    )
+                    controller.addWatch(cordova.activity, locationOptions).collect { result ->
+
+                        result.onSuccess { locationList ->
+                            locationList.forEach { locationResult ->
+                                callbackContext.sendSuccess(
+                                    result = JSONObject(gson.toJson(locationResult)),
+                                    keepCallback = true
+                                )
+                            }
+                        }
+                        result.onFailure { exception ->
+                            when (exception) {
+                                is OSLocationException.OSLocationRequestDeniedException -> {
+                                    callbackContext.sendError(OSGeolocationErrors.LOCATION_ENABLE_REQUEST_DENIED)
+                                }
+                                is OSLocationException.OSLocationSettingsException -> {
+                                    callbackContext.sendError(OSGeolocationErrors.GET_LOCATION_GENERAL)
+                                }
+                                is OSLocationException.OSLocationInvalidTimeoutException -> {
+                                    callbackContext.sendError(OSGeolocationErrors.GET_LOCATION_GENERAL)
+                                }
+                                is OSLocationException.OSLocationGoogleServicesException -> {
+                                    callbackContext.sendError(OSGeolocationErrors.GET_LOCATION_GENERAL)
+                                }
+                                is NullPointerException -> {
+                                    callbackContext.sendError(OSGeolocationErrors.GET_LOCATION_GENERAL)
+                                }
+                                is Exception -> {
+                                    callbackContext.sendError(OSGeolocationErrors.GET_LOCATION_GENERAL)
+                                }
+                                else -> {
+                                    callbackContext.sendError(OSGeolocationErrors.GET_LOCATION_GENERAL)
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    callbackContext.sendError(OSGeolocationErrors.LOCATION_PERMISSIONS_DENIED)
+                }
+            }
+        }
+
     }
 
     /**
@@ -164,16 +225,27 @@ class OSGeolocation : CordovaPlugin() {
      * @param callbackContext CallbackContext the method should return to
      */
     private fun clearWatch(args: JSONArray, callbackContext: CallbackContext) {
-        TODO("Not yet implemented")
+        val id = args.getString(0)
+        val watchCleared = controller.clearWatch(id)
+        if (watchCleared) {
+            callbackContext.sendError(OSGeolocationErrors.WATCH_ID_NOT_FOUND)
+        } else {
+            callbackContext.sendSuccess(result = null)
+        }
     }
 
     /**
      * Extension function to return a successful plugin result
-     * @param result JSONObject with the JSON content to return
+     * @param result JSONObject with the JSON content to return, or null if there's no json data
+     * @param keepCallback whether the callback should be kept or not. By default, false
      */
-    private fun CallbackContext.sendSuccess(result: JSONObject) {
-        val pluginResult = PluginResult(PluginResult.Status.OK, result)
-        pluginResult.keepCallback = true
+    private fun CallbackContext.sendSuccess(result: JSONObject?, keepCallback: Boolean = false) {
+        val pluginResult = if (result != null) {
+            PluginResult(PluginResult.Status.OK, result)
+        } else {
+            PluginResult(PluginResult.Status.OK)
+        }
+        pluginResult.keepCallback = keepCallback
         this.sendPluginResult(pluginResult)
     }
 
