@@ -42,7 +42,7 @@ class OSGeolocationController(
      * @param options OSLocationOptions object with the options to obtain the location with (e.g. timeout)
      * @return Result<OSLocationResult> object with either the location or an exception to be handled by the caller
      */
-    suspend fun getLocation(
+    suspend fun getCurrentPosition(
         activity: Activity,
         options: OSLocationOptions
     ): Result<OSLocationResult> {

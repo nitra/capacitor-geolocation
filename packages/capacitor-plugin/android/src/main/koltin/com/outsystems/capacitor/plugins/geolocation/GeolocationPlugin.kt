@@ -162,12 +162,11 @@ class GeolocationPlugin : Plugin() {
             val enableHighAccuracy = call.getBoolean("enableHighAccuracy") ?: false
 
             // validate parameters in args
-            // put parameters in object to send that object to getLocation
+            // put parameters in object to send that object to getCurrentPosition
             // the way we get the arguments may change
             val locationOptions = OSLocationOptions(timeout, maximumAge, enableHighAccuracy)
-            // call getLocation method from controller
 
-            val locationResult = controller.getLocation(activity, locationOptions)
+            val locationResult = controller.getCurrentPosition(activity, locationOptions)
 
             if (locationResult.isSuccess) {
                 call.sendSuccess(JSObject(gson.toJson(locationResult.getOrNull())))

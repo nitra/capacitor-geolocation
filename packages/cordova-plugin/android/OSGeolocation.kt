@@ -103,7 +103,7 @@ class OSGeolocation : CordovaPlugin() {
             flow.collect { permissionEvent ->
                 if (permissionEvent == OSGeolocationPermissionEvents.Granted) {
                     // validate parameters in args
-                    // put parameters in object to send that object to getLocation
+                    // put parameters in object to send that object to getCurrentPosition
                     // the way we get the arguments may change
 
                     val locationOptions = OSLocationOptions(
@@ -111,8 +111,7 @@ class OSGeolocation : CordovaPlugin() {
                         parameters.getLong(MAXIMUM_AGE),
                         parameters.getBoolean(ENABLE_HIGH_ACCURACY))
 
-                    // call getCurrentPosition method from controller
-                    val locationResult = controller.getLocation(cordova.activity, locationOptions)
+                    val locationResult = controller.getCurrentPosition(cordova.activity, locationOptions)
 
                     if (locationResult.isSuccess) {
                         callbackContext.sendSuccess(JSONObject(gson.toJson(locationResult.getOrNull())))
