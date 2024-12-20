@@ -31,6 +31,7 @@ class OSGeolocation : CordovaPlugin() {
 
     // for permissions
     private lateinit var flow: MutableSharedFlow<OSGeolocationPermissionEvents>
+    private lateinit var coroutineScope: CoroutineScope
 
     companion object {
         private const val LOCATION_PERMISSIONS_REQUEST_CODE = 22332
@@ -42,10 +43,11 @@ class OSGeolocation : CordovaPlugin() {
     override fun initialize(cordova: CordovaInterface, webView: CordovaWebView) {
         super.initialize(cordova, webView)
 
+        coroutineScope = CoroutineScope(Dispatchers.Main)
         val activityLauncher = cordova.activity.registerForActivityResult(
             ActivityResultContracts.StartIntentSenderForResult()
         ) { result ->
-            CoroutineScope(Dispatchers.Main).launch {
+            coroutineScope.launch {
                 controller.onResolvableExceptionResult(result.resultCode)
             }
         }
@@ -54,7 +56,11 @@ class OSGeolocation : CordovaPlugin() {
             LocationServices.getFusedLocationProviderClient(cordova.context),
             activityLauncher
         )
+    }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        coroutineScope.cancel()
     }
 
     override fun execute(
@@ -83,7 +89,7 @@ class OSGeolocation : CordovaPlugin() {
      * @param callbackContext CallbackContext the method should return to
      */
     private fun getCurrentPosition(parameters: JSONObject, callbackContext: CallbackContext) {
-        CoroutineScope(Dispatchers.IO).launch {
+        coroutineScope.launch {
             flow = MutableSharedFlow(replay = 1)
 
             // first, we request permissions if necessary
@@ -212,7 +218,7 @@ class OSGeolocation : CordovaPlugin() {
         grantResults: IntArray
     ) {
         if (requestCode == LOCATION_PERMISSIONS_REQUEST_CODE) {
-            CoroutineScope(Dispatchers.IO).launch {
+            coroutineScope.launch {
                 flow.emit(
                     if (grantResults.contains(PackageManager.PERMISSION_GRANTED)) {
                         OSGeolocationPermissionEvents.Granted
