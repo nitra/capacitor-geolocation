@@ -3,9 +3,25 @@ import { WebPlugin } from '@capacitor/core';
 import type { CallbackID, ClearWatchOptions, GeolocationPluginPermissions, IGeolocationPlugin, PermissionStatus, Position, PositionOptions, WatchPositionCallback } from './definitions';
 
 export class GeolocationPluginWeb extends WebPlugin implements IGeolocationPlugin {
-  getCurrentPosition(options?: PositionOptions): Promise<Position> {
-    throw new Error('Method not implemented.');
+  async getCurrentPosition(options?: PositionOptions): Promise<Position> {
+    return new Promise((resolve, reject) => {
+      navigator.geolocation.getCurrentPosition(
+        pos => {
+          resolve(pos);
+        },
+        err => {
+          reject(err);
+        },
+        {
+          enableHighAccuracy: false,
+          timeout: 10000,
+          maximumAge: 0,
+          ...options,
+        },
+      );
+    });
   }
+
   watchPosition(options: PositionOptions, callback: WatchPositionCallback): Promise<CallbackID> {
     throw new Error('Method not implemented.');
   }
