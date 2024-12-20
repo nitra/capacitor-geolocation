@@ -54,4 +54,14 @@ object OSGeolocationErrors {
         message = "Location settings error."
     )
 
+    val WATCH_ID_NOT_FOUND = ErrorInfo(
+        code = formatErrorCode(10),
+        message = "Watch id not found"
+    )
+
+    val WATCH_ID_NOT_PROVIDED = ErrorInfo(
+        code = formatErrorCode(10),
+        message = "WatchID needs to be provided."
+    )
+
 }

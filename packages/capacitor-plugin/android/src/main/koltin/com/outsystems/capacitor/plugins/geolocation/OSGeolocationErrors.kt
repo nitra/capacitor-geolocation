@@ -59,4 +59,14 @@ object OSGeolocationErrors {
         message = "Location services are not enabled."
     )
 
+    val WATCH_ID_NOT_FOUND = ErrorInfo(
+        code = formatErrorCode(10),
+        message = "Watch id not found"
+    )
+
+    val WATCH_ID_NOT_PROVIDED = ErrorInfo(
+        code = formatErrorCode(10),
+        message = "WatchID needs to be provided."
+    )
+
 }

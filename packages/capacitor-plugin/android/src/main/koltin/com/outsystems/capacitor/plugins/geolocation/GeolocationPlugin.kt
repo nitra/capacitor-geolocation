@@ -1,7 +1,6 @@
 package com.outsystems.capacitor.plugins.geolocation
 
 import android.Manifest
-import android.location.Location
 import android.os.Build
 import androidx.activity.result.contract.ActivityResultContracts
 import com.getcapacitor.JSObject
@@ -19,10 +18,8 @@ import com.outsystems.plugins.osgeolocation.model.OSLocationException
 import com.outsystems.plugins.osgeolocation.model.OSLocationOptions
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
-import org.apache.cordova.geolocation.OSGeolocationErrors
-import org.apache.cordova.geolocation.OSGeolocationPermissionEvents
 
 @CapacitorPlugin(
     name = "Geolocation",
@@ -38,12 +35,10 @@ class GeolocationPlugin : Plugin() {
 
     private lateinit var controller: OSGeolocationController
     private val gson by lazy { Gson() }
-
-    // for permissions
-    private lateinit var flow: MutableSharedFlow<OSGeolocationPermissionEvents>
+    private lateinit var coroutineScope: CoroutineScope
+    private val watchingCalls: MutableMap<String, PluginCall> = mutableMapOf()
 
     companion object {
-        private const val LOCATION_PERMISSIONS_REQUEST_CODE = 22332
         const val LOCATION_ALIAS: String = "location"
         const val COARSE_LOCATION_ALIAS: String = "coarseLocation"
     }
@@ -51,6 +46,7 @@ class GeolocationPlugin : Plugin() {
     override fun load() {
         super.load()
 
+        coroutineScope = CoroutineScope(Dispatchers.Main)
         val activityLauncher = activity.registerForActivityResult(
             ActivityResultContracts.StartIntentSenderForResult()
         ) { result ->
@@ -64,6 +60,11 @@ class GeolocationPlugin : Plugin() {
             activityLauncher
         )
 
+    }
+
+    override fun handleOnDestroy() {
+        super.handleOnDestroy()
+        coroutineScope.cancel()
     }
 
     @PluginMethod
@@ -112,22 +113,61 @@ class GeolocationPlugin : Plugin() {
         }
     }
 
+    /**
+     * Checks location permission state, requesting them if necessary.
+     * If not, calls startWatch to start getting location updates
+     */
     @PluginMethod
     fun watchPosition(call: PluginCall) {
-        TODO("Not yet implemented")
+        val alias = getAlias(call)
+        if (getPermissionState(alias) != PermissionState.GRANTED) {
+            requestPermissionForAlias(alias, call, "completeWatchPosition")
+        } else {
+            startWatch(call)
+        }
+    }
+
+    /**
+     * Completes the watchPosition plugin call after a permission request
+     * @see .startWatch
+     * @param call the plugin call
+     */
+    @PermissionCallback
+    private fun completeWatchPosition(call: PluginCall) {
+        if (getPermissionState(GeolocationPluginOld.COARSE_LOCATION) == PermissionState.GRANTED) {
+            startWatch(call)
+        } else {
+            call.sendError(OSGeolocationErrors.LOCATION_PERMISSIONS_DENIED)
+        }
     }
 
     @PluginMethod
     fun clearWatch(call: PluginCall) {
-        TODO("Not yet implemented")
+        val id = call.getString("id")
+        if (id.isNullOrBlank()) {
+            call.sendError(OSGeolocationErrors.WATCH_ID_NOT_PROVIDED)
+        } else {
+            watchingCalls.remove(id)?.release(bridge)
+            val watchCleared = controller.clearWatch(id)
+            if (watchCleared) {
+                call.sendSuccess()
+            } else {
+                call.sendError(OSGeolocationErrors.WATCH_ID_NOT_FOUND)
+            }
+        }
     }
 
     /**
      * Extension function to return a successful plugin result
      * @param result JSOObject with the JSON content to return
      */
-    private fun PluginCall.sendSuccess(result: JSObject) {
-        this.resolve(result)
+    private fun PluginCall.sendSuccess(result: JSObject? = null, keepCallback: Boolean? = false) {
+        this.setKeepAlive(keepCallback)
+        if (result != null) {
+            this.resolve(result)
+        } else {
+            this.resolve()
+        }
     }
 
     /**
@@ -156,16 +196,18 @@ class GeolocationPlugin : Plugin() {
      * Gets the current position
      */
     private fun getPosition(call: PluginCall) {
-        CoroutineScope(Dispatchers.IO).launch {
+        coroutineScope.launch {
             val timeout = call.getLong("timeout") ?: 10000
             val maximumAge = call.getLong("maximumAge") ?: 0
             val enableHighAccuracy = call.getBoolean("enableHighAccuracy") ?: false
+            val minimumUpdateInterval = call.getLong("minimumUpdateInterval") ?: 5000
 
             // validate parameters in args
             // put parameters in object to send that object to getCurrentPosition
             // the way we get the arguments may change
-            val locationOptions = OSLocationOptions(timeout, maximumAge, enableHighAccuracy)
+            val locationOptions = OSLocationOptions(timeout, maximumAge, enableHighAccuracy, minimumUpdateInterval)
 
+            // call getCurrentPosition method from controller
             val locationResult = controller.getCurrentPosition(activity, locationOptions)
 
             if (locationResult.isSuccess) {
@@ -198,7 +240,60 @@ class GeolocationPlugin : Plugin() {
                 }
             }
         }
+    }
 
+    /**
+     * Starts watching the device's location by requesting location updates
+     */
+    private fun startWatch(call: PluginCall) {
+        coroutineScope.launch {
+            val watchId = call.callbackId
+            val timeout = call.getLong("timeout") ?: 10000
+            val maximumAge = call.getLong("maximumAge") ?: 0
+            val enableHighAccuracy = call.getBoolean("enableHighAccuracy") ?: false
+            val minimumUpdateInterval = call.getLong("minimumUpdateInterval") ?: 5000
+
+            // validate parameters in args
+            // put parameters in object to send that object to getLocation
+            // the way we get the arguments may change
+            val locationOptions = OSLocationOptions(timeout, maximumAge, enableHighAccuracy, minimumUpdateInterval)
+
+            // call addWatch method from controller
+            controller.addWatch(activity, locationOptions, watchId).collect { result ->
+                result.onSuccess { locationList ->
+                    locationList.forEach { locationResult ->
+                        call.sendSuccess(JSObject(gson.toJson(locationResult)))
+                    }
+                }
+                result.onFailure { exception ->
+                    when (exception) {
+                        is OSLocationException.OSLocationRequestDeniedException -> {
+                            call.sendError(OSGeolocationErrors.LOCATION_ENABLE_REQUEST_DENIED)
+                        }
+                        is OSLocationException.OSLocationSettingsException -> {
+                            call.sendError(OSGeolocationErrors.GET_LOCATION_GENERAL)
+                        }
+                        is OSLocationException.OSLocationInvalidTimeoutException -> {
+                            call.sendError(OSGeolocationErrors.GET_LOCATION_GENERAL)
+                        }
+                        is OSLocationException.OSLocationGoogleServicesException -> {
+                            call.sendError(OSGeolocationErrors.GET_LOCATION_GENERAL)
+                        }
+                        is NullPointerException -> {
+                            call.sendError(OSGeolocationErrors.GET_LOCATION_GENERAL)
+                        }
+                        is Exception -> {
+                            call.sendError(OSGeolocationErrors.GET_LOCATION_GENERAL)
+                        }
+                        else -> {
+                            call.sendError(OSGeolocationErrors.GET_LOCATION_GENERAL)
+                        }
+                    }
+                }
+
+            }
+        }
+        watchingCalls[call.callbackId] = call
     }
 
 }

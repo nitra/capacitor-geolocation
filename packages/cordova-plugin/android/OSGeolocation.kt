@@ -21,6 +21,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import com.outsystems.plugins.osgeolocation.model.OSLocationException
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableSharedFlow
+import java.util.UUID
 
 /**
  * Cordova bridge, inherits from CordovaPlugin
@@ -86,7 +87,7 @@ class OSGeolocation : CordovaPlugin() {
 
     /**
      * Calls the getCurrentPosition method of OSGeolocationController to get the device's geolocation
-     * @param args JSONArray that contains the parameters to parse (e.g. timeout)
+     * @param parameters JSONObject that contains the parameters to parse (e.g. timeout)
      * @param callbackContext CallbackContext the method should return to
      */
     private fun getCurrentPosition(parameters: JSONObject, callbackContext: CallbackContext) {
@@ -156,6 +157,13 @@ class OSGeolocation : CordovaPlugin() {
      * @param callbackContext CallbackContext the method should return to
      */
     private fun addWatch(args: JSONArray, callbackContext: CallbackContext) {
+
+        val watchId = UUID.randomUUID().toString()
+        callbackContext.sendSuccess(
+            result = JSONObject("{\"id\": \"$watchId\"}"),
+            keepCallback = true
+        )
+
         coroutineScope.launch {
             flow = MutableSharedFlow(replay = 1)
 
@@ -171,11 +179,11 @@ class OSGeolocation : CordovaPlugin() {
 
                 if (permissionEvent == OSGeolocationPermissionEvents.Granted) {
                     val locationOptions = OSLocationOptions(
-                        id = args.getString(0),
                         maximumAge = args.getLong(2),
                         enableHighAccuracy = args.getBoolean(1),
                     )
-                    controller.addWatch(cordova.activity, locationOptions).collect { result ->
+
+                    controller.addWatch(cordova.activity, locationOptions, watchId).collect { result ->
 
                         result.onSuccess { locationList ->
                             locationList.forEach { locationResult ->
@@ -225,12 +233,18 @@ class OSGeolocation : CordovaPlugin() {
      * @param callbackContext CallbackContext the method should return to
      */
     private fun clearWatch(args: JSONArray, callbackContext: CallbackContext) {
-        val id = args.getString(0)
+        val id = args.optString(0)
+
+        if (id.isNullOrBlank()) {
+            callbackContext.sendError(OSGeolocationErrors.WATCH_ID_NOT_PROVIDED)
+            return
+        }
+
         val watchCleared = controller.clearWatch(id)
         if (watchCleared) {
-            callbackContext.sendError(OSGeolocationErrors.WATCH_ID_NOT_FOUND)
+            callbackContext.sendSuccess()
         } else {
-            callbackContext.sendSuccess(result = null)
+            callbackContext.sendError(OSGeolocationErrors.WATCH_ID_NOT_FOUND)
         }
     }
 
@@ -239,7 +253,7 @@ class OSGeolocation : CordovaPlugin() {
      * @param result JSONObject with the JSON content to return, or null if there's no json data
      * @param keepCallback whether the callback should be kept or not. By default, false
      */
-    private fun CallbackContext.sendSuccess(result: JSONObject?, keepCallback: Boolean = false) {
+    private fun CallbackContext.sendSuccess(result: JSONObject? = null, keepCallback: Boolean = false) {
         val pluginResult = if (result != null) {
             PluginResult(PluginResult.Status.OK, result)
         } else {

@@ -39,9 +39,7 @@ class OSGeolocationController(
     private val fusedLocationClient: FusedLocationProviderClient,
     private val activityLauncher: ActivityResultLauncher<IntentSenderRequest>
 ) {
-
     private lateinit var flow: MutableSharedFlow<Result<Unit>>
-
     private val locationCallbacks: MutableMap<String, LocationCallback> = mutableMapOf()
     private val watchIdsBlacklist: MutableList<String> = mutableListOf()
 
@@ -228,7 +226,7 @@ class OSGeolocationController(
      * @param options location request options to use
      * @return Location object representing the location
      */
-    fun addWatch(activity: Activity, options: OSLocationOptions): Flow<Result<List<OSLocationResult>>> = callbackFlow {
+    fun addWatch(activity: Activity, options: OSLocationOptions, watchId: String): Flow<Result<List<OSLocationResult>>> = callbackFlow {
 
         // check play services
         val checkResult = checkGooglePlayServicesAvailable(activity)
@@ -242,15 +240,15 @@ class OSGeolocationController(
         if (checkLocationSettings(
                 activity,
                 options,
-                interval = options.timeout
+                options.timeout
             )) {
-            locationCallbacks[options.id] = object : LocationCallback() {
+            locationCallbacks[watchId] = object : LocationCallback() {
                 override fun onLocationResult(location: LocationResult) {
-                    if (watchIdsBlacklist.contains(options.id)) {
+                    if (watchIdsBlacklist.contains(watchId)) {
                         // received a location update but watch id is in blacklist, so the location updates should be removed
-                        val cleared = clearWatch(options.id, addToBlackList = false)
+                        val cleared = clearWatch(watchId, addToBlackList = false)
                         if (cleared) {
-                            watchIdsBlacklist.remove(options.id)
+                            watchIdsBlacklist.remove(watchId)
                         }
                         return
                     }
@@ -269,18 +267,18 @@ class OSGeolocationController(
                     trySend(Result.success(locations))
                 }
             }
-            requestLocationUpdates(options)
+            requestLocationUpdates(options, watchId)
         }
 
         val result = flow.first()
         if (result.isSuccess) {
-            locationCallbacks[options.id] = object : LocationCallback() {
+            locationCallbacks[watchId] = object : LocationCallback() {
                 override fun onLocationResult(location: LocationResult) {
-                    if (watchIdsBlacklist.contains(options.id)) {
+                    if (watchIdsBlacklist.contains(watchId)) {
                         // received a location update but watch id is in blacklist, so the location updates should be removed
-                        val cleared = clearWatch(options.id, addToBlackList = false)
+                        val cleared = clearWatch(watchId, addToBlackList = false)
                         if (cleared) {
-                            watchIdsBlacklist.remove(options.id)
+                            watchIdsBlacklist.remove(watchId)
                         }
                         return
                     }
@@ -299,7 +297,7 @@ class OSGeolocationController(
                     trySend(Result.success(locations))
                 }
             }
-            requestLocationUpdates(options)
+            requestLocationUpdates(options, watchId)
         } else {
             trySend(
                 Result.failure(
@@ -309,11 +307,11 @@ class OSGeolocationController(
         }
 
         awaitClose {
-            clearWatch(options.id)
+            clearWatch(watchId)
         }
     }
 
-    private fun requestLocationUpdates(options: OSLocationOptions) {
+    private fun requestLocationUpdates(options: OSLocationOptions, watchId: String) {
         val locationRequest = LocationRequest.Builder(options.timeout).apply {
             setMaxUpdateAgeMillis(options.maximumAge)
             setPriority(if (options.enableHighAccuracy) Priority.PRIORITY_HIGH_ACCURACY else Priority.PRIORITY_BALANCED_POWER_ACCURACY)
@@ -322,7 +320,7 @@ class OSGeolocationController(
             }
         }.build()
 
-        locationCallbacks[options.id]?.let {
+        locationCallbacks[watchId]?.let {
             fusedLocationClient.requestLocationUpdates(
                 locationRequest,
                 it,
