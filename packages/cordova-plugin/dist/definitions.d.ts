@@ -62,8 +62,8 @@ export type PositionOptions = {
      */
     minimumUpdateInterval?: number;
     /**
-     * @deprecate since 1.0.0
-     * */
+    * @deprecate since 1.0.0
+    * */
     id?: ReturnType<typeof setTimeout>;
 };
 export type ClearWatchOptions = {

@@ -22,8 +22,6 @@ function getCurrentPosition(options: PositionOptions, success: (output: Position
     }
     success(convertedPosition)
   }
-
-
   exec(convertOnSuccess, error, 'OSGeolocation', 'getCurrentPosition', [options]);
 }
 

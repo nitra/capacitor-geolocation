@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		756346652C00F21000685AA3 /* OSGeolocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 756346612C00F21000685AA3 /* OSGeolocation.swift */; };
+		756346652C00F21000685AA3 /* OSGLOCManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 756346612C00F21000685AA3 /* OSGLOCManager.swift */; };
 		7575CF6A2BFCEE6F008F3FD0 /* OSGeolocationLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7575CF612BFCEE6F008F3FD0 /* OSGeolocationLib.framework */; };
-		7575CF802BFCEEEA008F3FD0 /* OSGeolocationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7575CF7D2BFCEEEA008F3FD0 /* OSGeolocationTests.swift */; };
+		7575CF802BFCEEEA008F3FD0 /* OSGLOCManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7575CF7D2BFCEEEA008F3FD0 /* OSGLOCManagerTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -23,10 +23,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		756346612C00F21000685AA3 /* OSGeolocation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OSGeolocation.swift; sourceTree = "<group>"; };
+		756346612C00F21000685AA3 /* OSGLOCManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OSGLOCManager.swift; sourceTree = "<group>"; };
 		7575CF612BFCEE6F008F3FD0 /* OSGeolocationLib.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = OSGeolocationLib.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7575CF692BFCEE6F008F3FD0 /* OSGeolocationLibTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = OSGeolocationLibTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		7575CF7D2BFCEEEA008F3FD0 /* OSGeolocationTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OSGeolocationTests.swift; sourceTree = "<group>"; };
+		7575CF7D2BFCEEEA008F3FD0 /* OSGLOCManagerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OSGLOCManagerTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -69,7 +69,7 @@
 		7575CF632BFCEE6F008F3FD0 /* OSGeolocationLib */ = {
 			isa = PBXGroup;
 			children = (
-				756346612C00F21000685AA3 /* OSGeolocation.swift */,
+				756346612C00F21000685AA3 /* OSGLOCManager.swift */,
 			);
 			path = OSGeolocationLib;
 			sourceTree = "<group>";
@@ -77,7 +77,7 @@
 		7575CF6D2BFCEE6F008F3FD0 /* OSGeolocationLibTests */ = {
 			isa = PBXGroup;
 			children = (
-				7575CF7D2BFCEEEA008F3FD0 /* OSGeolocationTests.swift */,
+				7575CF7D2BFCEEEA008F3FD0 /* OSGLOCManagerTests.swift */,
 			);
 			path = OSGeolocationLibTests;
 			sourceTree = "<group>";
@@ -214,7 +214,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				756346652C00F21000685AA3 /* OSGeolocation.swift in Sources */,
+				756346652C00F21000685AA3 /* OSGLOCManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -222,7 +222,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7575CF802BFCEEEA008F3FD0 /* OSGeolocationTests.swift in Sources */,
+				7575CF802BFCEEEA008F3FD0 /* OSGLOCManagerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
