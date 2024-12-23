@@ -214,28 +214,25 @@ class GeolocationPlugin : Plugin() {
                 call.sendSuccess(JSObject(gson.toJson(locationResult.getOrNull())))
             } else {
                 // handle error accordingly
-                val exception = locationResult.exceptionOrNull()
-                when (exception) {
+                when (val exception = locationResult.exceptionOrNull()) {
                     is OSLocationException.OSLocationRequestDeniedException -> {
                         call.sendError(OSGeolocationErrors.LOCATION_ENABLE_REQUEST_DENIED)
                     }
                     is OSLocationException.OSLocationSettingsException -> {
-                        call.sendError(OSGeolocationErrors.LOCATION_ENABLE_REQUEST_DENIED)
+                        call.sendError(OSGeolocationErrors.LOCATION_SETTINGS_ERROR)
                     }
                     is OSLocationException.OSLocationInvalidTimeoutException -> {
-                        call.sendError(OSGeolocationErrors.LOCATION_ENABLE_REQUEST_DENIED)
+                        call.sendError(OSGeolocationErrors.INVALID_TIMEOUT)
                     }
                     is OSLocationException.OSLocationGoogleServicesException -> {
-                        call.sendError(OSGeolocationErrors.LOCATION_ENABLE_REQUEST_DENIED)
-                    }
-                    is NullPointerException -> {
-                        call.sendError(OSGeolocationErrors.LOCATION_ENABLE_REQUEST_DENIED)
-                    }
-                    is Exception -> {
-                        call.sendError(OSGeolocationErrors.LOCATION_ENABLE_REQUEST_DENIED)
+                        if (exception.resolvable) {
+                            call.sendError(OSGeolocationErrors.GOOGLE_SERVICES_RESOLVABLE)
+                        } else {
+                            call.sendError(OSGeolocationErrors.GOOGLE_SERVICES_ERROR)
+                        }
                     }
                     else -> {
-                        call.sendError(OSGeolocationErrors.LOCATION_ENABLE_REQUEST_DENIED)
+                        call.sendError(OSGeolocationErrors.GET_LOCATION_GENERAL)
                     }
                 }
             }
@@ -271,19 +268,17 @@ class GeolocationPlugin : Plugin() {
                             call.sendError(OSGeolocationErrors.LOCATION_ENABLE_REQUEST_DENIED)
                         }
                         is OSLocationException.OSLocationSettingsException -> {
-                            call.sendError(OSGeolocationErrors.GET_LOCATION_GENERAL)
+                            call.sendError(OSGeolocationErrors.LOCATION_SETTINGS_ERROR)
                         }
                         is OSLocationException.OSLocationInvalidTimeoutException -> {
-                            call.sendError(OSGeolocationErrors.GET_LOCATION_GENERAL)
+                            call.sendError(OSGeolocationErrors.INVALID_TIMEOUT)
                         }
                         is OSLocationException.OSLocationGoogleServicesException -> {
-                            call.sendError(OSGeolocationErrors.GET_LOCATION_GENERAL)
-                        }
-                        is NullPointerException -> {
-                            call.sendError(OSGeolocationErrors.GET_LOCATION_GENERAL)
-                        }
-                        is Exception -> {
-                            call.sendError(OSGeolocationErrors.GET_LOCATION_GENERAL)
+                            if (exception.resolvable) {
+                                call.sendError(OSGeolocationErrors.GOOGLE_SERVICES_RESOLVABLE)
+                            } else {
+                                call.sendError(OSGeolocationErrors.GOOGLE_SERVICES_ERROR)
+                            }
                         }
                         else -> {
                             call.sendError(OSGeolocationErrors.GET_LOCATION_GENERAL)
