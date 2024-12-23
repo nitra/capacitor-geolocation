@@ -30,6 +30,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.mockkStatic
+import io.mockk.spyk
 import io.mockk.unmockkObject
 import io.mockk.unmockkStatic
 import io.mockk.verify
@@ -55,6 +56,9 @@ class OSGeolocationControllerTest {
     private val activityResultLauncher = mockk<ActivityResultLauncher<IntentSenderRequest>>()
     private val googleApiAvailability = mockk<GoogleApiAvailability>()
     private val locationSettingsClient = mockk<SettingsClient>()
+    private val helper = spyk(
+        OSGeolocationServiceHelper(fusedLocationProviderClient, activityResultLauncher)
+    )
 
     private val mockAndroidLocation = mockkLocation()
     private val locationSettingsTask = mockk<Task<LocationSettingsResponse>>(relaxed = true)
@@ -81,7 +85,8 @@ class OSGeolocationControllerTest {
 
         sut = OSGeolocationController(
             fusedLocationClient = fusedLocationProviderClient,
-            activityLauncher = activityResultLauncher
+            activityLauncher = activityResultLauncher,
+            helper = helper
         )
     }
 
