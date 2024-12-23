@@ -107,7 +107,7 @@ class OSGeolocation {
         }
 
         // @ts-ignore
-        CapacitorUtils.Synapse.OSGeolocation.addWatch(options, successCallback, errorCallback)
+        CapacitorUtils.Synapse.OSGeolocation.watchPosition(options, successCallback, errorCallback)
         return watchId
     }
 
@@ -126,7 +126,7 @@ class OSGeolocation {
         clearTimeout(this.#timers[options.id]);
         delete this.#timers[options.id];
         // @ts-ignore
-        CapacitorUtils.Synapse.OSGeolocation.clearWatch(id, null, null)
+        CapacitorUtils.Synapse.OSGeolocation.clearWatch(options.id, null, null)
     }
 
 
