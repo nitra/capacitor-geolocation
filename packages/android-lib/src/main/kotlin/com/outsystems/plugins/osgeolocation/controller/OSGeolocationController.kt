@@ -39,13 +39,14 @@ class OSGeolocationController(
     private val fusedLocationClient: FusedLocationProviderClient,
     private val activityLauncher: ActivityResultLauncher<IntentSenderRequest>
 ) {
-    private lateinit var flow: MutableSharedFlow<Result<Unit>>
+    private lateinit var resolveLocationSettingsResultFlow: MutableSharedFlow<Result<Unit>>
     private val locationCallbacks: MutableMap<String, LocationCallback> = mutableMapOf()
     private val watchIdsBlacklist: MutableList<String> = mutableListOf()
 
     /**
      * Obtains the device's location using FusedLocationProviderClient.
      * Tries to obtain the last retrieved location, and then gets a fresh one if necessary.
+     * @param activity the Android activity from which the location request is being triggered
      * @param options OSLocationOptions object with the options to obtain the location with (e.g. timeout)
      * @return Result<OSLocationResult> object with either the location or an exception to be handled by the caller
      */
@@ -54,14 +55,6 @@ class OSGeolocationController(
         options: OSLocationOptions
     ): Result<OSLocationResult> {
         try {
-
-            // check play services
-            val checkResult = checkGooglePlayServicesAvailable(activity)
-
-            if (checkResult.isFailure) {
-                return Result.failure(checkResult.exceptionOrNull() ?: NullPointerException())
-            }
-
             // check timeout
             if (options.timeout <= 0) {
                 return Result.failure(OSLocationException.OSLocationInvalidTimeoutException(
@@ -69,50 +62,16 @@ class OSGeolocationController(
                 ))
             }
 
-            flow = MutableSharedFlow()
-
-            if (checkLocationSettings(
-                    activity,
-                    options,
-                    0 // 0 is used because we only want to do one location request
-                )) {
-                val location = getCurrentLocation(options)
-                return Result.success(
-                    OSLocationResult(
-                        location.latitude,
-                        location.longitude,
-                        location.altitude,
-                        location.accuracy,
-                        if (OSGeolocationBuildConfig.getAndroidSdkVersionCode() >= Build.VERSION_CODES.O) location.verticalAccuracyMeters else null,
-                        location.bearing,
-                        location.speed,
-                        location.time
-                    )
-                )
-            }
-
-            val result = flow.first()
-
-            if (result.isSuccess) {
-                val location = getCurrentLocation(options)
-                return Result.success(
-                    OSLocationResult(
-                        location.latitude,
-                        location.longitude,
-                        location.altitude,
-                        location.accuracy,
-                        if (OSGeolocationBuildConfig.getAndroidSdkVersionCode() >= Build.VERSION_CODES.O) location.verticalAccuracyMeters else null,
-                        location.bearing,
-                        location.speed,
-                        location.time
-                    )
+            val checkResult: Result<Unit> =
+                checkLocationPreconditions(activity, options, isSingleLocationRequest = true)
+            return if (checkResult.isFailure) {
+                Result.failure(
+                    checkResult.exceptionOrNull() ?: NullPointerException()
                 )
             } else {
-                return Result.failure(
-                    result.exceptionOrNull() ?: NullPointerException()
-                )
+                val location = getCurrentLocation(options)
+                return Result.success(location.toOSLocationResult())
             }
-
         } catch (exception: Exception) {
             Log.d(LOG_TAG, "Error fetching location: ${exception.message}")
             return Result.failure(exception)
@@ -127,9 +86,9 @@ class OSGeolocationController(
      */
     suspend fun onResolvableExceptionResult(resultCode: Int) {
         if (resultCode == Activity.RESULT_OK) {
-            flow.emit(Result.success(Unit))
+            resolveLocationSettingsResultFlow.emit(Result.success(Unit))
         } else {
-            flow.emit(
+            resolveLocationSettingsResultFlow.emit(
                 Result.failure(
                     OSLocationException.OSLocationRequestDeniedException(
                         message = "Request to enable location denied."
@@ -146,6 +105,58 @@ class OSGeolocationController(
     fun areLocationServicesEnabled(context: Context): Boolean {
         return LocationManagerCompat.isLocationEnabled(context.getSystemService(Context.LOCATION_SERVICE) as LocationManager)
     }
+
+    /**
+     * Creates a callback for location updates.
+     * @param activity the Android activity from which the location request is being triggered
+     * @param options location request options to use
+     * @param watchId a unique id identifying the watch
+     * @return Flow in which location updates will be emitted
+     */
+    fun addWatch(activity: Activity, options: OSLocationOptions, watchId: String): Flow<Result<List<OSLocationResult>>> = callbackFlow {
+
+        try {
+            val checkResult: Result<Unit> =
+                checkLocationPreconditions(activity, options, isSingleLocationRequest = true)
+            if (checkResult.isFailure) {
+                trySend(
+                    Result.failure(checkResult.exceptionOrNull() ?: NullPointerException())
+                )
+            } else {
+                locationCallbacks[watchId] = object : LocationCallback() {
+                    override fun onLocationResult(location: LocationResult) {
+                        if (watchIdsBlacklist.contains(watchId)) {
+                            // received a location update but watch id is in blacklist, so the location updates should be removed
+                            val cleared = clearWatch(watchId, addToBlackList = false)
+                            if (cleared) {
+                                watchIdsBlacklist.remove(watchId)
+                            }
+                            return
+                        }
+                        val locations = location.locations.map { currentLocation ->
+                            currentLocation.toOSLocationResult()
+                        }
+                        trySend(Result.success(locations))
+                    }
+                }
+                requestLocationUpdates(options, watchId)
+            }
+        } catch (exception: Exception) {
+            Log.d(LOG_TAG, "Error requesting location updates: ${exception.message}")
+            trySend(Result.failure(exception))
+        }
+
+        awaitClose {
+            clearWatch(watchId)
+        }
+    }
+
+    /**
+     * clears a watch by removing its location update request
+     * @param id the watch id
+     * @return true if watch was cleared, false if watch was not found
+     */
+    fun clearWatch(id: String): Boolean = clearWatch(id, addToBlackList = true)
 
     /**
      * Obtains a fresh device location.
@@ -166,7 +177,71 @@ class OSGeolocationController(
         ).await()
     }
 
-    private suspend fun checkLocationSettings(activity: Activity, options: OSLocationOptions, interval: Long): Boolean {
+    /**
+     * Requests updates of device location.
+     *
+     * Locations returned in callback associated with watchId
+     * @param options location request options to use
+     * @param watchId the id for this location request
+     */
+    private fun requestLocationUpdates(options: OSLocationOptions, watchId: String) {
+        val locationRequest = LocationRequest.Builder(options.timeout).apply {
+            setMaxUpdateAgeMillis(options.maximumAge)
+            setPriority(if (options.enableHighAccuracy) Priority.PRIORITY_HIGH_ACCURACY else Priority.PRIORITY_BALANCED_POWER_ACCURACY)
+            if (options.minUpdateInterval != null) {
+                setMinUpdateIntervalMillis(options.minUpdateInterval)
+            }
+        }.build()
+
+        locationCallbacks[watchId]?.let {
+            fusedLocationClient.requestLocationUpdates(locationRequest, it, Looper.getMainLooper())
+        }
+    }
+
+    /**
+     * checks if all preconditions for retrieving location are met
+     * @param activity the Android activity from which the location request is being triggered
+     * @param options location request options to use
+     * @param isSingleLocationRequest true if request is for a single location, false if for location updates
+     */
+    private suspend fun checkLocationPreconditions(
+        activity: Activity,
+        options: OSLocationOptions,
+        isSingleLocationRequest: Boolean
+    ): Result<Unit> {
+        val playServicesResult = checkGooglePlayServicesAvailable(activity)
+        if (playServicesResult.isFailure) {
+            return Result.failure(playServicesResult.exceptionOrNull() ?: NullPointerException())
+        }
+
+        resolveLocationSettingsResultFlow = MutableSharedFlow()
+        val locationSettingsChecked = checkLocationSettings(
+            activity,
+            options,
+            interval = if (isSingleLocationRequest) 0 else options.timeout
+        )
+
+        return if (locationSettingsChecked) {
+            Result.success(Unit)
+        } else {
+            resolveLocationSettingsResultFlow.first()
+        }
+    }
+
+    /**
+     * Checks if location is on, as well as other conditions for retrieving device location
+     * @param activity the Android activity from which the location request is being triggered
+     * @param options location request options to use
+     * @param interval interval for requesting location updates; use 0 if meant to retrieve a single location
+     * @return true if location was checked and is on, false if it requires user to resolve issue (e.g. turn on location)
+     *          If false, the result is returned in `resolveLocationSettingsResultFlow`
+     * @throws [OSLocationException.OSLocationSettingsException] if an error occurs that is not resolvable by user
+     */
+    private suspend fun checkLocationSettings(
+        activity: Activity,
+        options: OSLocationOptions,
+        interval: Long
+    ): Boolean {
 
         val request = LocationRequest.Builder(
             if (options.enableHighAccuracy) Priority.PRIORITY_HIGH_ACCURACY else Priority.PRIORITY_BALANCED_POWER_ACCURACY,
@@ -188,7 +263,6 @@ class OSGeolocationController(
             val resolution: IntentSenderRequest = resolutionBuilder.build()
 
             activityLauncher.launch(resolution)
-
         } catch (e: Exception) {
             throw OSLocationException.OSLocationSettingsException(
                 message = "There is an error with the location settings.",
@@ -198,6 +272,11 @@ class OSGeolocationController(
         return false
     }
 
+    /**
+     * Checks if the device has google play services, required to use [FusedLocationProviderClient]
+     * @param activity the Android activity from which the location request is being triggered
+     * @return true if google play services is available, false otherwise
+     */
     private fun checkGooglePlayServicesAvailable(activity: Activity): Result<Unit> {
         val googleApiAvailability = GoogleApiAvailability.getInstance()
         val status = googleApiAvailability.isGooglePlayServicesAvailable(activity)
@@ -205,141 +284,24 @@ class OSGeolocationController(
         return if (status != ConnectionResult.SUCCESS) {
             if (googleApiAvailability.isUserResolvableError(status)) {
                 googleApiAvailability.getErrorDialog(activity, status, 1)?.show()
-                Result.failure(OSLocationException.OSLocationGoogleServicesException(
-                    resolvable = true,
-                    message = "Google Play Services error user resolvable."
-                ))
-            } else {
-                Result.failure(OSLocationException.OSLocationGoogleServicesException(
-                    resolvable = false,
-                    message = "Google Play Services error."
+                Result.failure(
+                    OSLocationException.OSLocationGoogleServicesException(
+                        resolvable = true,
+                        message = "Google Play Services error user resolvable."
+                    )
                 )
+            } else {
+                Result.failure(
+                    OSLocationException.OSLocationGoogleServicesException(
+                        resolvable = false,
+                        message = "Google Play Services error."
+                    )
                 )
             }
         } else {
             Result.success(Unit)
         }
     }
-
-    /**
-     * Creates a callback for location updates.
-     * @param options location request options to use
-     * @return Location object representing the location
-     */
-    fun addWatch(activity: Activity, options: OSLocationOptions, watchId: String): Flow<Result<List<OSLocationResult>>> = callbackFlow {
-
-        try {
-            // check play services
-            val checkResult = checkGooglePlayServicesAvailable(activity)
-
-            if (checkResult.isFailure) {
-                trySend(Result.failure(checkResult.exceptionOrNull() ?: NullPointerException()))
-            } else {
-                flow = MutableSharedFlow()
-
-                if (checkLocationSettings(
-                        activity,
-                        options,
-                        options.timeout
-                    )) {
-                    locationCallbacks[watchId] = object : LocationCallback() {
-                        override fun onLocationResult(location: LocationResult) {
-                            if (watchIdsBlacklist.contains(watchId)) {
-                                // received a location update but watch id is in blacklist, so the location updates should be removed
-                                val cleared = clearWatch(watchId, addToBlackList = false)
-                                if (cleared) {
-                                    watchIdsBlacklist.remove(watchId)
-                                }
-                                return
-                            }
-                            val locations = location.locations.map { currentLocation ->
-                                OSLocationResult(
-                                    currentLocation.latitude,
-                                    currentLocation.longitude,
-                                    currentLocation.altitude,
-                                    currentLocation.accuracy,
-                                    if (OSGeolocationBuildConfig.getAndroidSdkVersionCode() >= Build.VERSION_CODES.O) currentLocation.verticalAccuracyMeters else null,
-                                    currentLocation.bearing,
-                                    currentLocation.speed,
-                                    currentLocation.time
-                                )
-                            }
-                            trySend(Result.success(locations))
-                        }
-                    }
-                    requestLocationUpdates(options, watchId)
-                }
-
-                val result = flow.first()
-                if (result.isSuccess) {
-                    locationCallbacks[watchId] = object : LocationCallback() {
-                        override fun onLocationResult(location: LocationResult) {
-                            if (watchIdsBlacklist.contains(watchId)) {
-                                // received a location update but watch id is in blacklist, so the location updates should be removed
-                                val cleared = clearWatch(watchId, addToBlackList = false)
-                                if (cleared) {
-                                    watchIdsBlacklist.remove(watchId)
-                                }
-                                return
-                            }
-                            val locations = location.locations.map { currentLocation ->
-                                OSLocationResult(
-                                    currentLocation.latitude,
-                                    currentLocation.longitude,
-                                    currentLocation.altitude,
-                                    currentLocation.accuracy,
-                                    if (OSGeolocationBuildConfig.getAndroidSdkVersionCode() >= Build.VERSION_CODES.O) currentLocation.verticalAccuracyMeters else null,
-                                    currentLocation.bearing,
-                                    currentLocation.speed,
-                                    currentLocation.time
-                                )
-                            }
-                            trySend(Result.success(locations))
-                        }
-                    }
-                    requestLocationUpdates(options, watchId)
-                } else {
-                    trySend(
-                        Result.failure(
-                            result.exceptionOrNull() ?: NullPointerException()
-                        )
-                    )
-                }
-            }
-        } catch (exception: Exception) {
-            Log.d(LOG_TAG, "Error requesting location updates: ${exception.message}")
-            trySend(Result.failure(exception))
-        }
-
-        awaitClose {
-            clearWatch(watchId)
-        }
-    }
-
-    private fun requestLocationUpdates(options: OSLocationOptions, watchId: String) {
-        val locationRequest = LocationRequest.Builder(options.timeout).apply {
-            setMaxUpdateAgeMillis(options.maximumAge)
-            setPriority(if (options.enableHighAccuracy) Priority.PRIORITY_HIGH_ACCURACY else Priority.PRIORITY_BALANCED_POWER_ACCURACY)
-            if (options.minUpdateInterval != null) {
-                setMinUpdateIntervalMillis(options.minUpdateInterval)
-            }
-        }.build()
-
-        locationCallbacks[watchId]?.let {
-            fusedLocationClient.requestLocationUpdates(
-                locationRequest,
-                it,
-                Looper.getMainLooper()
-            )
-        }
-    }
-
-    /**
-     * clears a watch by removing its location update request
-     * @param id the watch id
-     * @return true if watch was cleared, false if watch was not found
-     */
-    fun clearWatch(id: String): Boolean = clearWatch(id, addToBlackList = true)
 
     /**
      * clears a watch by removing its location update request
@@ -361,6 +323,17 @@ class OSGeolocationController(
             false
         }
     }
+
+    private fun Location.toOSLocationResult(): OSLocationResult = OSLocationResult(
+        latitude = this.latitude,
+        longitude = this.longitude,
+        altitude = this.altitude,
+        accuracy =  this.accuracy,
+        altitudeAccuracy = if (OSGeolocationBuildConfig.getAndroidSdkVersionCode() >= Build.VERSION_CODES.O) this.verticalAccuracyMeters else null,
+        heading = this.bearing,
+        speed = this.speed,
+        timestamp = this.time
+    )
 
     companion object {
         private const val LOG_TAG = "OSGeolocationController"

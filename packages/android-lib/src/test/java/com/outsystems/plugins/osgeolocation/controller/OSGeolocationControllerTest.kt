@@ -110,7 +110,7 @@ class OSGeolocationControllerTest {
     @Test
     fun `given negative timeout in getCurrentLocation, OSLocationInvalidTimeoutException is returned`() =
         runTest {
-            givenSuccessConditions()
+            // nothing to setup in this test
 
             val result =
                 sut.getCurrentPosition(mockk<Activity>(), locationOptions.copy(timeout = -1))
