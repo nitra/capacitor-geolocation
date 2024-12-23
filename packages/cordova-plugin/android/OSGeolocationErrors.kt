@@ -54,14 +54,19 @@ object OSGeolocationErrors {
         message = "Location settings error."
     )
 
+    val INVALID_TIMEOUT = ErrorInfo(
+        code = formatErrorCode(9),
+        message = "Timeout needs to be a positive value."
+    )
+
     val WATCH_ID_NOT_FOUND = ErrorInfo(
         code = formatErrorCode(10),
-        message = "Watch id not found"
+        message = "WatchId not found"
     )
 
     val WATCH_ID_NOT_PROVIDED = ErrorInfo(
-        code = formatErrorCode(10),
-        message = "WatchID needs to be provided."
+        code = formatErrorCode(11),
+        message = "WatchId needs to be provided."
     )
 
 }

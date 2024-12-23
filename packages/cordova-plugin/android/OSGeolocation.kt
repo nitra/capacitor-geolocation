@@ -70,10 +70,9 @@ class OSGeolocation : CordovaPlugin() {
         args: JSONArray,
         callbackContext: CallbackContext
     ): Boolean {
-        val parameters = args.getJSONObject(0)
         when (action) {
             "getCurrentPosition" -> {
-                getCurrentPosition(parameters, callbackContext)
+                getCurrentPosition(args, callbackContext)
             }
             "addWatch" -> {
                 addWatch(args, callbackContext)
@@ -87,10 +86,18 @@ class OSGeolocation : CordovaPlugin() {
 
     /**
      * Calls the getCurrentPosition method of OSGeolocationController to get the device's geolocation
-     * @param parameters JSONObject that contains the parameters to parse (e.g. timeout)
+     * @param args JSONArray that contains the parameters to parse (e.g. timeout)
      * @param callbackContext CallbackContext the method should return to
      */
-    private fun getCurrentPosition(parameters: JSONObject, callbackContext: CallbackContext) {
+    private fun getCurrentPosition(args: JSONArray, callbackContext: CallbackContext) {
+        val parameters: JSONObject
+        try {
+            parameters = args.getJSONObject(0)
+        } catch (e: Exception) {
+            callbackContext.sendError(OSGeolocationErrors.INVALID_INPUT)
+            return
+        }
+
         coroutineScope.launch {
             flow = MutableSharedFlow(replay = 1)
 
@@ -125,19 +132,17 @@ class OSGeolocation : CordovaPlugin() {
                                 callbackContext.sendError(OSGeolocationErrors.LOCATION_ENABLE_REQUEST_DENIED)
                             }
                             is OSLocationException.OSLocationSettingsException -> {
-                                callbackContext.sendError(OSGeolocationErrors.GET_LOCATION_GENERAL)
+                                callbackContext.sendError(OSGeolocationErrors.LOCATION_SETTINGS_ERROR)
                             }
                             is OSLocationException.OSLocationInvalidTimeoutException -> {
-                                callbackContext.sendError(OSGeolocationErrors.GET_LOCATION_GENERAL)
+                                callbackContext.sendError(OSGeolocationErrors.INVALID_TIMEOUT)
                             }
                             is OSLocationException.OSLocationGoogleServicesException -> {
-                                callbackContext.sendError(OSGeolocationErrors.GET_LOCATION_GENERAL)
-                            }
-                            is NullPointerException -> {
-                                callbackContext.sendError(OSGeolocationErrors.GET_LOCATION_GENERAL)
-                            }
-                            is Exception -> {
-                                callbackContext.sendError(OSGeolocationErrors.GET_LOCATION_GENERAL)
+                                if (exception.resolvable) {
+                                    callbackContext.sendError(OSGeolocationErrors.GOOGLE_SERVICES_RESOLVABLE)
+                                } else {
+                                    callbackContext.sendError(OSGeolocationErrors.GOOGLE_SERVICES_ERROR)
+                                }
                             }
                             else -> {
                                 callbackContext.sendError(OSGeolocationErrors.GET_LOCATION_GENERAL)
@@ -157,6 +162,13 @@ class OSGeolocation : CordovaPlugin() {
      * @param callbackContext CallbackContext the method should return to
      */
     private fun addWatch(args: JSONArray, callbackContext: CallbackContext) {
+        val parameters: JSONObject
+        try {
+            parameters = args.getJSONObject(0)
+        } catch (e: Exception) {
+            callbackContext.sendError(OSGeolocationErrors.INVALID_INPUT)
+            return
+        }
 
         val watchId = UUID.randomUUID().toString()
         callbackContext.sendSuccess(
@@ -199,19 +211,17 @@ class OSGeolocation : CordovaPlugin() {
                                     callbackContext.sendError(OSGeolocationErrors.LOCATION_ENABLE_REQUEST_DENIED)
                                 }
                                 is OSLocationException.OSLocationSettingsException -> {
-                                    callbackContext.sendError(OSGeolocationErrors.GET_LOCATION_GENERAL)
+                                    callbackContext.sendError(OSGeolocationErrors.LOCATION_SETTINGS_ERROR)
                                 }
                                 is OSLocationException.OSLocationInvalidTimeoutException -> {
-                                    callbackContext.sendError(OSGeolocationErrors.GET_LOCATION_GENERAL)
+                                    callbackContext.sendError(OSGeolocationErrors.INVALID_TIMEOUT)
                                 }
                                 is OSLocationException.OSLocationGoogleServicesException -> {
-                                    callbackContext.sendError(OSGeolocationErrors.GET_LOCATION_GENERAL)
-                                }
-                                is NullPointerException -> {
-                                    callbackContext.sendError(OSGeolocationErrors.GET_LOCATION_GENERAL)
-                                }
-                                is Exception -> {
-                                    callbackContext.sendError(OSGeolocationErrors.GET_LOCATION_GENERAL)
+                                    if (exception.resolvable) {
+                                        callbackContext.sendError(OSGeolocationErrors.GOOGLE_SERVICES_RESOLVABLE)
+                                    } else {
+                                        callbackContext.sendError(OSGeolocationErrors.GOOGLE_SERVICES_ERROR)
+                                    }
                                 }
                                 else -> {
                                     callbackContext.sendError(OSGeolocationErrors.GET_LOCATION_GENERAL)
@@ -233,6 +243,14 @@ class OSGeolocation : CordovaPlugin() {
      * @param callbackContext CallbackContext the method should return to
      */
     private fun clearWatch(args: JSONArray, callbackContext: CallbackContext) {
+        val parameters: JSONObject
+        try {
+            parameters = args.getJSONObject(0)
+        } catch (e: Exception) {
+            callbackContext.sendError(OSGeolocationErrors.INVALID_INPUT)
+            return
+        }
+
         val id = args.optString(0)
 
         if (id.isNullOrBlank()) {
