@@ -106,6 +106,8 @@ class OSGeolocation {
             this.#timers[watchId] = timeoutID
         }
 
+        options.watchId = watchId;
+
         // @ts-ignore
         CapacitorUtils.Synapse.OSGeolocation.watchPosition(options, successCallback, errorCallback)
         return watchId
