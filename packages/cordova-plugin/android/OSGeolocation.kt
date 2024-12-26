@@ -21,7 +21,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import com.outsystems.plugins.osgeolocation.model.OSLocationException
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableSharedFlow
-import java.util.UUID
 
 /**
  * Cordova bridge, inherits from CordovaPlugin
@@ -74,8 +73,8 @@ class OSGeolocation : CordovaPlugin() {
             "getCurrentPosition" -> {
                 getCurrentPosition(args, callbackContext)
             }
-            "addWatch" -> {
-                addWatch(args, callbackContext)
+            "watchPosition" -> {
+                watchPosition(args, callbackContext)
             }
             "clearWatch" -> {
                 clearWatch(args, callbackContext)
@@ -90,9 +89,9 @@ class OSGeolocation : CordovaPlugin() {
      * @param callbackContext CallbackContext the method should return to
      */
     private fun getCurrentPosition(args: JSONArray, callbackContext: CallbackContext) {
-        val parameters: JSONObject
+        val options: JSONObject
         try {
-            parameters = args.getJSONObject(0)
+            options = args.getJSONObject(0)
         } catch (e: Exception) {
             callbackContext.sendError(OSGeolocationErrors.INVALID_INPUT)
             return
@@ -116,9 +115,9 @@ class OSGeolocation : CordovaPlugin() {
                     // the way we get the arguments may change
 
                     val locationOptions = OSLocationOptions(
-                        parameters.getLong(TIMEOUT),
-                        parameters.getLong(MAXIMUM_AGE),
-                        parameters.getBoolean(ENABLE_HIGH_ACCURACY))
+                        options.getLong(TIMEOUT),
+                        options.getLong(MAXIMUM_AGE),
+                        options.getBoolean(ENABLE_HIGH_ACCURACY))
 
                     val locationResult = controller.getCurrentPosition(cordova.activity, locationOptions)
 
@@ -126,8 +125,7 @@ class OSGeolocation : CordovaPlugin() {
                         callbackContext.sendSuccess(JSONObject(gson.toJson(locationResult.getOrNull())))
                     } else {
                         // handle error accordingly
-                        val exception = locationResult.exceptionOrNull()
-                        when (exception) {
+                        when (val exception = locationResult.exceptionOrNull()) {
                             is OSLocationException.OSLocationRequestDeniedException -> {
                                 callbackContext.sendError(OSGeolocationErrors.LOCATION_ENABLE_REQUEST_DENIED)
                             }
@@ -161,20 +159,16 @@ class OSGeolocation : CordovaPlugin() {
      * @param args JSONArray that contains the parameters to parse (e.g. timeout)
      * @param callbackContext CallbackContext the method should return to
      */
-    private fun addWatch(args: JSONArray, callbackContext: CallbackContext) {
-        val parameters: JSONObject
+    private fun watchPosition(args: JSONArray, callbackContext: CallbackContext) {
+        val options: JSONObject
+        val watchId: String
         try {
-            parameters = args.getJSONObject(0)
+            options = args.getJSONObject(0)
+            watchId = args.getString(1)
         } catch (e: Exception) {
             callbackContext.sendError(OSGeolocationErrors.INVALID_INPUT)
             return
         }
-
-        val watchId = UUID.randomUUID().toString()
-        callbackContext.sendSuccess(
-            result = JSONObject("{\"id\": \"$watchId\"}"),
-            keepCallback = true
-        )
 
         coroutineScope.launch {
             flow = MutableSharedFlow(replay = 1)
@@ -191,8 +185,9 @@ class OSGeolocation : CordovaPlugin() {
 
                 if (permissionEvent == OSGeolocationPermissionEvents.Granted) {
                     val locationOptions = OSLocationOptions(
-                        maximumAge = args.getLong(2),
-                        enableHighAccuracy = args.getBoolean(1),
+                        timeout = options.getLong(TIMEOUT),
+                        maximumAge = options.getLong(MAXIMUM_AGE),
+                        enableHighAccuracy = options.getBoolean(ENABLE_HIGH_ACCURACY),
                     )
 
                     controller.addWatch(cordova.activity, locationOptions, watchId).collect { result ->
