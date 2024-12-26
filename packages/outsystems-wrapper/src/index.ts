@@ -107,7 +107,7 @@ class OSGeolocation {
         }
 
         // @ts-ignore
-        CapacitorUtils.Synapse.OSGeolocation.watchPosition(options, successCallback, errorCallback)
+        CapacitorUtils.Synapse.OSGeolocation.watchPosition(options, watchId, successCallback, errorCallback)
         return watchId
     }
 
