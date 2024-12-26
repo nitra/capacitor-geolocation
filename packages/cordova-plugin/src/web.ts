@@ -25,10 +25,25 @@ function getCurrentPosition(options: PositionOptions, success: (output: Position
   exec(convertOnSuccess, error, 'OSGeolocation', 'getCurrentPosition', [options]);
 }
 
-function watchPosition(options: PositionOptions, success: (output: string) => void, error: (error: PluginError) => void): void {
+function watchPosition(options: PositionOptions, success: (output: Position) => void, error: (error: PluginError) => void): void {
   options = options || PositionOptionsDefault;
 
-  exec(success, error, 'OSGeolocation', 'watchPosition', [options]);
+  let convertOnSuccess = (position: OSGLOCPosition) => {
+    let convertedPosition: Position = {
+      coords: {
+        latitude: position.latitude,
+        longitude: position.longitude,
+        altitude: position.altitude,
+        accuracy: position.accuracy,
+        heading: position.heading,
+        speed: position.speed,
+        altitudeAccuracy: position.accuracy
+      },
+      timestamp: position.timestamp,
+    }
+    success(convertedPosition)
+  }
+  exec(convertOnSuccess, error, 'OSGeolocation', 'watchPosition', [options]);
 }
 
 function clearWatch(options: ClearWatchOptions, success: (output: string) => void, error: (error: PluginError) => void): void {

@@ -75,7 +75,22 @@ function getCurrentPosition(options, success, error) {
 }
 function watchPosition(options, success, error) {
   options = options || PositionOptionsDefault;
-  exec(success, error, "OSGeolocation", "watchPosition", [options]);
+  let convertOnSuccess = (position) => {
+    let convertedPosition = {
+      coords: {
+        latitude: position.latitude,
+        longitude: position.longitude,
+        altitude: position.altitude,
+        accuracy: position.accuracy,
+        heading: position.heading,
+        speed: position.speed,
+        altitudeAccuracy: position.accuracy
+      },
+      timestamp: position.timestamp
+    };
+    success(convertedPosition);
+  };
+  exec(convertOnSuccess, error, "OSGeolocation", "watchPosition", [options]);
 }
 function clearWatch(options, success, error) {
   options = options || ClearWatchOptionsDefault;
