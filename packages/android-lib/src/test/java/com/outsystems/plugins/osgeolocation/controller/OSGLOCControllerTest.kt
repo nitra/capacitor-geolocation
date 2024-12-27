@@ -92,8 +92,8 @@ class OSGLOCControllerTest {
 
     @After
     fun tearDown() {
-        unmockkObject(Looper::class)
-        unmockkObject(Log::class)
+        unmockkStatic(Looper::class)
+        unmockkStatic(Log::class)
         unmockkObject(OSGLOCBuildConfig)
         unmockkStatic("kotlinx.coroutines.tasks.TasksKt")
         unmockkStatic(LocationServices::class)
