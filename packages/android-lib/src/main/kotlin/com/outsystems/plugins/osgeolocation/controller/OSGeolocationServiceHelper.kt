@@ -20,6 +20,9 @@ import com.outsystems.plugins.osgeolocation.model.OSLocationException
 import com.outsystems.plugins.osgeolocation.model.OSLocationOptions
 import kotlinx.coroutines.tasks.await
 
+/**
+ * Helper class that wraps the functionality of FusedLocationProviderClient
+ */
 class OSGeolocationServiceHelper(
     private val fusedLocationClient: FusedLocationProviderClient,
     private val activityLauncher: ActivityResultLauncher<IntentSenderRequest>

@@ -31,7 +31,7 @@ class OSGeolocation : CordovaPlugin() {
     private val gson by lazy { Gson() }
 
     // for permissions
-    private lateinit var flow: MutableSharedFlow<OSGeolocationPermissionEvents>
+    private lateinit var permissionsFlow: MutableSharedFlow<OSGeolocationPermissionEvents>
     private lateinit var coroutineScope: CoroutineScope
 
     companion object {
@@ -98,57 +98,18 @@ class OSGeolocation : CordovaPlugin() {
         }
 
         coroutineScope.launch {
-            flow = MutableSharedFlow(replay = 1)
+            handleLocationPermission(callbackContext) {
+                val locationOptions = OSLocationOptions(
+                    options.getLong(TIMEOUT),
+                    options.getLong(MAXIMUM_AGE),
+                    options.getBoolean(ENABLE_HIGH_ACCURACY))
 
-            // first, we request permissions if necessary
-            if (hasLocationPermissions()) {
-                flow.emit(OSGeolocationPermissionEvents.Granted)
-            } else { // request necessary permissions
-                requestLocationPermissions()
-            }
+                val locationResult = controller.getCurrentPosition(cordova.activity, locationOptions)
 
-            // collect the flow to handle permission request result
-            flow.collect { permissionEvent ->
-                if (permissionEvent == OSGeolocationPermissionEvents.Granted) {
-                    // validate parameters in args
-                    // put parameters in object to send that object to getCurrentPosition
-                    // the way we get the arguments may change
-
-                    val locationOptions = OSLocationOptions(
-                        options.getLong(TIMEOUT),
-                        options.getLong(MAXIMUM_AGE),
-                        options.getBoolean(ENABLE_HIGH_ACCURACY))
-
-                    val locationResult = controller.getCurrentPosition(cordova.activity, locationOptions)
-
-                    if (locationResult.isSuccess) {
-                        callbackContext.sendSuccess(JSONObject(gson.toJson(locationResult.getOrNull())))
-                    } else {
-                        // handle error accordingly
-                        when (val exception = locationResult.exceptionOrNull()) {
-                            is OSLocationException.OSLocationRequestDeniedException -> {
-                                callbackContext.sendError(OSGeolocationErrors.LOCATION_ENABLE_REQUEST_DENIED)
-                            }
-                            is OSLocationException.OSLocationSettingsException -> {
-                                callbackContext.sendError(OSGeolocationErrors.LOCATION_SETTINGS_ERROR)
-                            }
-                            is OSLocationException.OSLocationInvalidTimeoutException -> {
-                                callbackContext.sendError(OSGeolocationErrors.INVALID_TIMEOUT)
-                            }
-                            is OSLocationException.OSLocationGoogleServicesException -> {
-                                if (exception.resolvable) {
-                                    callbackContext.sendError(OSGeolocationErrors.GOOGLE_SERVICES_RESOLVABLE)
-                                } else {
-                                    callbackContext.sendError(OSGeolocationErrors.GOOGLE_SERVICES_ERROR)
-                                }
-                            }
-                            else -> {
-                                callbackContext.sendError(OSGeolocationErrors.GET_LOCATION_GENERAL)
-                            }
-                        }
-                    }
+                if (locationResult.isSuccess) {
+                    callbackContext.sendSuccess(JSONObject(gson.toJson(locationResult.getOrNull())))
                 } else {
-                    callbackContext.sendError(OSGeolocationErrors.LOCATION_PERMISSIONS_DENIED)
+                    handleErrors(locationResult.exceptionOrNull(), callbackContext)
                 }
             }
         }
@@ -171,65 +132,65 @@ class OSGeolocation : CordovaPlugin() {
         }
 
         coroutineScope.launch {
-            flow = MutableSharedFlow(replay = 1)
+            handleLocationPermission(callbackContext) {
+                val locationOptions = OSLocationOptions(
+                    timeout = options.getLong(TIMEOUT),
+                    maximumAge = options.getLong(MAXIMUM_AGE),
+                    enableHighAccuracy = options.getBoolean(ENABLE_HIGH_ACCURACY),
+                )
 
-            // first, we request permissions if necessary
-            if (hasLocationPermissions()) {
-                flow.emit(OSGeolocationPermissionEvents.Granted)
-            } else { // request necessary permissions
-                requestLocationPermissions()
-            }
-
-            // collect the flow to handle permission request result
-            flow.collect { permissionEvent ->
-
-                if (permissionEvent == OSGeolocationPermissionEvents.Granted) {
-                    val locationOptions = OSLocationOptions(
-                        timeout = options.getLong(TIMEOUT),
-                        maximumAge = options.getLong(MAXIMUM_AGE),
-                        enableHighAccuracy = options.getBoolean(ENABLE_HIGH_ACCURACY),
-                    )
-
-                    controller.addWatch(cordova.activity, locationOptions, watchId).collect { result ->
-
-                        result.onSuccess { locationList ->
-                            locationList.forEach { locationResult ->
-                                callbackContext.sendSuccess(
-                                    result = JSONObject(gson.toJson(locationResult)),
-                                    keepCallback = true
-                                )
-                            }
-                        }
-                        result.onFailure { exception ->
-                            when (exception) {
-                                is OSLocationException.OSLocationRequestDeniedException -> {
-                                    callbackContext.sendError(OSGeolocationErrors.LOCATION_ENABLE_REQUEST_DENIED)
-                                }
-                                is OSLocationException.OSLocationSettingsException -> {
-                                    callbackContext.sendError(OSGeolocationErrors.LOCATION_SETTINGS_ERROR)
-                                }
-                                is OSLocationException.OSLocationInvalidTimeoutException -> {
-                                    callbackContext.sendError(OSGeolocationErrors.INVALID_TIMEOUT)
-                                }
-                                is OSLocationException.OSLocationGoogleServicesException -> {
-                                    if (exception.resolvable) {
-                                        callbackContext.sendError(OSGeolocationErrors.GOOGLE_SERVICES_RESOLVABLE)
-                                    } else {
-                                        callbackContext.sendError(OSGeolocationErrors.GOOGLE_SERVICES_ERROR)
-                                    }
-                                }
-                                else -> {
-                                    callbackContext.sendError(OSGeolocationErrors.GET_LOCATION_GENERAL)
-                                }
-                            }
+                controller.addWatch(cordova.activity, locationOptions, watchId).collect { result ->
+                    result.onSuccess { locationList ->
+                        locationList.forEach { locationResult ->
+                            callbackContext.sendSuccess(
+                                result = JSONObject(gson.toJson(locationResult)),
+                                keepCallback = true
+                            )
                         }
                     }
-                } else {
-                    callbackContext.sendError(OSGeolocationErrors.LOCATION_PERMISSIONS_DENIED)
+                    result.onFailure { exception ->
+                        handleErrors(exception, callbackContext)
+                    }
                 }
             }
         }
 
+    }
+
+    /**
+     * Helper function to handle errors from getCurrentPosition and watchPosition
+     * @param exception Throwable exception to handle
+     * @param callbackContext CallbackContext to use when sending the error callback
+     */
+    private fun handleErrors(
+        exception: Throwable?,
+        callbackContext: CallbackContext
+    ) {
+        when (exception) {
+            is OSLocationException.OSLocationRequestDeniedException -> {
+                callbackContext.sendError(OSGeolocationErrors.LOCATION_ENABLE_REQUEST_DENIED)
+            }
+
+            is OSLocationException.OSLocationSettingsException -> {
+                callbackContext.sendError(OSGeolocationErrors.LOCATION_SETTINGS_ERROR)
+            }
+
+            is OSLocationException.OSLocationInvalidTimeoutException -> {
+                callbackContext.sendError(OSGeolocationErrors.INVALID_TIMEOUT)
+            }
+
+            is OSLocationException.OSLocationGoogleServicesException -> {
+                if (exception.resolvable) {
+                    callbackContext.sendError(OSGeolocationErrors.GOOGLE_SERVICES_RESOLVABLE)
+                } else {
+                    callbackContext.sendError(OSGeolocationErrors.GOOGLE_SERVICES_ERROR)
+                }
+            }
+
+            else -> {
+                callbackContext.sendError(OSGeolocationErrors.GET_LOCATION_GENERAL)
+            }
+        }
     }
 
     /**
@@ -281,6 +242,35 @@ class OSGeolocation : CordovaPlugin() {
         this.sendPluginResult(pluginResult)
     }
 
+    /**
+     * Helper function to handle the location permission request using a Flow
+     * @param callbackContext CallbackContext to use in case an error should be returned
+     * @param onLocationGranted callback to use in case permissions are granted
+     */
+    private suspend fun handleLocationPermission(callbackContext: CallbackContext, onLocationGranted: suspend () -> Unit) {
+        permissionsFlow = MutableSharedFlow(replay = 1)
+
+        // first, we request permissions if necessary
+        if (hasLocationPermissions()) {
+            permissionsFlow.emit(OSGeolocationPermissionEvents.Granted)
+        } else { // request necessary permissions
+            requestLocationPermissions()
+        }
+
+        // collect the flow to handle permission request result
+        permissionsFlow.collect { permissionEvent ->
+            if (permissionEvent == OSGeolocationPermissionEvents.Granted) {
+                onLocationGranted()
+            } else {
+                callbackContext.sendError(OSGeolocationErrors.LOCATION_PERMISSIONS_DENIED)
+            }
+        }
+    }
+
+    /**
+     * Helper function to determine Location permission state
+     * @return Boolean indicating if permissions are granted or not
+     */
     private fun hasLocationPermissions(): Boolean {
         for (permission in listOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)) {
             if (!PermissionHelper.hasPermission(this, permission)) {
@@ -290,6 +280,9 @@ class OSGeolocation : CordovaPlugin() {
         return true
     }
 
+    /**
+     * Helper function to request location permissions
+     */
     private fun requestLocationPermissions() {
         PermissionHelper.requestPermissions(
             this,
@@ -307,7 +300,7 @@ class OSGeolocation : CordovaPlugin() {
     ) {
         if (requestCode == LOCATION_PERMISSIONS_REQUEST_CODE) {
             coroutineScope.launch {
-                flow.emit(
+                permissionsFlow.emit(
                     if (grantResults.contains(PackageManager.PERMISSION_GRANTED)) {
                         OSGeolocationPermissionEvents.Granted
                     } else {

@@ -1,5 +1,8 @@
 package com.outsystems.plugins.osgeolocation.model
 
+/**
+ * Sealed class with exceptions that the library's functions can throw
+ */
 sealed class OSLocationException(message: String, cause: Throwable?) : Exception(message, cause) {
     class OSLocationSettingsException(
         message: String, cause: Throwable? = null

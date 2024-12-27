@@ -49,15 +49,6 @@ class OSGeolocationController(
         options: OSLocationOptions
     ): Result<OSLocationResult> {
         try {
-            // check timeout
-            if (options.timeout <= 0) {
-                return Result.failure(
-                    OSLocationException.OSLocationInvalidTimeoutException(
-                        message = "Timeout needs to be a positive value."
-                    )
-                )
-            }
-
             val checkResult: Result<Unit> =
                 checkLocationPreconditions(activity, options, isSingleLocationRequest = true)
             return if (checkResult.isFailure) {
@@ -148,14 +139,14 @@ class OSGeolocationController(
     }
 
     /**
-     * clears a watch by removing its location update request
+     * Clears a watch by removing its location update request
      * @param id the watch id
      * @return true if watch was cleared, false if watch was not found
      */
     fun clearWatch(id: String): Boolean = clearWatch(id, addToBlackList = true)
 
     /**
-     * checks if all preconditions for retrieving location are met
+     * Checks if all preconditions for retrieving location are met
      * @param activity the Android activity from which the location request is being triggered
      * @param options location request options to use
      * @param isSingleLocationRequest true if request is for a single location, false if for location updates
@@ -165,6 +156,15 @@ class OSGeolocationController(
         options: OSLocationOptions,
         isSingleLocationRequest: Boolean
     ): Result<Unit> {
+        // check timeout
+        if (options.timeout <= 0) {
+            return Result.failure(
+                OSLocationException.OSLocationInvalidTimeoutException(
+                    message = "Timeout needs to be a positive value."
+                )
+            )
+        }
+
         val playServicesResult = helper.checkGooglePlayServicesAvailable(activity)
         if (playServicesResult.isFailure) {
             return Result.failure(playServicesResult.exceptionOrNull() ?: NullPointerException())
@@ -185,7 +185,7 @@ class OSGeolocationController(
     }
 
     /**
-     * clears a watch by removing its location update request
+     * Clears a watch by removing its location update request
      * @param id the watch id
      * @param addToBlackList whether or not the watch id should go in blacklist if not found
      * @return true if watch was cleared, false if watch was not found
@@ -223,6 +223,10 @@ class OSGeolocationController(
         return false
     }
 
+    /**
+     * Extension function to convert Location object into OSLocationResult object
+     * @return OSLocationResult object
+     */
     private fun Location.toOSLocationResult(): OSLocationResult = OSLocationResult(
         latitude = this.latitude,
         longitude = this.longitude,

@@ -1,5 +1,8 @@
 package com.outsystems.plugins.osgeolocation.model
 
+/**
+ * Data class representing the object returned in getCurrentPosition and watchPosition
+ */
 data class OSLocationResult(
     val latitude: Double,
     val longitude: Double,
