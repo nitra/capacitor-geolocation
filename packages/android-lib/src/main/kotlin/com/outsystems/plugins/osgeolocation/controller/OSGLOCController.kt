@@ -12,9 +12,9 @@ import androidx.core.location.LocationManagerCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationResult
-import com.outsystems.plugins.osgeolocation.model.OSLocationException
-import com.outsystems.plugins.osgeolocation.model.OSLocationOptions
-import com.outsystems.plugins.osgeolocation.model.OSLocationResult
+import com.outsystems.plugins.osgeolocation.model.OSGLOCException
+import com.outsystems.plugins.osgeolocation.model.OSGLOCLocationOptions
+import com.outsystems.plugins.osgeolocation.model.OSGLOCLocationResult
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -25,10 +25,10 @@ import kotlinx.coroutines.flow.first
  * Entry point in OSGeolocationLib-Android
  *
  */
-class OSGeolocationController(
+class OSGLOCController(
     fusedLocationClient: FusedLocationProviderClient,
     activityLauncher: ActivityResultLauncher<IntentSenderRequest>,
-    private val helper: OSGeolocationServiceHelper = OSGeolocationServiceHelper(
+    private val helper: OSGLOCServiceHelper = OSGLOCServiceHelper(
         fusedLocationClient,
         activityLauncher
     )
@@ -46,8 +46,8 @@ class OSGeolocationController(
      */
     suspend fun getCurrentPosition(
         activity: Activity,
-        options: OSLocationOptions
-    ): Result<OSLocationResult> {
+        options: OSGLOCLocationOptions
+    ): Result<OSGLOCLocationResult> {
         try {
             val checkResult: Result<Unit> =
                 checkLocationPreconditions(activity, options, isSingleLocationRequest = true)
@@ -77,7 +77,7 @@ class OSGeolocationController(
         } else {
             resolveLocationSettingsResultFlow.emit(
                 Result.failure(
-                    OSLocationException.OSLocationRequestDeniedException(
+                    OSGLOCException.OSGLOCRequestDeniedException(
                         message = "Request to enable location denied."
                     )
                 )
@@ -102,9 +102,9 @@ class OSGeolocationController(
      */
     fun addWatch(
         activity: Activity,
-        options: OSLocationOptions,
+        options: OSGLOCLocationOptions,
         watchId: String
-    ): Flow<Result<List<OSLocationResult>>> = callbackFlow {
+    ): Flow<Result<List<OSGLOCLocationResult>>> = callbackFlow {
 
         try {
             val checkResult: Result<Unit> =
@@ -153,13 +153,13 @@ class OSGeolocationController(
      */
     private suspend fun checkLocationPreconditions(
         activity: Activity,
-        options: OSLocationOptions,
+        options: OSGLOCLocationOptions,
         isSingleLocationRequest: Boolean
     ): Result<Unit> {
         // check timeout
         if (options.timeout <= 0) {
             return Result.failure(
-                OSLocationException.OSLocationInvalidTimeoutException(
+                OSGLOCException.OSGLOCInvalidTimeoutException(
                     message = "Timeout needs to be a positive value."
                 )
             )
@@ -227,12 +227,12 @@ class OSGeolocationController(
      * Extension function to convert Location object into OSLocationResult object
      * @return OSLocationResult object
      */
-    private fun Location.toOSLocationResult(): OSLocationResult = OSLocationResult(
+    private fun Location.toOSLocationResult(): OSGLOCLocationResult = OSGLOCLocationResult(
         latitude = this.latitude,
         longitude = this.longitude,
         altitude = this.altitude,
         accuracy = this.accuracy,
-        altitudeAccuracy = if (OSGeolocationBuildConfig.getAndroidSdkVersionCode() >= Build.VERSION_CODES.O) this.verticalAccuracyMeters else null,
+        altitudeAccuracy = if (OSGLOCBuildConfig.getAndroidSdkVersionCode() >= Build.VERSION_CODES.O) this.verticalAccuracyMeters else null,
         heading = this.bearing,
         speed = this.speed,
         timestamp = this.time

@@ -6,7 +6,7 @@ package com.outsystems.plugins.osgeolocation
 object OSGeolocationErrors {
 
     private fun formatErrorCode(number: Int): String {
-        return "OS-PLUG-GEO-" + number.toString().padStart(4, '0')
+        return "OS-PLUG-GLOC-" + number.toString().padStart(4, '0')
     }
 
     data class ErrorInfo(

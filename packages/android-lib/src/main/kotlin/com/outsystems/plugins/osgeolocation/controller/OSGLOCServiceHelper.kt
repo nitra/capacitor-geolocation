@@ -16,14 +16,14 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.gms.location.Priority
-import com.outsystems.plugins.osgeolocation.model.OSLocationException
-import com.outsystems.plugins.osgeolocation.model.OSLocationOptions
+import com.outsystems.plugins.osgeolocation.model.OSGLOCException
+import com.outsystems.plugins.osgeolocation.model.OSGLOCLocationOptions
 import kotlinx.coroutines.tasks.await
 
 /**
  * Helper class that wraps the functionality of FusedLocationProviderClient
  */
-class OSGeolocationServiceHelper(
+class OSGLOCServiceHelper(
     private val fusedLocationClient: FusedLocationProviderClient,
     private val activityLauncher: ActivityResultLauncher<IntentSenderRequest>
 ) {
@@ -34,11 +34,11 @@ class OSGeolocationServiceHelper(
      * @param interval interval for requesting location updates; use 0 if meant to retrieve a single location
      * @return true if location was checked and is on, false if it requires user to resolve issue (e.g. turn on location)
      *          If false, the result is returned in `resolveLocationSettingsResultFlow`
-     * @throws [OSLocationException.OSLocationSettingsException] if an error occurs that is not resolvable by user
+     * @throws [OSGLOCException.OSGLOCSettingsException] if an error occurs that is not resolvable by user
      */
     internal suspend fun checkLocationSettings(
         activity: Activity,
-        options: OSLocationOptions,
+        options: OSGLOCLocationOptions,
         interval: Long
     ): Boolean {
 
@@ -64,7 +64,7 @@ class OSGeolocationServiceHelper(
 
             activityLauncher.launch(resolution)
         } catch (e: Exception) {
-            throw OSLocationException.OSLocationSettingsException(
+            throw OSGLOCException.OSGLOCSettingsException(
                 message = "There is an error with the location settings.",
                 cause = e
             )
@@ -85,14 +85,14 @@ class OSGeolocationServiceHelper(
             if (googleApiAvailability.isUserResolvableError(status)) {
                 googleApiAvailability.getErrorDialog(activity, status, 1)?.show()
                 Result.failure(
-                    OSLocationException.OSLocationGoogleServicesException(
+                    OSGLOCException.OSGLOCGoogleServicesException(
                         resolvable = true,
                         message = "Google Play Services error user resolvable."
                     )
                 )
             } else {
                 Result.failure(
-                    OSLocationException.OSLocationGoogleServicesException(
+                    OSGLOCException.OSGLOCGoogleServicesException(
                         resolvable = false,
                         message = "Google Play Services error."
                     )
@@ -109,7 +109,7 @@ class OSGeolocationServiceHelper(
      * @return Location object representing the location
      */
     @SuppressLint("MissingPermission")
-    internal suspend fun getCurrentLocation(options: OSLocationOptions): Location {
+    internal suspend fun getCurrentLocation(options: OSGLOCLocationOptions): Location {
 
         val locationRequest = CurrentLocationRequest.Builder()
             .setPriority(if (options.enableHighAccuracy) Priority.PRIORITY_HIGH_ACCURACY else Priority.PRIORITY_BALANCED_POWER_ACCURACY)
@@ -132,7 +132,7 @@ class OSGeolocationServiceHelper(
      */
     @SuppressLint("MissingPermission")
     internal fun requestLocationUpdates(
-        options: OSLocationOptions,
+        options: OSGLOCLocationOptions,
         locationCallback: LocationCallback
     ) {
         val locationRequest = LocationRequest.Builder(options.timeout).apply {

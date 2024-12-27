@@ -13,9 +13,9 @@ import com.getcapacitor.annotation.Permission
 import com.getcapacitor.annotation.PermissionCallback
 import com.google.android.gms.location.LocationServices
 import com.google.gson.Gson
-import com.outsystems.plugins.osgeolocation.controller.OSGeolocationController
-import com.outsystems.plugins.osgeolocation.model.OSLocationException
-import com.outsystems.plugins.osgeolocation.model.OSLocationOptions
+import com.outsystems.plugins.osgeolocation.controller.OSGLOCController
+import com.outsystems.plugins.osgeolocation.model.OSGLOCException
+import com.outsystems.plugins.osgeolocation.model.OSGLOCLocationOptions
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
@@ -33,7 +33,7 @@ import kotlinx.coroutines.launch
 )
 class GeolocationPlugin : Plugin() {
 
-    private lateinit var controller: OSGeolocationController
+    private lateinit var controller: OSGLOCController
     private val gson by lazy { Gson() }
     private lateinit var coroutineScope: CoroutineScope
     private val watchingCalls: MutableMap<String, PluginCall> = mutableMapOf()
@@ -55,7 +55,7 @@ class GeolocationPlugin : Plugin() {
             }
         }
 
-        this.controller = OSGeolocationController(
+        this.controller = OSGLOCController(
             LocationServices.getFusedLocationProviderClient(context),
             activityLauncher
         )
@@ -176,7 +176,7 @@ class GeolocationPlugin : Plugin() {
      */
     private fun getPosition(call: PluginCall) {
         coroutineScope.launch {
-            val locationOptions = val locationOptions = createOptions(call)
+            val locationOptions = createOptions(call)
 
             // call getCurrentPosition method from controller
             val locationResult = controller.getCurrentPosition(activity, locationOptions)
@@ -215,16 +215,16 @@ class GeolocationPlugin : Plugin() {
 
     private fun onLocationError(exception: Throwable?, call: PluginCall) {
         when (exception) {
-            is OSLocationException.OSLocationRequestDeniedException -> {
+            is OSGLOCException.OSGLOCRequestDeniedException -> {
                 call.sendError(OSGeolocationErrors.LOCATION_ENABLE_REQUEST_DENIED)
             }
-            is OSLocationException.OSLocationSettingsException -> {
+            is OSGLOCException.OSGLOCSettingsException -> {
                 call.sendError(OSGeolocationErrors.LOCATION_SETTINGS_ERROR)
             }
-            is OSLocationException.OSLocationInvalidTimeoutException -> {
+            is OSGLOCException.OSGLOCInvalidTimeoutException -> {
                 call.sendError(OSGeolocationErrors.INVALID_TIMEOUT)
             }
-            is OSLocationException.OSLocationGoogleServicesException -> {
+            is OSGLOCException.OSGLOCGoogleServicesException -> {
                 if (exception.resolvable) {
                     call.sendError(OSGeolocationErrors.GOOGLE_SERVICES_RESOLVABLE)
                 } else {
@@ -261,16 +261,13 @@ class GeolocationPlugin : Plugin() {
     /**
      * Creates the location options to pass to the native controller
      */
-    private fun createOptions(call: PluginCall): OSLocationOptions {
+    private fun createOptions(call: PluginCall): OSGLOCLocationOptions {
         val timeout = call.getLong("timeout", 10000) ?: 10000
         val maximumAge = call.getLong("maximumAge", 0) ?: 0
         val enableHighAccuracy = call.getBoolean("enableHighAccuracy", false) ?: false
         val minimumUpdateInterval = call.getLong("minimumUpdateInterval", 5000) ?: 5000
 
-        // validate parameters in args
-        // put parameters in object to send that object to getLocation
-        // the way we get the arguments may change
-        val locationOptions = OSLocationOptions(timeout, maximumAge, enableHighAccuracy, minimumUpdateInterval)
+        val locationOptions = OSGLOCLocationOptions(timeout, maximumAge, enableHighAccuracy, minimumUpdateInterval)
 
         return locationOptions
     }

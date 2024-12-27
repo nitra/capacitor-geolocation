@@ -2,8 +2,6 @@ package com.outsystems.plugins.osgeolocation
 
 import com.google.android.gms.location.LocationServices
 import com.google.gson.Gson
-import com.outsystems.plugins.osgeolocation.controller.OSGeolocationController
-import com.outsystems.plugins.osgeolocation.model.OSLocationOptions
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -18,7 +16,9 @@ import org.json.JSONObject
 import android.Manifest
 import android.content.pm.PackageManager
 import androidx.activity.result.contract.ActivityResultContracts
-import com.outsystems.plugins.osgeolocation.model.OSLocationException
+import com.outsystems.plugins.osgeolocation.controller.OSGLOCController
+import com.outsystems.plugins.osgeolocation.model.OSGLOCException
+import com.outsystems.plugins.osgeolocation.model.OSGLOCLocationOptions
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableSharedFlow
 
@@ -27,7 +27,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
  */
 class OSGeolocation : CordovaPlugin() {
 
-    private lateinit var controller: OSGeolocationController
+    private lateinit var controller: OSGLOCController
     private val gson by lazy { Gson() }
 
     // for permissions
@@ -53,7 +53,7 @@ class OSGeolocation : CordovaPlugin() {
             }
         }
 
-        this.controller = OSGeolocationController(
+        this.controller = OSGLOCController(
             LocationServices.getFusedLocationProviderClient(cordova.context),
             activityLauncher
         )
@@ -99,7 +99,7 @@ class OSGeolocation : CordovaPlugin() {
 
         coroutineScope.launch {
             handleLocationPermission(callbackContext) {
-                val locationOptions = OSLocationOptions(
+                val locationOptions = OSGLOCLocationOptions(
                     options.getLong(TIMEOUT),
                     options.getLong(MAXIMUM_AGE),
                     options.getBoolean(ENABLE_HIGH_ACCURACY))
@@ -133,7 +133,7 @@ class OSGeolocation : CordovaPlugin() {
 
         coroutineScope.launch {
             handleLocationPermission(callbackContext) {
-                val locationOptions = OSLocationOptions(
+                val locationOptions = OSGLOCLocationOptions(
                     timeout = options.getLong(TIMEOUT),
                     maximumAge = options.getLong(MAXIMUM_AGE),
                     enableHighAccuracy = options.getBoolean(ENABLE_HIGH_ACCURACY),
@@ -167,19 +167,19 @@ class OSGeolocation : CordovaPlugin() {
         callbackContext: CallbackContext
     ) {
         when (exception) {
-            is OSLocationException.OSLocationRequestDeniedException -> {
+            is OSGLOCException.OSGLOCRequestDeniedException -> {
                 callbackContext.sendError(OSGeolocationErrors.LOCATION_ENABLE_REQUEST_DENIED)
             }
 
-            is OSLocationException.OSLocationSettingsException -> {
+            is OSGLOCException.OSGLOCSettingsException -> {
                 callbackContext.sendError(OSGeolocationErrors.LOCATION_SETTINGS_ERROR)
             }
 
-            is OSLocationException.OSLocationInvalidTimeoutException -> {
+            is OSGLOCException.OSGLOCInvalidTimeoutException -> {
                 callbackContext.sendError(OSGeolocationErrors.INVALID_TIMEOUT)
             }
 
-            is OSLocationException.OSLocationGoogleServicesException -> {
+            is OSGLOCException.OSGLOCGoogleServicesException -> {
                 if (exception.resolvable) {
                     callbackContext.sendError(OSGeolocationErrors.GOOGLE_SERVICES_RESOLVABLE)
                 } else {

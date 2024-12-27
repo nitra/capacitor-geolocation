@@ -22,9 +22,9 @@ import com.google.android.gms.location.LocationSettingsResponse
 import com.google.android.gms.location.LocationSettingsResult
 import com.google.android.gms.location.SettingsClient
 import com.google.android.gms.tasks.Task
-import com.outsystems.plugins.osgeolocation.model.OSLocationException
-import com.outsystems.plugins.osgeolocation.model.OSLocationOptions
-import com.outsystems.plugins.osgeolocation.model.OSLocationResult
+import com.outsystems.plugins.osgeolocation.model.OSGLOCException
+import com.outsystems.plugins.osgeolocation.model.OSGLOCLocationOptions
+import com.outsystems.plugins.osgeolocation.model.OSGLOCLocationResult
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
@@ -50,14 +50,14 @@ import org.junit.Test
 
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class OSGeolocationControllerTest {
+class OSGLOCControllerTest {
 
     private val fusedLocationProviderClient = mockk<FusedLocationProviderClient>()
     private val activityResultLauncher = mockk<ActivityResultLauncher<IntentSenderRequest>>()
     private val googleApiAvailability = mockk<GoogleApiAvailability>()
     private val locationSettingsClient = mockk<SettingsClient>()
     private val helper = spyk(
-        OSGeolocationServiceHelper(fusedLocationProviderClient, activityResultLauncher)
+        OSGLOCServiceHelper(fusedLocationProviderClient, activityResultLauncher)
     )
 
     private val mockAndroidLocation = mockkLocation()
@@ -65,7 +65,7 @@ class OSGeolocationControllerTest {
     private val currentLocationTask = mockk<Task<Location?>>(relaxed = true)
     private val voidTask = mockk<Task<Void>>(relaxed = true)
 
-    private lateinit var sut: OSGeolocationController
+    private lateinit var sut: OSGLOCController
     private lateinit var locationCallback: LocationCallback
 
     @Before
@@ -75,15 +75,15 @@ class OSGeolocationControllerTest {
         mockkStatic(LocationServices::class)
         every { LocationServices.getSettingsClient(any()) } returns locationSettingsClient
         mockkStatic("kotlinx.coroutines.tasks.TasksKt")
-        mockkObject(OSGeolocationBuildConfig)
-        every { OSGeolocationBuildConfig.getAndroidSdkVersionCode() } returns Build.VERSION_CODES.VANILLA_ICE_CREAM
+        mockkObject(OSGLOCBuildConfig)
+        every { OSGLOCBuildConfig.getAndroidSdkVersionCode() } returns Build.VERSION_CODES.VANILLA_ICE_CREAM
         mockkStatic(Log::class)
         every { Log.d(any(), any()) } returns 0
         every { Log.d(any(), any(), any()) } returns 0
         mockkStatic(Looper::class)
         every { Looper.getMainLooper() } returns mockk<Looper>()
 
-        sut = OSGeolocationController(
+        sut = OSGLOCController(
             fusedLocationClient = fusedLocationProviderClient,
             activityLauncher = activityResultLauncher,
             helper = helper
@@ -94,7 +94,7 @@ class OSGeolocationControllerTest {
     fun tearDown() {
         unmockkObject(Looper::class)
         unmockkObject(Log::class)
-        unmockkObject(OSGeolocationBuildConfig)
+        unmockkObject(OSGLOCBuildConfig)
         unmockkStatic("kotlinx.coroutines.tasks.TasksKt")
         unmockkStatic(LocationServices::class)
         unmockkStatic(GoogleApiAvailability::class)
@@ -121,7 +121,7 @@ class OSGeolocationControllerTest {
                 sut.getCurrentPosition(mockk<Activity>(), locationOptions.copy(timeout = -1))
 
             assertTrue(result.isFailure)
-            assertTrue(result.exceptionOrNull() is OSLocationException.OSLocationInvalidTimeoutException)
+            assertTrue(result.exceptionOrNull() is OSGLOCException.OSGLOCInvalidTimeoutException)
         }
 
     @Test
@@ -145,8 +145,8 @@ class OSGeolocationControllerTest {
 
             assertTrue(result.isFailure)
             result.exceptionOrNull().let { exception ->
-                assertTrue(exception is OSLocationException.OSLocationGoogleServicesException)
-                assertTrue((exception as OSLocationException.OSLocationGoogleServicesException).resolvable)
+                assertTrue(exception is OSGLOCException.OSGLOCGoogleServicesException)
+                assertTrue((exception as OSGLOCException.OSGLOCGoogleServicesException).resolvable)
             }
         }
 
@@ -159,8 +159,8 @@ class OSGeolocationControllerTest {
 
             assertTrue(result.isFailure)
             result.exceptionOrNull().let { exception ->
-                assertTrue(exception is OSLocationException.OSLocationGoogleServicesException)
-                assertFalse((exception as OSLocationException.OSLocationGoogleServicesException).resolvable)
+                assertTrue(exception is OSGLOCException.OSGLOCGoogleServicesException)
+                assertFalse((exception as OSGLOCException.OSGLOCGoogleServicesException).resolvable)
             }
         }
 
@@ -187,7 +187,7 @@ class OSGeolocationControllerTest {
             testScheduler.advanceTimeBy(DELAY)
 
             assertTrue(result.isFailure)
-            assertTrue(result.exceptionOrNull() is OSLocationException.OSLocationRequestDeniedException)
+            assertTrue(result.exceptionOrNull() is OSGLOCException.OSGLOCRequestDeniedException)
         }
 
     @Test
@@ -201,10 +201,10 @@ class OSGeolocationControllerTest {
 
             assertTrue(result.isFailure)
             result.exceptionOrNull().let { exception ->
-                assertTrue(exception is OSLocationException.OSLocationSettingsException)
+                assertTrue(exception is OSGLOCException.OSGLOCSettingsException)
                 assertEquals(
                     error,
-                    (exception as OSLocationException.OSLocationSettingsException).cause
+                    (exception as OSGLOCException.OSGLOCSettingsException).cause
                 )
             }
         }
@@ -253,8 +253,8 @@ class OSGeolocationControllerTest {
 
                 assertTrue(result.isFailure)
                 result.exceptionOrNull().let { exception ->
-                    assertTrue(exception is OSLocationException.OSLocationGoogleServicesException)
-                    assertTrue((exception as OSLocationException.OSLocationGoogleServicesException).resolvable)
+                    assertTrue(exception is OSGLOCException.OSGLOCGoogleServicesException)
+                    assertTrue((exception as OSGLOCException.OSGLOCGoogleServicesException).resolvable)
                 }
                 expectNoEvents()
             }
@@ -288,7 +288,7 @@ class OSGeolocationControllerTest {
                 val result = awaitItem()
 
                 assertTrue(result.isFailure)
-                assertTrue(result.exceptionOrNull() is OSLocationException.OSLocationRequestDeniedException)
+                assertTrue(result.exceptionOrNull() is OSGLOCException.OSGLOCRequestDeniedException)
                 expectNoEvents()
             }
         }
@@ -306,10 +306,10 @@ class OSGeolocationControllerTest {
 
                 assertTrue(result.isFailure)
                 result.exceptionOrNull().let { exception ->
-                    assertTrue(exception is OSLocationException.OSLocationSettingsException)
+                    assertTrue(exception is OSGLOCException.OSGLOCSettingsException)
                     assertEquals(
                         error,
-                        (exception as OSLocationException.OSLocationSettingsException).cause
+                        (exception as OSGLOCException.OSGLOCSettingsException).cause
                     )
                 }
                 expectNoEvents()
@@ -439,9 +439,9 @@ class OSGeolocationControllerTest {
     companion object {
         private const val DELAY = 3_000L
 
-        private val locationOptions = OSLocationOptions(minUpdateInterval = 2000L)
+        private val locationOptions = OSGLOCLocationOptions(minUpdateInterval = 2000L)
 
-        private val locationResult = OSLocationResult(
+        private val locationResult = OSGLOCLocationResult(
             latitude = 1.0,
             longitude = 2.0,
             altitude = 3.0,
