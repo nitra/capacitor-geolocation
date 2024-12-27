@@ -158,6 +158,86 @@ class GeolocationPlugin : Plugin() {
     }
 
     /**
+     * Gets the appropriate permission alias
+     */
+    private fun getAlias(call: PluginCall): String {
+        var alias = LOCATION_ALIAS
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val enableHighAccuracy = call.getBoolean("enableHighAccuracy") ?: false
+            if (!enableHighAccuracy) {
+                alias = COARSE_LOCATION_ALIAS
+            }
+        }
+        return alias
+    }
+
+    /**
+     * Gets the current position
+     */
+    private fun getPosition(call: PluginCall) {
+        coroutineScope.launch {
+            val locationOptions = val locationOptions = createOptions(call)
+
+            // call getCurrentPosition method from controller
+            val locationResult = controller.getCurrentPosition(activity, locationOptions)
+
+            if (locationResult.isSuccess) {
+                call.sendSuccess(JSObject(gson.toJson(locationResult.getOrNull())))
+            } else {
+                onLocationError(locationResult.exceptionOrNull(), call)
+            }
+        }
+    }
+
+    /**
+     * Starts watching the device's location by requesting location updates
+     */
+    private fun startWatch(call: PluginCall) {
+        coroutineScope.launch {
+            val watchId = call.callbackId
+
+            val locationOptions = createOptions(call)
+
+            // call addWatch method from controller
+            controller.addWatch(activity, locationOptions, watchId).collect { result ->
+                result.onSuccess { locationList ->
+                    locationList.forEach { locationResult ->
+                        call.sendSuccess(JSObject(gson.toJson(locationResult)))
+                    }
+                }
+                result.onFailure { exception ->
+                    onLocationError(exception, call)
+                }
+            }
+        }
+        watchingCalls[call.callbackId] = call
+    }
+
+    private fun onLocationError(exception: Throwable?, call: PluginCall) {
+        when (exception) {
+            is OSLocationException.OSLocationRequestDeniedException -> {
+                call.sendError(OSGeolocationErrors.LOCATION_ENABLE_REQUEST_DENIED)
+            }
+            is OSLocationException.OSLocationSettingsException -> {
+                call.sendError(OSGeolocationErrors.LOCATION_SETTINGS_ERROR)
+            }
+            is OSLocationException.OSLocationInvalidTimeoutException -> {
+                call.sendError(OSGeolocationErrors.INVALID_TIMEOUT)
+            }
+            is OSLocationException.OSLocationGoogleServicesException -> {
+                if (exception.resolvable) {
+                    call.sendError(OSGeolocationErrors.GOOGLE_SERVICES_RESOLVABLE)
+                } else {
+                    call.sendError(OSGeolocationErrors.GOOGLE_SERVICES_ERROR)
+                }
+            }
+            else -> {
+                call.sendError(OSGeolocationErrors.GET_LOCATION_GENERAL)
+            }
+        }
+    }
+
+    /**
      * Extension function to return a successful plugin result
      * @param result JSOObject with the JSON content to return
      */
@@ -179,116 +259,19 @@ class GeolocationPlugin : Plugin() {
     }
 
     /**
-     * Gets the appropriate permission alias
+     * Creates the location options to pass to the native controller
      */
-    private fun getAlias(call: PluginCall): String {
-        var alias = LOCATION_ALIAS
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            val enableHighAccuracy = call.getBoolean("enableHighAccuracy") ?: false
-            if (!enableHighAccuracy) {
-                alias = COARSE_LOCATION_ALIAS
-            }
-        }
-        return alias
+    private fun createOptions(call: PluginCall): OSLocationOptions {
+        val timeout = call.getLong("timeout", 10000) ?: 10000
+        val maximumAge = call.getLong("maximumAge", 0) ?: 0
+        val enableHighAccuracy = call.getBoolean("enableHighAccuracy", false) ?: false
+        val minimumUpdateInterval = call.getLong("minimumUpdateInterval", 5000) ?: 5000
+
+        // validate parameters in args
+        // put parameters in object to send that object to getLocation
+        // the way we get the arguments may change
+        val locationOptions = OSLocationOptions(timeout, maximumAge, enableHighAccuracy, minimumUpdateInterval)
+
+        return locationOptions
     }
-
-    /**
-     * Gets the current position
-     */
-    private fun getPosition(call: PluginCall) {
-        coroutineScope.launch {
-            val timeout = call.getLong("timeout") ?: 10000
-            val maximumAge = call.getLong("maximumAge") ?: 0
-            val enableHighAccuracy = call.getBoolean("enableHighAccuracy") ?: false
-            val minimumUpdateInterval = call.getLong("minimumUpdateInterval") ?: 5000
-
-            // validate parameters in args
-            // put parameters in object to send that object to getCurrentPosition
-            // the way we get the arguments may change
-            val locationOptions = OSLocationOptions(timeout, maximumAge, enableHighAccuracy, minimumUpdateInterval)
-
-            // call getCurrentPosition method from controller
-            val locationResult = controller.getCurrentPosition(activity, locationOptions)
-
-            if (locationResult.isSuccess) {
-                call.sendSuccess(JSObject(gson.toJson(locationResult.getOrNull())))
-            } else {
-                // handle error accordingly
-                when (val exception = locationResult.exceptionOrNull()) {
-                    is OSLocationException.OSLocationRequestDeniedException -> {
-                        call.sendError(OSGeolocationErrors.LOCATION_ENABLE_REQUEST_DENIED)
-                    }
-                    is OSLocationException.OSLocationSettingsException -> {
-                        call.sendError(OSGeolocationErrors.LOCATION_SETTINGS_ERROR)
-                    }
-                    is OSLocationException.OSLocationInvalidTimeoutException -> {
-                        call.sendError(OSGeolocationErrors.INVALID_TIMEOUT)
-                    }
-                    is OSLocationException.OSLocationGoogleServicesException -> {
-                        if (exception.resolvable) {
-                            call.sendError(OSGeolocationErrors.GOOGLE_SERVICES_RESOLVABLE)
-                        } else {
-                            call.sendError(OSGeolocationErrors.GOOGLE_SERVICES_ERROR)
-                        }
-                    }
-                    else -> {
-                        call.sendError(OSGeolocationErrors.GET_LOCATION_GENERAL)
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * Starts watching the device's location by requesting location updates
-     */
-    private fun startWatch(call: PluginCall) {
-        coroutineScope.launch {
-            val watchId = call.callbackId
-            val timeout = call.getLong("timeout") ?: 10000
-            val maximumAge = call.getLong("maximumAge") ?: 0
-            val enableHighAccuracy = call.getBoolean("enableHighAccuracy") ?: false
-            val minimumUpdateInterval = call.getLong("minimumUpdateInterval") ?: 5000
-
-            // validate parameters in args
-            // put parameters in object to send that object to getLocation
-            // the way we get the arguments may change
-            val locationOptions = OSLocationOptions(timeout, maximumAge, enableHighAccuracy, minimumUpdateInterval)
-
-            // call addWatch method from controller
-            controller.addWatch(activity, locationOptions, watchId).collect { result ->
-                result.onSuccess { locationList ->
-                    locationList.forEach { locationResult ->
-                        call.sendSuccess(JSObject(gson.toJson(locationResult)))
-                    }
-                }
-                result.onFailure { exception ->
-                    when (exception) {
-                        is OSLocationException.OSLocationRequestDeniedException -> {
-                            call.sendError(OSGeolocationErrors.LOCATION_ENABLE_REQUEST_DENIED)
-                        }
-                        is OSLocationException.OSLocationSettingsException -> {
-                            call.sendError(OSGeolocationErrors.LOCATION_SETTINGS_ERROR)
-                        }
-                        is OSLocationException.OSLocationInvalidTimeoutException -> {
-                            call.sendError(OSGeolocationErrors.INVALID_TIMEOUT)
-                        }
-                        is OSLocationException.OSLocationGoogleServicesException -> {
-                            if (exception.resolvable) {
-                                call.sendError(OSGeolocationErrors.GOOGLE_SERVICES_RESOLVABLE)
-                            } else {
-                                call.sendError(OSGeolocationErrors.GOOGLE_SERVICES_ERROR)
-                            }
-                        }
-                        else -> {
-                            call.sendError(OSGeolocationErrors.GET_LOCATION_GENERAL)
-                        }
-                    }
-                }
-
-            }
-        }
-        watchingCalls[call.callbackId] = call
-    }
-
 }
