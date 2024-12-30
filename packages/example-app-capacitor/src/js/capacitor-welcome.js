@@ -60,7 +60,7 @@ window.customElements.define(
         <h1>Capacitor Geolocation Example App</h1>
       </capacitor-welcome-titlebar>
       <main>
-        <h2>Below are the several features for the capacitor geolocation plugin.\nYou may be prompted to grant location permission to the application.</h2>
+        <p>Below are the several features for the capacitor geolocation plugin. You may be prompted to grant location permission to the application.</p>
         <button id="check-permission" class="button">Check permission</button>
         <button id="request-permission" class="button">Request permission</button>
         <br><br>
@@ -92,23 +92,33 @@ window.customElements.define(
         /*let currentLocation = await window.CapacitorUtils.Synapse.GeolocationPlugin.getCurrentPosition(
           { enableHighAccuracy: true }
         );*/
-        let currentLocation = await GeolocationPlugin.getCurrentPosition(
-          { enableHighAccuracy: true }
-        );
-        const stringRepresentation = locationToString(currentLocation)
-        alert(stringRepresentation)
+        try {
+          let currentLocation = await GeolocationPlugin.getCurrentPosition(
+            { enableHighAccuracy: true }
+          );
+          const stringRepresentation = locationToString(currentLocation)
+          alert(stringRepresentation)
+        } catch (exception) {
+          alert(`Error getting current position:\n\tcode=${exception.code}\n\tmessage=\"${exception.message}\"`)
+        }
       });
 
       function locationToString(location) {
         if (location == null || location == undefined) {
           return ""
         }
+        var stringRepresentation = 'Position:\n'
         const timeRepresentation = location.timestamp ? new Date(location.timestamp).toISOString() : '-'
-        let time = `- Time: ${timeRepresentation}\n`
-        let latLong = `- Latitute: ${location?.coords.latitude}\n- Longitude: ${location?.coords.longitude}\n`
-        let altHead = `- Altitude: ${location?.coords.altitude}\n- Heading: ${location?.coords.heading}\n`
-        let accs = `- Accuracy: ${location?.coords.accuracy}\n- Altitude accuracy: ${location?.coords.altitudeAccuracy}\n`
-        return `Position:\n\n${time}${latLong}${altHead}${accs}`
+        stringRepresentation += `- Time: ${timeRepresentation}\n`
+        stringRepresentation += `- Latitute: ${location?.coords.latitude}\n- Longitude: ${location?.coords.longitude}\n`
+        if (location?.coords.altitude || location?.coords.heading) {
+          stringRepresentation += `- Altitude: ${location?.coords.altitude}\n- Heading: ${location?.coords.heading}\n`
+        }
+        stringRepresentation += `- Accuracy: ${location?.coords.accuracy}\n`
+        if (location?.coords.altitudeAccuracy) {
+          stringRepresentation += `- Altitude accuracy: ${location?.coords.altitudeAccuracy}\n`
+        }
+        return stringRepresentation
       }
     }
   }
