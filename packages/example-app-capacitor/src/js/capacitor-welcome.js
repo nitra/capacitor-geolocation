@@ -1,5 +1,5 @@
 import { SplashScreen } from '@capacitor/splash-screen';
-import { GeolocationPlugin } from 'capacitor-geolocation';
+import { GeolocationPlugin } from 'geolocation-capacitor';
 
 window.customElements.define(
   'capacitor-welcome',

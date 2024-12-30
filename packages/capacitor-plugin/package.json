@@ -1,5 +1,5 @@
 {
-  "name": "capacitor-geolocation",
+  "name": "geolocation-capacitor",
   "version": "0.0.1",
   "description": "Geolocation plugin for Capacitor",
   "main": "dist/plugin.cjs.js",

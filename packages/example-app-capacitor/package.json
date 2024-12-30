@@ -1,5 +1,5 @@
 {
-  "name": "capacitor-geolocation-example-app",
+  "name": "geolocation-capacitor-example-app",
   "version": "1.0.0",
   "description": "An Example App for testing the Capacitor Geolocation plugin",
   "main": "index.js",
@@ -18,7 +18,7 @@
     "@capacitor/core": "latest",
     "@capacitor/ios": "latest",
     "@capacitor/splash-screen": "latest",
-    "capacitor-geolocation": "file:../capacitor-plugin"
+    "geolocation-capacitor": "file:../capacitor-plugin"
   },
   "devDependencies": {
     "@capacitor/cli": "latest",
