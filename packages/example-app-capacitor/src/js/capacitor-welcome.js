@@ -67,6 +67,21 @@ window.customElements.define(
         <button id="current-location" class="button">Get Current (single) position</button>
         <br><br>
         <button id="watch-location" class="button">Watch position (updates)</button>
+        <br><br>
+
+        <!-- List to hold watch IDs -->
+        <div id="watch-ids-container">
+          <h2>Active watches (click one to stop receiving updates):</h2>
+          <ul id="watch-id-list"></ul>
+        </div>
+
+        <br>
+
+        <div id="watch-position-updates-container">
+          <h2>Position updates are shown below:</h2>
+          <button id="clear-position-updates" class="button">Clear list</button>
+          <ul id="watch-position-updates-list"></ul>
+        </div>
       </main>
     </div>
     `;
@@ -105,8 +120,9 @@ window.customElements.define(
       });
 
       self.shadowRoot.querySelector('#watch-location').addEventListener('click', async function (e) {
+        var watchId = ""
         try {
-          var watchId = "unknown_watch_id"
+          var shouldAppendWatchId = true
           // TODO fix usage with Synapse
           //let watchId = await window.CapacitorUtils.Synapse.GeolocationPlugin.watchPosition(
           watchId = await GeolocationPlugin.watchPosition(
@@ -116,6 +132,23 @@ window.customElements.define(
                 alert(`Error getting current position:\n\t code=${err.code}\n\t message=\"${err.message}\"`)
               } else {
                 const locationString = locationToString(position, watchId)
+                if (shouldAppendWatchId && watchId) {
+                  shouldAppendWatchId = false
+                  onWatchAdded(watchId);
+                }
+                const positionUpdatesList = self.shadowRoot.querySelector('#watch-position-updates-list');
+                const newListItem = document.createElement('li');
+                newListItem.textContent = locationString;
+                 // 'pre-wrap' to make \n's count as line breaks
+                newListItem.style.whiteSpace = 'pre-wrap'; 
+                newListItem.style.padding = '10px';
+                newListItem.style.borderBottom = '1px solid #ddd';
+                // add to top of list
+                if (positionUpdatesList.firstChild) {
+                  positionUpdatesList.insertBefore(newListItem, positionUpdatesList.firstChild);
+                } else {
+                  positionUpdatesList.appendChild(newListItem);
+                }
                 console.log(locationString)
               }
             },
@@ -124,6 +157,32 @@ window.customElements.define(
           alert(`Error getting current position:\n\t code=${exception.code}\n\t message=\"${exception.message}\"`)
         }
       });
+
+      self.shadowRoot.querySelector('#clear-position-updates').addEventListener('click', () => {
+        const wacthesList = self.shadowRoot.querySelector('#watch-position-updates-list');
+        wacthesList.innerHTML = '';
+      });
+
+      function onWatchAdded(watchId) {
+        // Append the watchId as a button to the list
+        const watchIdListElement = self.shadowRoot.querySelector('#watch-id-list');
+        const newListItem = document.createElement('li');
+        const watchIdButton = document.createElement('button');
+        watchIdButton.textContent = `Watch ID: ${watchId}`;
+        watchIdButton.classList.add('watch-id-button');
+        watchIdButton.style.cursor = 'pointer';
+
+        watchIdButton.addEventListener('click',  async function (e) {
+          // for simplicity, watch is already removed visually, regardless of clearWatch result
+          newListItem.remove();
+          // TODO fix usage with Synapse
+          //await window.CapacitorUtils.Synapse.GeolocationPlugin.clearWatch({id: watchId});
+          await GeolocationPlugin.clearWatch({id: watchId});
+        });
+
+        newListItem.appendChild(watchIdButton);
+        watchIdListElement.appendChild(newListItem);
+      }
 
       function locationToString(location, watchId) {
         if (location == null || location == undefined) {
