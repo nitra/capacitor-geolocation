@@ -57,12 +57,16 @@ window.customElements.define(
     </style>
     <div>
       <capacitor-welcome-titlebar>
-        <h1>Capacitor</h1>
+        <h1>Capacitor Geolocation Example App</h1>
       </capacitor-welcome-titlebar>
       <main>
-        <h1>Welcome to Capacitor!</h1>
-        <button id="run-test" class="button">Test</button>
-        <textarea id="output" style="width: 100%; height: 200px;"></textarea>
+        <h2>Below are the several features for the capacitor geolocation plugin.\nYou may be prompted to grant location permission to the application.</h2>
+        <button id="check-permission" class="button">Check permissions</button>
+        <br><br>
+        <button id="request-permission" class="button">Request permissions</button>
+        <br><br>
+        <button id="current-location" class="button">Get Current (single) position</button>
+        <br><br>
       </main>
     </div>
     `;
@@ -71,13 +75,42 @@ window.customElements.define(
     connectedCallback() {
       const self = this;
 
-      self.shadowRoot.querySelector('#run-test').addEventListener('click', async function (e) {
-        window.CapacitorUtils.Synapse.GeolocationPlugin.ping(
-          { value: "hello" },
-          (val) => { console.log(val) },
-          (err) => { console.error(err) }
-        );
+      self.shadowRoot.querySelector('#check-permission').addEventListener('click', async function (e) {
+        // TODO fix usage with Synapse
+        //const permissionStatus = await window.CapacitorUtils.Synapse.GeolocationPlugin.checkPermissions();
+        const permissionStatus = await GeolocationPlugin.checkPermissions();
+        alert(`Permissions are:\nlocation = ${permissionStatus.location}`)
       });
+      self.shadowRoot.querySelector('#request-permission').addEventListener('click', async function (e) {
+        // TODO fix usage with Synapse
+        //const permissionStatus = await window.CapacitorUtils.Synapse.GeolocationPlugin.requestPermissions();
+        const permissionStatus = await GeolocationPlugin.requestPermissions();
+        alert(`Permissions are:\nlocation = ${permissionStatus.location}`)
+      });
+
+      self.shadowRoot.querySelector('#current-location').addEventListener('click', async function (e) {
+        // TODO fix usage with Synapse
+        /*let currentLocation = await window.CapacitorUtils.Synapse.GeolocationPlugin.getCurrentPosition(
+          { enableHighAccuracy: true }
+        );*/
+        let currentLocation = await GeolocationPlugin.getCurrentPosition(
+          { enableHighAccuracy: true }
+        );
+        const stringRepresentation = locationToString(currentLocation)
+        alert(stringRepresentation)
+      });
+
+      function locationToString(location) {
+        if (location == null || location == undefined) {
+          return ""
+        }
+        const timeRepresentation = location.timestamp ? new Date(location.timestamp).toISOString() : '-'
+        let time = `- Time: ${timeRepresentation}\n`
+        let latLong = `- Latitute: ${location?.coords.latitude}\n- Longitude: ${location?.coords.longitude}\n`
+        let altHead = `- Altitude: ${location?.coords.altitude}\n- Heading: ${location?.coords.heading}\n`
+        let accs = `- Accuracy: ${location?.coords.accuracy}\n- Altitude accuracy: ${location?.coords.altitudeAccuracy}\n`
+        return `Position:\n\n${time}${latLong}${altHead}${accs}`
+      }
     }
   }
 );
