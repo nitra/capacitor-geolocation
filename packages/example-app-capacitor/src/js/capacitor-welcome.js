@@ -24,10 +24,10 @@ window.customElements.define(
       }
       .button {
         display: inline-block;
-        padding: 10px;
+        padding: 16px;
         background-color: #73B5F6;
         color: #fff;
-        font-size: 0.9em;
+        font-size: 1.1em;
         border: 0;
         border-radius: 3px;
         text-decoration: none;
@@ -61,9 +61,8 @@ window.customElements.define(
       </capacitor-welcome-titlebar>
       <main>
         <h2>Below are the several features for the capacitor geolocation plugin.\nYou may be prompted to grant location permission to the application.</h2>
-        <button id="check-permission" class="button">Check permissions</button>
-        <br><br>
-        <button id="request-permission" class="button">Request permissions</button>
+        <button id="check-permission" class="button">Check permission</button>
+        <button id="request-permission" class="button">Request permission</button>
         <br><br>
         <button id="current-location" class="button">Get Current (single) position</button>
         <br><br>
