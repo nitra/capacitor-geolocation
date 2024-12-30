@@ -2,25 +2,20 @@ export type PluginError = {
     code: string;
     message: string;
 };
+declare const SpeedProp: {
+    speed: null;
+    velocity: null;
+};
 export type OSGLOCPosition = {
     timestamp: number;
     latitude: number;
     longitude: number;
     accuracy: number;
     altitude: number | null;
-    speed: number | null;
     heading: number | null;
     altitudeAccuracy: number | null;
-};
-export type LegacyOSPosition = {
-    timestamp: number;
-    latitude: number;
-    longitude: number;
-    accuracy: number;
-    altitudeAccuracy: number | null | undefined;
-    altitude: number | null;
-    velocity: number | null;
-    heading: number | null;
+} & {
+    [Prop in keyof typeof SpeedProp]: number | null;
 };
 export type PositionOptions = {
     /**
@@ -61,10 +56,6 @@ export type PositionOptions = {
      * @since 6.1.0
      */
     minimumUpdateInterval?: number;
-    /**
-    * @deprecate since 1.0.0
-    * */
-    id?: ReturnType<typeof setTimeout>;
 };
 export type ClearWatchOptions = {
     id: string;
@@ -128,3 +119,4 @@ export type Position = {
         heading: number | null;
     };
 };
+export {};
