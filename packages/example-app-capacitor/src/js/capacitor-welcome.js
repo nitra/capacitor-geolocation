@@ -66,6 +66,7 @@ window.customElements.define(
         <br><br>
         <button id="current-location" class="button">Get Current (single) position</button>
         <br><br>
+        <button id="watch-location" class="button">Watch position (updates)</button>
       </main>
     </div>
     `;
@@ -88,26 +89,52 @@ window.customElements.define(
       });
 
       self.shadowRoot.querySelector('#current-location').addEventListener('click', async function (e) {
-        // TODO fix usage with Synapse
-        /*let currentLocation = await window.CapacitorUtils.Synapse.GeolocationPlugin.getCurrentPosition(
-          { enableHighAccuracy: true }
-        );*/
         try {
+          // TODO fix usage with Synapse
+          /*let currentLocation = await window.CapacitorUtils.Synapse.GeolocationPlugin.getCurrentPosition(
+            { enableHighAccuracy: true }
+          );*/
           let currentLocation = await GeolocationPlugin.getCurrentPosition(
             { enableHighAccuracy: true }
           );
-          const stringRepresentation = locationToString(currentLocation)
-          alert(stringRepresentation)
+          const locationString = locationToString(currentLocation, '')
+          alert(locationString)
         } catch (exception) {
-          alert(`Error getting current position:\n\tcode=${exception.code}\n\tmessage=\"${exception.message}\"`)
+          alert(`Error getting current position:\n\t code=${exception.code}\n\t message=\"${exception.message}\"`)
         }
       });
 
-      function locationToString(location) {
+      self.shadowRoot.querySelector('#watch-location').addEventListener('click', async function (e) {
+        try {
+          var watchId = "unknown_watch_id"
+          // TODO fix usage with Synapse
+          //let watchId = await window.CapacitorUtils.Synapse.GeolocationPlugin.watchPosition(
+          watchId = await GeolocationPlugin.watchPosition(
+            { enableHighAccuracy: true },
+            (position, err) => {
+              if (err) {
+                alert(`Error getting current position:\n\t code=${err.code}\n\t message=\"${err.message}\"`)
+              } else {
+                const locationString = locationToString(position, watchId)
+                console.log(locationString)
+              }
+            },
+          );
+        } catch (exception) {
+          alert(`Error getting current position:\n\t code=${exception.code}\n\t message=\"${exception.message}\"`)
+        }
+      });
+
+      function locationToString(location, watchId) {
         if (location == null || location == undefined) {
           return ""
         }
-        var stringRepresentation = 'Position:\n'
+        var stringRepresentation = 'Position'
+        if (watchId) {
+          stringRepresentation += ` for watch ${watchId}:\n`
+        } else {
+          stringRepresentation += ':\n'
+        }
         const timeRepresentation = location.timestamp ? new Date(location.timestamp).toISOString() : '-'
         stringRepresentation += `- Time: ${timeRepresentation}\n`
         stringRepresentation += `- Latitute: ${location?.coords.latitude}\n- Longitude: ${location?.coords.longitude}\n`
