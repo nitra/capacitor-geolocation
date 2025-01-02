@@ -118,7 +118,7 @@ class GeolocationPlugin : Plugin() {
      * If not, calls startWatch to start getting location updates
      * @param call the plugin call
      */
-    @PluginMethod
+    @PluginMethod(returnType = PluginMethod.RETURN_CALLBACK)
     fun watchPosition(call: PluginCall) {
         val alias = getAlias(call)
         if (getPermissionState(alias) != PermissionState.GRANTED) {
