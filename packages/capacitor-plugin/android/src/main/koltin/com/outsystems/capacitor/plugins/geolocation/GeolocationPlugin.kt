@@ -106,7 +106,7 @@ class GeolocationPlugin : Plugin() {
      */
     @PermissionCallback
     private fun completeCurrentPosition(call: PluginCall) {
-        if (getPermissionState(GeolocationPluginOld.COARSE_LOCATION) == PermissionState.GRANTED) {
+        if (getPermissionState(COARSE_LOCATION_ALIAS) == PermissionState.GRANTED) {
             getPosition(call)
         } else {
             call.sendError(OSGeolocationErrors.LOCATION_PERMISSIONS_DENIED)
@@ -134,7 +134,7 @@ class GeolocationPlugin : Plugin() {
      */
     @PermissionCallback
     private fun completeWatchPosition(call: PluginCall) {
-        if (getPermissionState(GeolocationPluginOld.COARSE_LOCATION) == PermissionState.GRANTED) {
+        if (getPermissionState(COARSE_LOCATION_ALIAS) == PermissionState.GRANTED) {
             startWatch(call)
         } else {
             call.sendError(OSGeolocationErrors.LOCATION_PERMISSIONS_DENIED)
