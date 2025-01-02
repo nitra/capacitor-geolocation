@@ -197,8 +197,8 @@ window.customElements.define(
         const timeRepresentation = location.timestamp ? new Date(location.timestamp).toISOString() : '-'
         stringRepresentation += `- Time: ${timeRepresentation}\n`
         stringRepresentation += `- Latitute: ${location?.coords.latitude}\n- Longitude: ${location?.coords.longitude}\n`
-        if (location?.coords.altitude || location?.coords.heading) {
-          stringRepresentation += `- Altitude: ${location?.coords.altitude}\n- Heading: ${location?.coords.heading}\n`
+        if (location?.coords.altitude || location?.coords.heading || location?.coords.speed) {
+          stringRepresentation += `- Altitude: ${location?.coords.altitude}\n- Heading: ${location?.coords.heading}\n- Speed: ${location?.coords.speed}\n`
         }
         stringRepresentation += `- Accuracy: ${location?.coords.accuracy}\n`
         if (location?.coords.altitudeAccuracy) {
