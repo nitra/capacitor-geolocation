@@ -213,7 +213,9 @@ class GeolocationPlugin : Plugin() {
             controller.addWatch(activity, locationOptions, watchId).collect { result ->
                 result.onSuccess { locationList ->
                     locationList.forEach { locationResult ->
-                        call.sendSuccess(getJSObjectForLocation(locationResult))
+                        call.sendSuccess(
+                            result = getJSObjectForLocation(locationResult), 
+                            keepCallback = true)
                     }
                 }
                 result.onFailure { exception ->
