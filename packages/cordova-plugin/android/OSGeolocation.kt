@@ -36,6 +36,7 @@ class OSGeolocation : CordovaPlugin() {
 
     companion object {
         private const val LOCATION_PERMISSIONS_REQUEST_CODE = 22332
+        private const val ID = "id"
         private const val TIMEOUT = "timeout"
         private const val MAXIMUM_AGE = "maximumAge"
         private const val ENABLE_HIGH_ACCURACY = "enableHighAccuracy"
@@ -122,14 +123,13 @@ class OSGeolocation : CordovaPlugin() {
      */
     private fun watchPosition(args: JSONArray, callbackContext: CallbackContext) {
         val options: JSONObject
-        val watchId: String
         try {
             options = args.getJSONObject(0)
-            watchId = args.getString(1)
         } catch (e: Exception) {
             callbackContext.sendError(OSGeolocationErrors.INVALID_INPUT)
             return
         }
+        val watchId = options.getString(ID)
 
         coroutineScope.launch {
             handleLocationPermission(callbackContext) {

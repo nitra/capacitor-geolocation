@@ -73,7 +73,7 @@ function getCurrentPosition(options, success, error) {
   };
   exec(convertOnSuccess, error, "OSGeolocation", "getCurrentPosition", [options]);
 }
-function watchPosition(options, watchId, success, error) {
+function watchPosition(options, success, error) {
   options = options || PositionOptionsDefault;
   let convertOnSuccess = (position) => {
     let convertedPosition = {
@@ -90,7 +90,7 @@ function watchPosition(options, watchId, success, error) {
     };
     success(convertedPosition);
   };
-  exec(convertOnSuccess, error, "OSGeolocation", "watchPosition", [options, watchId]);
+  exec(convertOnSuccess, error, "OSGeolocation", "watchPosition", [options]);
 }
 function clearWatch(options, success, error) {
   options = options || ClearWatchOptionsDefault;
