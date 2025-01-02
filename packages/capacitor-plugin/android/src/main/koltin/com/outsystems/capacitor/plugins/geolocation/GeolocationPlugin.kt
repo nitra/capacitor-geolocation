@@ -12,10 +12,10 @@ import com.getcapacitor.annotation.CapacitorPlugin
 import com.getcapacitor.annotation.Permission
 import com.getcapacitor.annotation.PermissionCallback
 import com.google.android.gms.location.LocationServices
-import com.google.gson.Gson
 import com.outsystems.plugins.osgeolocation.controller.OSGLOCController
 import com.outsystems.plugins.osgeolocation.model.OSGLOCException
 import com.outsystems.plugins.osgeolocation.model.OSGLOCLocationOptions
+import com.outsystems.plugins.osgeolocation.model.OSGLOCLocationResult
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
@@ -34,7 +34,6 @@ import kotlinx.coroutines.launch
 class GeolocationPlugin : Plugin() {
 
     private lateinit var controller: OSGLOCController
-    private val gson by lazy { Gson() }
     private lateinit var coroutineScope: CoroutineScope
     private val watchingCalls: MutableMap<String, PluginCall> = mutableMapOf()
 
@@ -88,6 +87,7 @@ class GeolocationPlugin : Plugin() {
     /**
      * Checks location permission state, requesting them if necessary.
      * If not, calls getPosition to get the device's position
+     * @param call the plugin call
      */
     @PluginMethod
     fun getCurrentPosition(call: PluginCall) {
@@ -106,7 +106,7 @@ class GeolocationPlugin : Plugin() {
      */
     @PermissionCallback
     private fun completeCurrentPosition(call: PluginCall) {
-        if (getPermissionState(GeolocationPluginOld.COARSE_LOCATION) == PermissionState.GRANTED) {
+        if (getPermissionState(COARSE_LOCATION_ALIAS) == PermissionState.GRANTED) {
             getPosition(call)
         } else {
             call.sendError(OSGeolocationErrors.LOCATION_PERMISSIONS_DENIED)
@@ -116,8 +116,9 @@ class GeolocationPlugin : Plugin() {
     /**
      * Checks location permission state, requesting them if necessary.
      * If not, calls startWatch to start getting location updates
+     * @param call the plugin call
      */
-    @PluginMethod
+    @PluginMethod(returnType = PluginMethod.RETURN_CALLBACK)
     fun watchPosition(call: PluginCall) {
         val alias = getAlias(call)
         if (getPermissionState(alias) != PermissionState.GRANTED) {
@@ -134,13 +135,17 @@ class GeolocationPlugin : Plugin() {
      */
     @PermissionCallback
     private fun completeWatchPosition(call: PluginCall) {
-        if (getPermissionState(GeolocationPluginOld.COARSE_LOCATION) == PermissionState.GRANTED) {
+        if (getPermissionState(COARSE_LOCATION_ALIAS) == PermissionState.GRANTED) {
             startWatch(call)
         } else {
             call.sendError(OSGeolocationErrors.LOCATION_PERMISSIONS_DENIED)
         }
     }
 
+    /**
+     * Clears the watch, removing location updates.
+     * @param call the plugin call
+     */
     @PluginMethod
     fun clearWatch(call: PluginCall) {
         val id = call.getString("id")
@@ -159,6 +164,8 @@ class GeolocationPlugin : Plugin() {
 
     /**
      * Gets the appropriate permission alias
+     * @param call the plugin call
+     * @return String with correct alias
      */
     private fun getAlias(call: PluginCall): String {
         var alias = LOCATION_ALIAS
@@ -173,6 +180,7 @@ class GeolocationPlugin : Plugin() {
 
     /**
      * Gets the current position
+     * @param call the plugin call
      */
     private fun getPosition(call: PluginCall) {
         coroutineScope.launch {
@@ -181,16 +189,19 @@ class GeolocationPlugin : Plugin() {
             // call getCurrentPosition method from controller
             val locationResult = controller.getCurrentPosition(activity, locationOptions)
 
-            if (locationResult.isSuccess) {
-                call.sendSuccess(JSObject(gson.toJson(locationResult.getOrNull())))
-            } else {
-                onLocationError(locationResult.exceptionOrNull(), call)
-            }
+            locationResult
+                .onSuccess { location ->
+                    call.sendSuccess(getJSObjectForLocation(location))
+                }
+                .onFailure { exception ->
+                    onLocationError(exception, call)
+                }
         }
     }
 
     /**
      * Starts watching the device's location by requesting location updates
+     * @param call the plugin call
      */
     private fun startWatch(call: PluginCall) {
         coroutineScope.launch {
@@ -202,7 +213,7 @@ class GeolocationPlugin : Plugin() {
             controller.addWatch(activity, locationOptions, watchId).collect { result ->
                 result.onSuccess { locationList ->
                     locationList.forEach { locationResult ->
-                        call.sendSuccess(JSObject(gson.toJson(locationResult)))
+                        call.sendSuccess(getJSObjectForLocation(locationResult))
                     }
                 }
                 result.onFailure { exception ->
@@ -213,6 +224,32 @@ class GeolocationPlugin : Plugin() {
         watchingCalls[call.callbackId] = call
     }
 
+    /**
+     * Helper function to convert OSGLOCLocationResult object into the format accepted by the Capacitor bridge
+     * @param locationResult OSGLOCLocationResult object with the location to convert
+     * @return JSObject with converted JSON object
+     */
+    private fun getJSObjectForLocation(locationResult: OSGLOCLocationResult): JSObject {
+        val coords = JSObject().apply {
+            put("latitude", locationResult.latitude)
+            put("longitude", locationResult.longitude)
+            put("accuracy", locationResult.accuracy)
+            put("altitude", locationResult.altitude)
+            locationResult.altitudeAccuracy?.let { put("altitudeAccuracy", it) }
+            put("speed", locationResult.speed)
+            put("heading", locationResult.heading)
+        }
+        return JSObject().apply {
+            put("timestamp", locationResult.timestamp)
+            put("coords", coords)
+        }
+    }
+
+    /**
+     * Helper function to handle error cases
+     * @param exception Throwable to handle as an error
+     * @param call the plugin call
+     */
     private fun onLocationError(exception: Throwable?, call: PluginCall) {
         when (exception) {
             is OSGLOCException.OSGLOCRequestDeniedException -> {
@@ -240,6 +277,7 @@ class GeolocationPlugin : Plugin() {
     /**
      * Extension function to return a successful plugin result
      * @param result JSOObject with the JSON content to return
+     * @param keepCallback boolean to determine if callback should be kept for future calls or not
      */
     private fun PluginCall.sendSuccess(result: JSObject? = null, keepCallback: Boolean? = false) {
         this.setKeepAlive(keepCallback)
@@ -260,6 +298,8 @@ class GeolocationPlugin : Plugin() {
 
     /**
      * Creates the location options to pass to the native controller
+     * @param call the plugin call
+     * @return OSGLOCLocationOptions object
      */
     private fun createOptions(call: PluginCall): OSGLOCLocationOptions {
         val timeout = call.getLong("timeout", 10000) ?: 10000
