@@ -140,9 +140,18 @@ class OSGeolocation {
      * @returns the timeout's ID
      */
     #createTimeout(onError: (error: PluginError) => void, timeout: number | undefined, isWatch: boolean, id: string): ReturnType<typeof setTimeout> {
+
+        function onClearWatchSuccess(output: string) {
+            // do nothing
+        }
+
+        function onClearWatchError(error: PluginError | GeolocationPositionError) {
+            // do nothing
+        }
+
         let t = setTimeout(() => {
             if (isWatch === true) {
-                this.clearWatch({ id });
+                this.clearWatch(onClearWatchSuccess, onClearWatchError, { id });
             }
             onError({
                 code: 'OS-GLOC-0001',
