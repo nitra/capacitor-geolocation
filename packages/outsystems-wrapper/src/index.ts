@@ -127,7 +127,7 @@ class OSGeolocation {
         clearTimeout(this.#timers[options.id]);
         delete this.#timers[options.id];
         // @ts-ignore
-        CapacitorUtils.Synapse.OSGeolocation.clearWatch(options.id, success, error)
+        CapacitorUtils.Synapse.OSGeolocation.clearWatch(options, success, error)
     }
 
 
