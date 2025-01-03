@@ -115,7 +115,7 @@ class OSGeolocation {
     /**
     * Clears the specified heading watch.
     */
-    clearWatch(options: ClearWatchOptions): void {
+    clearWatch(success: (output: string) => void, error: (error: PluginError | GeolocationPositionError) => void, options: ClearWatchOptions): void {
         // @ts-ignore
         if (typeof (CapacitorUtils) === 'undefined') {
             // if we're not in synapse land, we call the good old bridge or web api 
@@ -127,7 +127,7 @@ class OSGeolocation {
         clearTimeout(this.#timers[options.id]);
         delete this.#timers[options.id];
         // @ts-ignore
-        CapacitorUtils.Synapse.OSGeolocation.clearWatch(options.id, null, null)
+        CapacitorUtils.Synapse.OSGeolocation.clearWatch(options.id, success, error)
     }
 
 
