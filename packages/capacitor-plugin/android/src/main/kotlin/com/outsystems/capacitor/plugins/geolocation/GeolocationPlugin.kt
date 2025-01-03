@@ -68,19 +68,24 @@ class GeolocationPlugin : Plugin() {
 
     @PluginMethod
     override fun checkPermissions(call: PluginCall) {
-        if (controller.areLocationServicesEnabled(context)) {
-            super.checkPermissions(call)
-        } else {
-            call.sendError(OSGeolocationErrors.LOCATION_DISABLED)
-        }
+        checkLocationState(call) { super.checkPermissions(call) }
     }
 
     @PluginMethod
     override fun requestPermissions(call: PluginCall) {
+        checkLocationState(call) { super.requestPermissions(call) }
+    }
+
+    /**
+     * Helper function to determine if location services are enabled or not
+     * @param call the PluginCall to use in case we want to send an error
+     * @param onLocationEnabled lambda function to use in case location services are enabled
+     */
+    private fun checkLocationState(call: PluginCall, onLocationEnabled: () -> Unit) {
         if (controller.areLocationServicesEnabled(context)) {
-            super.requestPermissions(call)
+            onLocationEnabled()
         } else {
-            call.sendError(OSGeolocationErrors.LOCATION_DISABLED)
+            call.sendError(GeolocationErrors.LOCATION_DISABLED)
         }
     }
 
@@ -91,11 +96,35 @@ class GeolocationPlugin : Plugin() {
      */
     @PluginMethod
     fun getCurrentPosition(call: PluginCall) {
+        handlePermissionRequest(call, "completeCurrentPosition") { getPosition(call) }
+    }
+
+    /**
+     * Checks location permission state, requesting them if necessary.
+     * If not, calls startWatch to start getting location updates
+     * @param call the plugin call
+     */
+    @PluginMethod(returnType = PluginMethod.RETURN_CALLBACK)
+    fun watchPosition(call: PluginCall) {
+        handlePermissionRequest(call, "completeWatchPosition") { startWatch(call) }
+    }
+
+    /**
+     * Helper function to determine if a permission is granted or not and request it if necessary
+     * @param call the PluginCall to use in case we want to send an error
+     * @param callbackName a string identifying the callback to call once the permission prompt is answered
+     * @param onPermissionGranted lambda function to use in case the permission is enabled
+     */
+    private fun handlePermissionRequest(
+        call: PluginCall,
+        callbackName: String,
+        onPermissionGranted: () -> Unit
+    ) {
         val alias = getAlias(call)
         if (getPermissionState(alias) != PermissionState.GRANTED) {
-            requestPermissionForAlias(alias, call, "completeCurrentPosition")
+            requestPermissionForAlias(alias, call, callbackName)
         } else {
-            getPosition(call)
+            onPermissionGranted()
         }
     }
 
@@ -106,26 +135,7 @@ class GeolocationPlugin : Plugin() {
      */
     @PermissionCallback
     private fun completeCurrentPosition(call: PluginCall) {
-        if (getPermissionState(COARSE_LOCATION_ALIAS) == PermissionState.GRANTED) {
-            getPosition(call)
-        } else {
-            call.sendError(OSGeolocationErrors.LOCATION_PERMISSIONS_DENIED)
-        }
-    }
-
-    /**
-     * Checks location permission state, requesting them if necessary.
-     * If not, calls startWatch to start getting location updates
-     * @param call the plugin call
-     */
-    @PluginMethod(returnType = PluginMethod.RETURN_CALLBACK)
-    fun watchPosition(call: PluginCall) {
-        val alias = getAlias(call)
-        if (getPermissionState(alias) != PermissionState.GRANTED) {
-            requestPermissionForAlias(alias, call, "completeWatchPosition")
-        } else {
-            startWatch(call)
-        }
+        handlePermissionResult(call) { getPosition(call) }
     }
 
     /**
@@ -135,10 +145,19 @@ class GeolocationPlugin : Plugin() {
      */
     @PermissionCallback
     private fun completeWatchPosition(call: PluginCall) {
+        handlePermissionResult(call) { startWatch(call) }
+    }
+
+    /**
+     * Helper function to handle the result of a location permission request
+     * @param call the PluginCall to use in case we want to send an error
+     * @param onPermissionGranted lambda function to use in case the permission was granted
+     */
+    private fun handlePermissionResult(call: PluginCall, onPermissionGranted: () -> Unit) {
         if (getPermissionState(COARSE_LOCATION_ALIAS) == PermissionState.GRANTED) {
-            startWatch(call)
+            onPermissionGranted()
         } else {
-            call.sendError(OSGeolocationErrors.LOCATION_PERMISSIONS_DENIED)
+            call.sendError(GeolocationErrors.LOCATION_PERMISSIONS_DENIED)
         }
     }
 
@@ -150,14 +169,14 @@ class GeolocationPlugin : Plugin() {
     fun clearWatch(call: PluginCall) {
         val id = call.getString("id")
         if (id.isNullOrBlank()) {
-            call.sendError(OSGeolocationErrors.WATCH_ID_NOT_PROVIDED)
+            call.sendError(GeolocationErrors.WATCH_ID_NOT_PROVIDED)
         } else {
             watchingCalls.remove(id)?.release(bridge)
             val watchCleared = controller.clearWatch(id)
             if (watchCleared) {
                 call.sendSuccess()
             } else {
-                call.sendError(OSGeolocationErrors.WATCH_ID_NOT_FOUND)
+                call.sendError(GeolocationErrors.WATCH_ID_NOT_FOUND)
             }
         }
     }
@@ -214,7 +233,7 @@ class GeolocationPlugin : Plugin() {
                 result.onSuccess { locationList ->
                     locationList.forEach { locationResult ->
                         call.sendSuccess(
-                            result = getJSObjectForLocation(locationResult), 
+                            result = getJSObjectForLocation(locationResult),
                             keepCallback = true)
                     }
                 }
@@ -255,23 +274,26 @@ class GeolocationPlugin : Plugin() {
     private fun onLocationError(exception: Throwable?, call: PluginCall) {
         when (exception) {
             is OSGLOCException.OSGLOCRequestDeniedException -> {
-                call.sendError(OSGeolocationErrors.LOCATION_ENABLE_REQUEST_DENIED)
+                call.sendError(GeolocationErrors.LOCATION_ENABLE_REQUEST_DENIED)
             }
             is OSGLOCException.OSGLOCSettingsException -> {
-                call.sendError(OSGeolocationErrors.LOCATION_SETTINGS_ERROR)
+                call.sendError(GeolocationErrors.LOCATION_SETTINGS_ERROR)
             }
             is OSGLOCException.OSGLOCInvalidTimeoutException -> {
-                call.sendError(OSGeolocationErrors.INVALID_TIMEOUT)
+                call.sendError(GeolocationErrors.INVALID_TIMEOUT)
             }
             is OSGLOCException.OSGLOCGoogleServicesException -> {
                 if (exception.resolvable) {
-                    call.sendError(OSGeolocationErrors.GOOGLE_SERVICES_RESOLVABLE)
+                    call.sendError(GeolocationErrors.GOOGLE_SERVICES_RESOLVABLE)
                 } else {
-                    call.sendError(OSGeolocationErrors.GOOGLE_SERVICES_ERROR)
+                    call.sendError(GeolocationErrors.GOOGLE_SERVICES_ERROR)
                 }
             }
+            is OSGLOCException.OSGLOCLocationRetrievalTimeoutException -> {
+                call.sendError(GeolocationErrors.GET_LOCATION_TIMEOUT)
+            }
             else -> {
-                call.sendError(OSGeolocationErrors.GET_LOCATION_GENERAL)
+                call.sendError(GeolocationErrors.GET_LOCATION_GENERAL)
             }
         }
     }
@@ -294,7 +316,7 @@ class GeolocationPlugin : Plugin() {
      * Extension function to return a unsuccessful plugin result
      * @param error error class representing the error to return, containing a code and message
      */
-    private fun PluginCall.sendError(error: OSGeolocationErrors.ErrorInfo) {
+    private fun PluginCall.sendError(error: GeolocationErrors.ErrorInfo) {
         this.reject(error.message, error.code)
     }
 
