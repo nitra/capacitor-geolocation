@@ -72,17 +72,16 @@ class OSGLOCController(
      * @param resultCode to determine if the user enabled the location when prompted
      */
     suspend fun onResolvableExceptionResult(resultCode: Int) {
-        if (resultCode == Activity.RESULT_OK) {
-            resolveLocationSettingsResultFlow.emit(Result.success(Unit))
-        } else {
-            resolveLocationSettingsResultFlow.emit(
+        resolveLocationSettingsResultFlow.emit(
+            if (resultCode == Activity.RESULT_OK)
+                Result.success(Unit)
+            else
                 Result.failure(
                     OSGLOCException.OSGLOCRequestDeniedException(
                         message = "Request to enable location denied."
                     )
                 )
-            )
-        }
+        )
     }
 
     /**

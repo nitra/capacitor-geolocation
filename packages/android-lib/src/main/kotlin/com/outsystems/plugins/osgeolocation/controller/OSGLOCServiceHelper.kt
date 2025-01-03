@@ -84,23 +84,36 @@ class OSGLOCServiceHelper(
         return if (status != ConnectionResult.SUCCESS) {
             if (googleApiAvailability.isUserResolvableError(status)) {
                 googleApiAvailability.getErrorDialog(activity, status, 1)?.show()
-                Result.failure(
-                    OSGLOCException.OSGLOCGoogleServicesException(
-                        resolvable = true,
-                        message = "Google Play Services error user resolvable."
-                    )
+                sendResultWithGoogleServicesException(
+                    resolvable = true,
+                    message = "Google Play Services error user resolvable."
                 )
             } else {
-                Result.failure(
-                    OSGLOCException.OSGLOCGoogleServicesException(
-                        resolvable = false,
-                        message = "Google Play Services error."
-                    )
+                sendResultWithGoogleServicesException(
+                    resolvable = false,
+                    message = "Google Play Services error."
                 )
             }
         } else {
             Result.success(Unit)
         }
+    }
+
+    /**
+     * Returns a Result object containing an OSGLOCException.OSGLOCGoogleServicesException exception with the given
+     * resolvable and message values
+     * @param resolvable whether or not the exception is resolvable
+     * @param message message to include in the exception
+     * @return Result object with the exception to return
+     *
+     */
+    private fun sendResultWithGoogleServicesException(resolvable: Boolean, message: String): Result<Unit> {
+        return Result.failure(
+            OSGLOCException.OSGLOCGoogleServicesException(
+                resolvable = resolvable,
+                message = message
+            )
+        )
     }
 
     /**
