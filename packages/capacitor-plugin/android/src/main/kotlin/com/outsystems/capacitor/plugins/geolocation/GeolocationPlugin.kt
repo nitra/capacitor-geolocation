@@ -85,7 +85,7 @@ class GeolocationPlugin : Plugin() {
         if (controller.areLocationServicesEnabled(context)) {
             onLocationEnabled()
         } else {
-            call.sendError(OSGeolocationErrors.LOCATION_DISABLED)
+            call.sendError(GeolocationErrors.LOCATION_DISABLED)
         }
     }
 
@@ -157,7 +157,7 @@ class GeolocationPlugin : Plugin() {
         if (getPermissionState(COARSE_LOCATION_ALIAS) == PermissionState.GRANTED) {
             onPermissionGranted()
         } else {
-            call.sendError(OSGeolocationErrors.LOCATION_PERMISSIONS_DENIED)
+            call.sendError(GeolocationErrors.LOCATION_PERMISSIONS_DENIED)
         }
     }
 
@@ -169,14 +169,14 @@ class GeolocationPlugin : Plugin() {
     fun clearWatch(call: PluginCall) {
         val id = call.getString("id")
         if (id.isNullOrBlank()) {
-            call.sendError(OSGeolocationErrors.WATCH_ID_NOT_PROVIDED)
+            call.sendError(GeolocationErrors.WATCH_ID_NOT_PROVIDED)
         } else {
             watchingCalls.remove(id)?.release(bridge)
             val watchCleared = controller.clearWatch(id)
             if (watchCleared) {
                 call.sendSuccess()
             } else {
-                call.sendError(OSGeolocationErrors.WATCH_ID_NOT_FOUND)
+                call.sendError(GeolocationErrors.WATCH_ID_NOT_FOUND)
             }
         }
     }
@@ -274,23 +274,26 @@ class GeolocationPlugin : Plugin() {
     private fun onLocationError(exception: Throwable?, call: PluginCall) {
         when (exception) {
             is OSGLOCException.OSGLOCRequestDeniedException -> {
-                call.sendError(OSGeolocationErrors.LOCATION_ENABLE_REQUEST_DENIED)
+                call.sendError(GeolocationErrors.LOCATION_ENABLE_REQUEST_DENIED)
             }
             is OSGLOCException.OSGLOCSettingsException -> {
-                call.sendError(OSGeolocationErrors.LOCATION_SETTINGS_ERROR)
+                call.sendError(GeolocationErrors.LOCATION_SETTINGS_ERROR)
             }
             is OSGLOCException.OSGLOCInvalidTimeoutException -> {
-                call.sendError(OSGeolocationErrors.INVALID_TIMEOUT)
+                call.sendError(GeolocationErrors.INVALID_TIMEOUT)
             }
             is OSGLOCException.OSGLOCGoogleServicesException -> {
                 if (exception.resolvable) {
-                    call.sendError(OSGeolocationErrors.GOOGLE_SERVICES_RESOLVABLE)
+                    call.sendError(GeolocationErrors.GOOGLE_SERVICES_RESOLVABLE)
                 } else {
-                    call.sendError(OSGeolocationErrors.GOOGLE_SERVICES_ERROR)
+                    call.sendError(GeolocationErrors.GOOGLE_SERVICES_ERROR)
                 }
             }
+            is OSGLOCException.OSGLOCLocationRetrievalTimeoutException -> {
+                call.sendError(GeolocationErrors.GET_LOCATION_TIMEOUT)
+            }
             else -> {
-                call.sendError(OSGeolocationErrors.GET_LOCATION_GENERAL)
+                call.sendError(GeolocationErrors.GET_LOCATION_GENERAL)
             }
         }
     }
@@ -313,7 +316,7 @@ class GeolocationPlugin : Plugin() {
      * Extension function to return a unsuccessful plugin result
      * @param error error class representing the error to return, containing a code and message
      */
-    private fun PluginCall.sendError(error: OSGeolocationErrors.ErrorInfo) {
+    private fun PluginCall.sendError(error: GeolocationErrors.ErrorInfo) {
         this.reject(error.message, error.code)
     }
 

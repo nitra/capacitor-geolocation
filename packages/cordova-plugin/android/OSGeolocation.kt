@@ -94,7 +94,7 @@ class OSGeolocation : CordovaPlugin() {
         try {
             options = args.getJSONObject(0)
         } catch (e: Exception) {
-            callbackContext.sendError(OSGeolocationErrors.INVALID_INPUT)
+            callbackContext.sendError(OSGeolocationErrors.INVALID_INPUT_GET_POSITION)
             return
         }
 
@@ -126,7 +126,7 @@ class OSGeolocation : CordovaPlugin() {
         try {
             options = args.getJSONObject(0)
         } catch (e: Exception) {
-            callbackContext.sendError(OSGeolocationErrors.INVALID_INPUT)
+            callbackContext.sendError(OSGeolocationErrors.INVALID_INPUT_WATCH_POSITION)
             return
         }
         val watchId = options.getString(ID)
@@ -185,6 +185,10 @@ class OSGeolocation : CordovaPlugin() {
                 } else {
                     callbackContext.sendError(OSGeolocationErrors.GOOGLE_SERVICES_ERROR)
                 }
+            }
+
+            is OSGLOCException.OSGLOCLocationRetrievalTimeoutException -> {
+                callbackContext.sendError(OSGeolocationErrors.GET_LOCATION_TIMEOUT)
             }
 
             else -> {

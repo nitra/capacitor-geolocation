@@ -3,7 +3,7 @@ package com.outsystems.capacitor.plugins.geolocation
 /**
  * Object with plugin errors
  */
-object OSGeolocationErrors {
+object GeolocationErrors {
 
     private fun formatErrorCode(number: Int): String {
         return "OS-PLUG-GLOC-" + number.toString().padStart(4, '0')
@@ -24,53 +24,48 @@ object OSGeolocationErrors {
         message = "Google Play Services error."
     )
 
-    val INVALID_INPUT = ErrorInfo(
-        code = formatErrorCode(3),
-        message = "The input parameters aren't valid."
-    )
-
     val GET_LOCATION_TIMEOUT = ErrorInfo(
-        code = formatErrorCode(4),
+        code = formatErrorCode(3),
         message = "Could not obtain location in time. Try with a higher timeout."
     )
 
     val GET_LOCATION_GENERAL = ErrorInfo(
-        code = formatErrorCode(5),
+        code = formatErrorCode(4),
         message = "There was en error trying to obtain the location."
     )
 
     val LOCATION_PERMISSIONS_DENIED = ErrorInfo(
-        code = formatErrorCode(6),
+        code = formatErrorCode(5),
         message = "Location permission request was denied."
     )
 
     val LOCATION_ENABLE_REQUEST_DENIED = ErrorInfo(
-        code = formatErrorCode(7),
+        code = formatErrorCode(6),
         message = "Request to enable location denied."
     )
 
     val LOCATION_SETTINGS_ERROR = ErrorInfo(
-        code = formatErrorCode(8),
+        code = formatErrorCode(7),
         message = "Location settings error."
     )
 
     val INVALID_TIMEOUT = ErrorInfo(
-        code = formatErrorCode(9),
+        code = formatErrorCode(8),
         message = "Timeout needs to be a positive value."
     )
 
     val WATCH_ID_NOT_FOUND = ErrorInfo(
-        code = formatErrorCode(10),
+        code = formatErrorCode(9),
         message = "WatchId not found"
     )
 
     val WATCH_ID_NOT_PROVIDED = ErrorInfo(
-        code = formatErrorCode(11),
+        code = formatErrorCode(10),
         message = "WatchId needs to be provided."
     )
 
     val LOCATION_DISABLED = ErrorInfo(
-        code = formatErrorCode(12),
+        code = formatErrorCode(11),
         message = "Location services are not enabled."
     )
 }

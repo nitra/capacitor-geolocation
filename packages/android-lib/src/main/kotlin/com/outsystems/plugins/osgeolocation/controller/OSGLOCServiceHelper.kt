@@ -130,10 +130,10 @@ class OSGLOCServiceHelper(
             .setDurationMillis(options.timeout)
             .build()
 
-        return fusedLocationClient.getCurrentLocation(
-            locationRequest,
-            null
-        ).await()
+        return fusedLocationClient.getCurrentLocation(locationRequest, null).await()
+            ?: throw OSGLOCException.OSGLOCLocationRetrievalTimeoutException(
+                message = "Location request timed out"
+            )
     }
 
     /**

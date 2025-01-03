@@ -17,4 +17,7 @@ sealed class OSGLOCException(message: String, cause: Throwable?) : Exception(mes
     class OSGLOCInvalidTimeoutException(
         message: String, cause: Throwable? = null
     ) : OSGLOCException(message, cause)
+    class OSGLOCLocationRetrievalTimeoutException(
+        message: String, cause: Throwable? = null
+    ) : OSGLOCException(message, cause)
 }
