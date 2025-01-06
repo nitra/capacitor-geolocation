@@ -91,24 +91,16 @@ window.customElements.define(
       const self = this;
 
       self.shadowRoot.querySelector('#check-permission').addEventListener('click', async function (e) {
-        // TODO fix usage with Synapse
-        //const permissionStatus = await window.CapacitorUtils.Synapse.GeolocationPlugin.checkPermissions();
         const permissionStatus = await GeolocationPlugin.checkPermissions();
         alert(`Permissions are:\nlocation = ${permissionStatus.location}`)
       });
       self.shadowRoot.querySelector('#request-permission').addEventListener('click', async function (e) {
-        // TODO fix usage with Synapse
-        //const permissionStatus = await window.CapacitorUtils.Synapse.GeolocationPlugin.requestPermissions();
         const permissionStatus = await GeolocationPlugin.requestPermissions();
         alert(`Permissions are:\nlocation = ${permissionStatus.location}`)
       });
 
       self.shadowRoot.querySelector('#current-location').addEventListener('click', async function (e) {
         try {
-          // TODO fix usage with Synapse
-          /*let currentLocation = await window.CapacitorUtils.Synapse.GeolocationPlugin.getCurrentPosition(
-            { enableHighAccuracy: true }
-          );*/
           let currentLocation = await GeolocationPlugin.getCurrentPosition(
             { enableHighAccuracy: true }
           );
@@ -123,8 +115,6 @@ window.customElements.define(
         var watchId = ""
         try {
           var shouldAppendWatchId = true
-          // TODO fix usage with Synapse
-          //let watchId = await window.CapacitorUtils.Synapse.GeolocationPlugin.watchPosition(
           watchId = await GeolocationPlugin.watchPosition(
             { enableHighAccuracy: true },
             (position, err) => {
