@@ -3,7 +3,26 @@ export type PluginError = {
   message: string
 }
 
-export type PositionOptions = {
+
+const SpeedProp = {
+  speed: null,
+  velocity: null
+
+}
+
+export type OSGLOCPosition = {
+  timestamp: number;
+  latitude: number;
+  longitude: number;
+  accuracy: number;
+  altitude: number | null;
+  heading: number | null;
+  altitudeAccuracy: number | null;
+} & {
+  [Prop in keyof typeof SpeedProp]: number | null;
+}
+
+export type CurrentPositionOptions = {
   /**
    * High accuracy mode (such as GPS, if available)
    *
@@ -46,9 +65,12 @@ export type PositionOptions = {
    */
   minimumUpdateInterval?: number;
 }
+
 export type ClearWatchOptions = {
   id: string;
 }
+
+export type WatchPositionOptions = CurrentPositionOptions & ClearWatchOptions
 
 export type Position = {
   /**
