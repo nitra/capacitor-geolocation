@@ -203,7 +203,14 @@ class OSGeolocation : CordovaPlugin() {
      * @param callbackContext CallbackContext the method should return to
      */
     private fun clearWatch(args: JSONArray, callbackContext: CallbackContext) {
-        val id = args.optString(0)
+        val options: JSONObject
+        try {
+            options = args.getJSONObject(0)
+        } catch (e: Exception) {
+            callbackContext.sendError(OSGeolocationErrors.INVALID_INPUT_CLEAR_WATCH)
+            return
+        }
+        val id = options.optString(ID)
         if (id.isNullOrBlank()) {
             callbackContext.sendError(OSGeolocationErrors.WATCH_ID_NOT_PROVIDED)
             return
