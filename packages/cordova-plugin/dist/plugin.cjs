@@ -70,7 +70,7 @@ function getCurrentPosition(options, success, error) {
         accuracy: position.accuracy,
         heading: position.heading,
         speed: position.speed,
-        altitudeAccuracy: position.accuracy
+        altitudeAccuracy: position.altitudeAccuracy
       },
       timestamp: position.timestamp
     };
@@ -89,7 +89,7 @@ function watchPosition(options, success, error) {
         accuracy: position.accuracy,
         heading: position.heading,
         speed: position.speed,
-        altitudeAccuracy: position.accuracy
+        altitudeAccuracy: position.altitudeAccuracy
       },
       timestamp: position.timestamp
     };
