@@ -1,11 +1,11 @@
 import { require } from "cordova";
-import { ClearWatchOptions, OSGLOCPosition, PluginError, Position, PositionOptions } from "./definitions";
-import { ClearWatchOptionsDefault, PositionOptionsDefault } from "./defaults";
+import { ClearWatchOptions, OSGLOCPosition, PluginError, Position, CurrentPositionOptions, WatchPositionOptions } from "./definitions";
+import { ClearWatchOptionsDefault, CurrentPositionOptionsDefault, WatchPositionOptionsDefault } from "./defaults";
 
 var exec = require('cordova/exec');
 
-function getCurrentPosition(options: PositionOptions, success: (output: Position) => void, error: (error: PluginError) => void): void {
-  options = { ...PositionOptionsDefault, ...options };
+function getCurrentPosition(options: CurrentPositionOptions, success: (output: Position) => void, error: (error: PluginError) => void): void {
+  options = { ...CurrentPositionOptionsDefault, ...options };
 
   let convertOnSuccess = (position: OSGLOCPosition) => {
     let convertedPosition: Position = {
@@ -25,8 +25,8 @@ function getCurrentPosition(options: PositionOptions, success: (output: Position
   exec(convertOnSuccess, error, 'OSGeolocation', 'getCurrentPosition', [options]);
 }
 
-function watchPosition(options: PositionOptions, success: (output: Position) => void, error: (error: PluginError) => void): void {
-  options = options || PositionOptionsDefault;
+function watchPosition(options: WatchPositionOptions, success: (output: Position) => void, error: (error: PluginError) => void): void {
+  options = { ...WatchPositionOptionsDefault, ...options };
 
   let convertOnSuccess = (position: OSGLOCPosition) => {
     let convertedPosition: Position = {
@@ -47,9 +47,8 @@ function watchPosition(options: PositionOptions, success: (output: Position) => 
 }
 
 function clearWatch(options: ClearWatchOptions, success: (output: string) => void, error: (error: PluginError) => void): void {
-  options = options || ClearWatchOptionsDefault;
-
-  exec(success, error, 'OSGeolocation', 'clearWatch', [options]);
+  options = { ...ClearWatchOptionsDefault, ...options };
+  exec(success, error, "OSGeolocation", "clearWatch", [options.id]);
 }
 
 module.exports = {

@@ -44,7 +44,7 @@ function u(t) {
 function y() {
   window.CapacitorUtils = window.CapacitorUtils || {}, window.Capacitor !== void 0 ? s(window) : window.cordova !== void 0 && u(window);
 }
-const PositionOptionsDefault = {
+const CurrentPositionOptionsDefault = {
   enableHighAccuracy: false,
   timeout: 1e3,
   maximumAge: 0,
@@ -53,9 +53,13 @@ const PositionOptionsDefault = {
 const ClearWatchOptionsDefault = {
   id: "-1"
 };
+const WatchPositionOptionsDefault = {
+  ...CurrentPositionOptionsDefault,
+  ...ClearWatchOptionsDefault
+};
 var exec = require2("cordova/exec");
 function getCurrentPosition(options, success, error) {
-  options = { ...PositionOptionsDefault, ...options };
+  options = { ...CurrentPositionOptionsDefault, ...options };
   let convertOnSuccess = (position) => {
     let convertedPosition = {
       coords: {
@@ -74,7 +78,7 @@ function getCurrentPosition(options, success, error) {
   exec(convertOnSuccess, error, "OSGeolocation", "getCurrentPosition", [options]);
 }
 function watchPosition(options, success, error) {
-  options = options || PositionOptionsDefault;
+  options = { ...WatchPositionOptionsDefault, ...options };
   let convertOnSuccess = (position) => {
     let convertedPosition = {
       coords: {
@@ -93,8 +97,8 @@ function watchPosition(options, success, error) {
   exec(convertOnSuccess, error, "OSGeolocation", "watchPosition", [options]);
 }
 function clearWatch(options, success, error) {
-  options = options || ClearWatchOptionsDefault;
-  exec(success, error, "OSGeolocation", "clearWatch", [options]);
+  options = { ...ClearWatchOptionsDefault, ...options };
+  exec(success, error, "OSGeolocation", "clearWatch", [options.id]);
 }
 module.exports = {
   getCurrentPosition,
