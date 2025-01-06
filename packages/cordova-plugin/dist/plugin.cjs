@@ -99,7 +99,7 @@ function watchPosition(options, success, error) {
 }
 function clearWatch(options, success, error) {
   options = { ...ClearWatchOptionsDefault, ...options };
-  exec(success, error, "OSGeolocation", "clearWatch", [options.id]);
+  exec(success, error, "OSGeolocation", "clearWatch", [options]);
 }
 module.exports = {
   getCurrentPosition,

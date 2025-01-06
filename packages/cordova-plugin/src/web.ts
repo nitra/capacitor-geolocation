@@ -48,7 +48,7 @@ function watchPosition(options: WatchPositionOptions, success: (output: Position
 
 function clearWatch(options: ClearWatchOptions, success: (output: string) => void, error: (error: PluginError) => void): void {
   options = { ...ClearWatchOptionsDefault, ...options };
-  exec(success, error, "OSGeolocation", "clearWatch", [options.id]);
+  exec(success, error, "OSGeolocation", "clearWatch", [options]);
 }
 
 module.exports = {
