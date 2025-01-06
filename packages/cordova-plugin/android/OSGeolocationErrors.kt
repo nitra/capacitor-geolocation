@@ -34,43 +34,48 @@ object OSGeolocationErrors {
         message = "The input parameters for WatchPosition aren't valid."
     )
 
-    val GET_LOCATION_TIMEOUT = ErrorInfo(
+    val INVALID_INPUT_CLEAR_WATCH = ErrorInfo(
         code = formatErrorCode(5),
+        message = "The input parameters for ClearWatch aren't valid."
+    )
+
+    val GET_LOCATION_TIMEOUT = ErrorInfo(
+        code = formatErrorCode(6),
         message = "Could not obtain location in time. Try with a higher timeout."
     )
 
     val GET_LOCATION_GENERAL = ErrorInfo(
-        code = formatErrorCode(6),
+        code = formatErrorCode(7),
         message = "There was en error trying to obtain the location."
     )
 
     val LOCATION_PERMISSIONS_DENIED = ErrorInfo(
-        code = formatErrorCode(7),
+        code = formatErrorCode(8),
         message = "Location permission request was denied."
     )
 
     val LOCATION_ENABLE_REQUEST_DENIED = ErrorInfo(
-        code = formatErrorCode(8),
+        code = formatErrorCode(9),
         message = "Request to enable location denied."
     )
 
     val LOCATION_SETTINGS_ERROR = ErrorInfo(
-        code = formatErrorCode(9),
+        code = formatErrorCode(10),
         message = "Location settings error."
     )
 
     val INVALID_TIMEOUT = ErrorInfo(
-        code = formatErrorCode(10),
+        code = formatErrorCode(11),
         message = "Timeout needs to be a positive value."
     )
 
     val WATCH_ID_NOT_FOUND = ErrorInfo(
-        code = formatErrorCode(11),
+        code = formatErrorCode(12),
         message = "WatchId not found"
     )
 
     val WATCH_ID_NOT_PROVIDED = ErrorInfo(
-        code = formatErrorCode(12),
+        code = formatErrorCode(13),
         message = "WatchId needs to be provided."
     )
 

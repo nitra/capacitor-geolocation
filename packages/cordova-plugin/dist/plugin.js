@@ -72,7 +72,7 @@
           accuracy: position.accuracy,
           heading: position.heading,
           speed: position.speed,
-          altitudeAccuracy: position.accuracy
+          altitudeAccuracy: position.altitudeAccuracy
         },
         timestamp: position.timestamp
       };
@@ -91,7 +91,7 @@
           accuracy: position.accuracy,
           heading: position.heading,
           speed: position.speed,
-          altitudeAccuracy: position.accuracy
+          altitudeAccuracy: position.altitudeAccuracy
         },
         timestamp: position.timestamp
       };
@@ -101,7 +101,7 @@
   }
   function clearWatch(options, success, error) {
     options = { ...ClearWatchOptionsDefault, ...options };
-    exec(success, error, "OSGeolocation", "clearWatch", [options.id]);
+    exec(success, error, "OSGeolocation", "clearWatch", [options]);
   }
   module.exports = {
     getCurrentPosition,
