@@ -101,7 +101,7 @@ window.customElements.define(
 
       self.shadowRoot.querySelector('#current-location').addEventListener('click', async function (e) {
         try {
-          let currentLocation = await GeolocationPlugin.getCurrentPosition(
+          const currentLocation = await GeolocationPlugin.getCurrentPosition(
             { enableHighAccuracy: true }
           );
           const locationString = locationToString(currentLocation, '')
@@ -112,9 +112,9 @@ window.customElements.define(
       });
 
       self.shadowRoot.querySelector('#watch-location').addEventListener('click', async function (e) {
-        var watchId = ""
+        let watchId = ""
         try {
-          var shouldAppendWatchId = true
+          let shouldAppendWatchId = true
           watchId = await GeolocationPlugin.watchPosition(
             { enableHighAccuracy: true },
             (position, err) => {
@@ -176,7 +176,7 @@ window.customElements.define(
         if (location == null || location == undefined) {
           return ""
         }
-        var stringRepresentation = 'Position'
+        let stringRepresentation = 'Position'
         if (watchId) {
           stringRepresentation += ` for watch ${watchId}:\n`
         } else {
