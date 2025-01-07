@@ -163,10 +163,8 @@ window.customElements.define(
         watchIdButton.style.cursor = 'pointer';
 
         watchIdButton.addEventListener('click',  async function (e) {
-          // for simplicity, watch is already removed visually, regardless of clearWatch result
+          // for simplicity, watch is always removed visually, regardless of clearWatch result
           newListItem.remove();
-          // TODO fix usage with Synapse
-          //await window.CapacitorUtils.Synapse.GeolocationPlugin.clearWatch({id: watchId});
           await GeolocationPlugin.clearWatch({id: watchId});
         });
 
