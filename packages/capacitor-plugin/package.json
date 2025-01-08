@@ -13,7 +13,7 @@
     "ios/Sources",
     "ios/Tests",
     "Package.swift",
-    "GeolocationPlugin.podspec"
+    "GeolocationCapacitor.podspec"
   ],
   "author": "Outsystems",
   "license": "MIT",

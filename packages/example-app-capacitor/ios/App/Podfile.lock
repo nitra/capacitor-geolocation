@@ -1,0 +1,40 @@
+PODS:
+  - Capacitor (6.2.0):
+    - CapacitorCordova
+  - CapacitorCamera (6.1.2):
+    - Capacitor
+  - CapacitorCordova (6.2.0)
+  - CapacitorSplashScreen (6.0.3):
+    - Capacitor
+  - GeolocationCapacitor (0.0.1):
+    - Capacitor
+
+DEPENDENCIES:
+  - "Capacitor (from `../../node_modules/@capacitor/ios`)"
+  - "CapacitorCamera (from `../../node_modules/@capacitor/camera`)"
+  - "CapacitorCordova (from `../../node_modules/@capacitor/ios`)"
+  - "CapacitorSplashScreen (from `../../node_modules/@capacitor/splash-screen`)"
+  - GeolocationCapacitor (from `../../../capacitor-plugin`)
+
+EXTERNAL SOURCES:
+  Capacitor:
+    :path: "../../node_modules/@capacitor/ios"
+  CapacitorCamera:
+    :path: "../../node_modules/@capacitor/camera"
+  CapacitorCordova:
+    :path: "../../node_modules/@capacitor/ios"
+  CapacitorSplashScreen:
+    :path: "../../node_modules/@capacitor/splash-screen"
+  GeolocationCapacitor:
+    :path: "../../../capacitor-plugin"
+
+SPEC CHECKSUMS:
+  Capacitor: 1f3c7b9802d958cd8c4eb63895fff85dff2e1eea
+  CapacitorCamera: 9052bd3f464f135ba983feccd8ac1266272f0549
+  CapacitorCordova: b33e7f4aa4ed105dd43283acdd940964374a87d9
+  CapacitorSplashScreen: 68893659d77b5f82d753b3a70475082845e3039c
+  GeolocationCapacitor: f756e3b7a215712a33e85e6ecd20db6c1ca2f8ee
+
+PODFILE CHECKSUM: 5539d0104e159e1603eea3e5f2c0689ba566e65f
+
+COCOAPODS: 1.16.2
