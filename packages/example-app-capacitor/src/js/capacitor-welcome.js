@@ -209,7 +209,7 @@ window.customElements.define(
       :host {
         position: relative;
         display: block;
-        padding: 15px 15px 15px 15px;
+        padding: 60px 15px 15px 15px;
         text-align: center;
         background-color: #73B5F6;
       }
