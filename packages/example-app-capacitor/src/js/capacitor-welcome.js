@@ -1,5 +1,5 @@
 import { SplashScreen } from '@capacitor/splash-screen';
-import { GeolocationPlugin } from 'geolocation-capacitor';
+import { Geolocation } from '@capacitor/geolocation';
 
 window.customElements.define(
   'capacitor-welcome',
@@ -91,17 +91,17 @@ window.customElements.define(
       const self = this;
 
       self.shadowRoot.querySelector('#check-permission').addEventListener('click', async function (e) {
-        const permissionStatus = await GeolocationPlugin.checkPermissions();
+        const permissionStatus = await Geolocation.checkPermissions();
         alert(`Permissions are:\nlocation = ${permissionStatus.location}`)
       });
       self.shadowRoot.querySelector('#request-permission').addEventListener('click', async function (e) {
-        const permissionStatus = await GeolocationPlugin.requestPermissions();
+        const permissionStatus = await Geolocation.requestPermissions();
         alert(`Permissions are:\nlocation = ${permissionStatus.location}`)
       });
 
       self.shadowRoot.querySelector('#current-location').addEventListener('click', async function (e) {
         try {
-          const currentLocation = await GeolocationPlugin.getCurrentPosition(
+          const currentLocation = await Geolocation.getCurrentPosition(
             { enableHighAccuracy: true }
           );
           const locationString = locationToString(currentLocation, '')
@@ -115,7 +115,7 @@ window.customElements.define(
         let watchId = ""
         try {
           let shouldAppendWatchId = true
-          watchId = await GeolocationPlugin.watchPosition(
+          watchId = await Geolocation.watchPosition(
             { enableHighAccuracy: true },
             (position, err) => {
               if (err) {
@@ -165,7 +165,7 @@ window.customElements.define(
         watchIdButton.addEventListener('click',  async function (e) {
           // for simplicity, watch is always removed visually, regardless of clearWatch result
           newListItem.remove();
-          await GeolocationPlugin.clearWatch({id: watchId});
+          await Geolocation.clearWatch({id: watchId});
         });
 
         newListItem.appendChild(watchIdButton);

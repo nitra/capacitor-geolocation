@@ -1,15 +1,22 @@
 import { WebPlugin } from '@capacitor/core';
 
-import type { CallbackID, IGeolocationPlugin, PermissionStatus, Position, PositionOptions, WatchPositionCallback } from './definitions';
+import type {
+  CallbackID,
+  GeolocationPlugin,
+  PermissionStatus,
+  Position,
+  PositionOptions,
+  WatchPositionCallback,
+} from './definitions';
 
-export class GeolocationPluginWeb extends WebPlugin implements IGeolocationPlugin {
+export class GeolocationWeb extends WebPlugin implements GeolocationPlugin {
   async getCurrentPosition(options?: PositionOptions): Promise<Position> {
     return new Promise((resolve, reject) => {
       navigator.geolocation.getCurrentPosition(
-        pos => {
+        (pos) => {
           resolve(pos);
         },
-        err => {
+        (err) => {
           reject(err);
         },
         {
@@ -24,13 +31,12 @@ export class GeolocationPluginWeb extends WebPlugin implements IGeolocationPlugi
 
   async watchPosition(options: PositionOptions, callback: WatchPositionCallback): Promise<CallbackID> {
     const id = navigator.geolocation.watchPosition(
-      pos => {
+      (pos) => {
         callback(pos);
       },
-      err => {
+      (err) => {
         callback(null, err);
       },
-
       {
         enableHighAccuracy: false,
         timeout: 10000,
@@ -42,6 +48,7 @@ export class GeolocationPluginWeb extends WebPlugin implements IGeolocationPlugi
 
     return `${id}`;
   }
+
   async clearWatch(options: { id: string }): Promise<void> {
     navigator.geolocation.clearWatch(parseInt(options.id, 10));
   }
@@ -62,6 +69,6 @@ export class GeolocationPluginWeb extends WebPlugin implements IGeolocationPlugi
   }
 }
 
-const Geolocation = new GeolocationPluginWeb();
+const Geolocation = new GeolocationWeb();
 
 export { Geolocation };

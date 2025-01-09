@@ -1,20 +1,20 @@
 PODS:
-  - Capacitor (6.2.0):
+  - Capacitor (7.0.0-rc.0):
     - CapacitorCordova
-  - CapacitorCamera (6.1.2):
+  - CapacitorCamera (7.0.0-alpha.2):
     - Capacitor
-  - CapacitorCordova (6.2.0)
-  - CapacitorSplashScreen (6.0.3):
+  - CapacitorCordova (7.0.0-rc.0)
+  - CapacitorGeolocation (7.0.0-alpha.2):
     - Capacitor
-  - GeolocationCapacitor (0.0.1):
+  - CapacitorSplashScreen (7.0.0-alpha.2):
     - Capacitor
 
 DEPENDENCIES:
   - "Capacitor (from `../../node_modules/@capacitor/ios`)"
   - "CapacitorCamera (from `../../node_modules/@capacitor/camera`)"
   - "CapacitorCordova (from `../../node_modules/@capacitor/ios`)"
+  - CapacitorGeolocation (from `../../../capacitor-plugin`)
   - "CapacitorSplashScreen (from `../../node_modules/@capacitor/splash-screen`)"
-  - GeolocationCapacitor (from `../../../capacitor-plugin`)
 
 EXTERNAL SOURCES:
   Capacitor:
@@ -23,18 +23,18 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor/camera"
   CapacitorCordova:
     :path: "../../node_modules/@capacitor/ios"
+  CapacitorGeolocation:
+    :path: "../../../capacitor-plugin"
   CapacitorSplashScreen:
     :path: "../../node_modules/@capacitor/splash-screen"
-  GeolocationCapacitor:
-    :path: "../../../capacitor-plugin"
 
 SPEC CHECKSUMS:
-  Capacitor: 1f3c7b9802d958cd8c4eb63895fff85dff2e1eea
-  CapacitorCamera: 9052bd3f464f135ba983feccd8ac1266272f0549
-  CapacitorCordova: b33e7f4aa4ed105dd43283acdd940964374a87d9
-  CapacitorSplashScreen: 68893659d77b5f82d753b3a70475082845e3039c
-  GeolocationCapacitor: f756e3b7a215712a33e85e6ecd20db6c1ca2f8ee
+  Capacitor: e79eb426d47f13ee0e2fdaff9ef0e9990db34a48
+  CapacitorCamera: ad97105da555e693f9885aaab084d205f8d82366
+  CapacitorCordova: 8f4f6826f0b40f7b506eb13b832039b7140a88b4
+  CapacitorGeolocation: 7db597d2d452b08483db93049e0785832245578f
+  CapacitorSplashScreen: f612f95daee8566768daf86646b97d4dcac01240
 
-PODFILE CHECKSUM: 5539d0104e159e1603eea3e5f2c0689ba566e65f
+PODFILE CHECKSUM: 1f7193da1d33894fafd903ac2d93ba6415989a2b
 
 COCOAPODS: 1.16.2
