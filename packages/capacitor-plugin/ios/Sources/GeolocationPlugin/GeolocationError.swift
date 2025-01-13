@@ -10,6 +10,7 @@ enum GeolocationError: Error {
     case permissionRestricted
     case positionUnavailable
     case inputArgumentsIssue(target: OSGeolocationMethod)
+    case watchIdNotFound
 
     func toCodeMessagePair() -> (String, String) {
         ("OS-PLUG-GLOC-\(String(format: "%04d", code))", description)
@@ -22,7 +23,7 @@ private extension GeolocationError {
         case .positionUnavailable: 2
         case .permissionDenied: 3
         case .locationServicesDisabled: 7
-        case .permissionRestricted: 8
+        case .permissionRestricted: 9
         case .inputArgumentsIssue(let target):
             switch target {
             case .getCurrentPosition: 4
@@ -30,6 +31,7 @@ private extension GeolocationError {
             case .clearWatch: 6
             }
         }
+        case .watchIdNotFound: 8
     }
 
     var description: String {
@@ -39,6 +41,7 @@ private extension GeolocationError {
         case .locationServicesDisabled: "Location services are not enabled."
         case .permissionRestricted: "Application's use of location services was restricted."
         case .inputArgumentsIssue(let target): "The '\(target.rawValue)' input parameters aren't valid."
+        case .watchIdNotFound: "WatchId not found."
         }
     }
 }

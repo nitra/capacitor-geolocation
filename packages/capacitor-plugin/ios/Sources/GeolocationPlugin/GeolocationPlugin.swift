@@ -44,7 +44,11 @@ public class GeolocationPlugin: CAPPlugin, CAPBridgedPlugin {
             callbackManager?.sendError(.inputArgumentsIssue(target: .clearWatch))
             return
         }
-        callbackManager?.clearWatchCallbackIfExists(callbackId)
+        
+        if !(callbackManager?.clearWatchCallbackIfExists(callbackId) ?? false) {
+            callbackManager?.sendError(.watchIdNotFound)
+            return
+        }
 
         if (callbackManager?.watchCallbacks.isEmpty) ?? false {
             locationService?.stopMonitoringLocation()
