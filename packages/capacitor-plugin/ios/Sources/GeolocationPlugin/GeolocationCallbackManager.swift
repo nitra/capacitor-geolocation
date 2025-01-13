@@ -47,12 +47,11 @@ final class GeolocationCallbackManager {
         watchCallbacks[watchId] = call
     }
 
-    func clearWatchCallbackIfExists(_ watchId: String) -> Bool {
-        guard let callbackToRemove = watchCallbacks.removeValue(forKey: watchId) else {
-            return false
+    func clearWatchCallbackIfExists(_ watchId: String) {
+        if let callbackToRemove = watchCallbacks[watchId] {
+            capacitorBridge?.releaseCall(callbackToRemove)
+            watchCallbacks.removeValue(forKey: watchId)
         }
-        capacitorBridge?.releaseCall(callbackToRemove)
-        return true
     }
 
     func clearLocationCallbacks() {
