@@ -293,7 +293,7 @@ class GeolocationPlugin : Plugin() {
                 call.sendError(GeolocationErrors.GET_LOCATION_TIMEOUT)
             }
             else -> {
-                call.sendError(GeolocationErrors.GET_LOCATION_GENERAL)
+                call.sendError(GeolocationErrors.POSITION_UNAVAILABLE)
             }
         }
     }
