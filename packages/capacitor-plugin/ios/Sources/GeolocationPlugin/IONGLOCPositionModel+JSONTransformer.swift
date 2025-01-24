@@ -1,7 +1,7 @@
 import Capacitor
-import OSGeolocationLib
+import IONGeolocationLib
 
-extension OSGLOCPositionModel {
+extension IONGLOCPositionModel {
     func toJSObject() -> JSObject {
         [
             Constants.Position.timestamp: timestamp,
