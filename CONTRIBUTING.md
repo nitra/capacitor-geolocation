@@ -2,6 +2,13 @@
 
 This guide provides instructions for contributing to this Capacitor plugin.
 
+## Native code
+
+This repository contains minimal code for native Android and iOS. The implementation for native mobile exists in separate repositories:
+
+- [Contributing for Android](https://github.com/ionic-team/ion-android-geolocation?tab=readme-ov-file#contributing)
+- [Contributing for iOS](https://github.com/ionic-team/ion-ios-geolocation?tab=readme-ov-file#contributing)
+
 ## Developing
 
 ### Local Setup
@@ -41,6 +48,10 @@ This is useful to run in CI to verify that the plugin builds for all platforms.
 Check formatting and code quality, autoformat/autofix if possible.
 
 This template is integrated with ESLint, Prettier, and SwiftLint. Using these tools is completely optional, but the [Capacitor Community](https://github.com/capacitor-community/) strives to have consistent code style and structure for easier cooperation.
+
+## Commits/PR's
+
+Commits and PR's should use the [conventional-commits](https://www.conventionalcommits.org/) format so the release process can version and create changelog correctly.
 
 ## Publishing
 
