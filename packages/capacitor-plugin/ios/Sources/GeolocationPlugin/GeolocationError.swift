@@ -12,7 +12,7 @@ enum GeolocationError: Error {
     case inputArgumentsIssue(target: GeolocationMethod)
 
     func toCodeMessagePair() -> (String, String) {
-        ("CAP-PLUGIN-GLOC-\(String(format: "%04d", code))", description)
+        ("OS-PLUG-GLOC-\(String(format: "%04d", code))", description)
     }
 }
 
