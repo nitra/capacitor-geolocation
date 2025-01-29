@@ -1,6 +1,6 @@
 {
   "name": "@capacitor/geolocation",
-  "version": "7.0.0-alpha.2",
+  "version": "7.1.0-dev.1",
   "description": "Geolocation plugin for Capacitor",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",
