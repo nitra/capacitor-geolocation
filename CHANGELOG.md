@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.1.0-dev.1] (https://github.com/ionic-team/capacitor-plugins/compare/@capacitor/geolocation@7.1.0-dev.1...@capacitor/geolocation@7.0.0) (2025-01-29)
+
+### Features
+
+- Revamp error messages and add error codes for better error-handling.
+- Rewrite plugin using native Android and iOS libraries.
+
+### Fixes
+
+- **getCurrentPosition** on Android now uses uses the **timeout** parameter.
+- **watchPosition** on Android now uses the **timeout** parameter to define the interval for position updates, and the **maximumAge** parameter for **setMaxUpdateAgeMillis**. More info [here](https://developers.google.com/android/reference/com/google/android/gms/location/LocationRequest.Builder#public-locationrequest.builder-setmaxupdateagemillis-long-maxupdateagemillis).
+
 # [7.0.0](https://github.com/ionic-team/capacitor-plugins/compare/@capacitor/geolocation@7.0.0-rc.0...@capacitor/geolocation@7.0.0) (2025-01-20)
 
 **Note:** Version bump only for package @capacitor/geolocation
