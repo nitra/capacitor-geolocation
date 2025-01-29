@@ -221,18 +221,18 @@ The following table list all the plugin errors:
 
 | Error code           | Platform(s)  | Message                                  |
 | -------------------- | ------------ | ---------------------------------------- |
-| CAP-PLUGIN-GLOC-0002 | Android, iOS | There was en error trying to obtain the location. |
-| CAP-PLUGIN-GLOC-0003 | Android, iOS | Location permission request was denied. |
-| CAP-PLUGIN-GLOC-0004 | iOS          | The 'getCurrentPosition' input parameters aren't valid. |
-| CAP-PLUGIN-GLOC-0005 | iOS          | The 'watchPosition' input parameters aren't valid. |
-| CAP-PLUGIN-GLOC-0006 | iOS          | The 'clearWatch' input parameters aren't valid. |
-| CAP-PLUGIN-GLOC-0007 | Android, iOS | Location services are not enabled. |
-| CAP-PLUGIN-GLOC-0008 | iOS          | Application's use of location services was restricted. |
-| CAP-PLUGIN-GLOC-0009 | Android      | Request to enable location was denied. |
-| CAP-PLUGIN-GLOC-0010 | Android      | Could not obtain location in time. Try with a higher timeout. |
-| CAP-PLUGIN-GLOC-0011 | Android      | Timeout needs to be a positive value. |
-| CAP-PLUGIN-GLOC-0012 | Android      | WatchId not found. |
-| CAP-PLUGIN-GLOC-0013 | Android      | WatchId needs to be provided. |
-| CAP-PLUGIN-GLOC-0014 | Android      | Google Play Services error user resolvable. |
-| CAP-PLUGIN-GLOC-0015 | Android      | Google Play Services error. |
-| CAP-PLUGIN-GLOC-0016 | Android      | Location settings error. |
+| OS-PLUG-GLOC-0002 | Android, iOS | There was en error trying to obtain the location. |
+| OS-PLUG-GLOC-0003 | Android, iOS | Location permission request was denied. |
+| OS-PLUG-GLOC-0004 | iOS          | The 'getCurrentPosition' input parameters aren't valid. |
+| OS-PLUG-GLOC-0005 | iOS          | The 'watchPosition' input parameters aren't valid. |
+| OS-PLUG-GLOC-0006 | iOS          | The 'clearWatch' input parameters aren't valid. |
+| OS-PLUG-GLOC-0007 | Android, iOS | Location services are not enabled. |
+| OS-PLUG-GLOC-0008 | iOS          | Application's use of location services was restricted. |
+| OS-PLUG-GLOC-0009 | Android      | Request to enable location was denied. |
+| OS-PLUG-GLOC-0010 | Android      | Could not obtain location in time. Try with a higher timeout. |
+| OS-PLUG-GLOC-0011 | Android      | Timeout needs to be a positive value. |
+| OS-PLUG-GLOC-0012 | Android      | WatchId not found. |
+| OS-PLUG-GLOC-0013 | Android      | WatchId needs to be provided. |
+| OS-PLUG-GLOC-0014 | Android      | Google Play Services error user resolvable. |
+| OS-PLUG-GLOC-0015 | Android      | Google Play Services error. |
+| OS-PLUG-GLOC-0016 | Android      | Location settings error. |
