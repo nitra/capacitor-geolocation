@@ -1,6 +1,6 @@
 {
   "name": "@capacitor/geolocation",
-  "version": "7.1.0-dev.1",
+  "version": "7.1.0-dev.2",
   "description": "Geolocation plugin for Capacitor",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",
@@ -71,7 +71,7 @@
     "typescript": "~5.4.5"
   },
   "peerDependencies": {
-    "@capacitor/core": "next"
+    "@capacitor/core": ">=7.0.0"
   },
   "prettier": "@ionic/prettier-config",
   "swiftlint": "@ionic/swiftlint-config",
