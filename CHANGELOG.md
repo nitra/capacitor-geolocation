@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.1.0-dev.2] (https://github.com/ionic-team/capacitor-plugins/compare/@capacitor/geolocation@7.1.0-dev.2...@capacitor/geolocation@7.1.0-dev.1) (2025-01-31)
+
+### Chores
+
+- Set peerDependency on @capacitor/core to >=7.0.0
+
 # [7.1.0-dev.1] (https://github.com/ionic-team/capacitor-plugins/compare/@capacitor/geolocation@7.1.0-dev.1...@capacitor/geolocation@7.0.0) (2025-01-29)
 
 ### Features
