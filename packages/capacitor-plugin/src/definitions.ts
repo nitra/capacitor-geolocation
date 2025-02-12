@@ -37,7 +37,7 @@ export interface GeolocationPluginPermissions {
   permissions: GeolocationPermissionType[];
 }
 
-export interface IGeolocationPlugin {
+export interface GeolocationPlugin {
   /**
    * Get the current GPS location of the device
    *
@@ -51,10 +51,7 @@ export interface IGeolocationPlugin {
    *
    * @since 1.0.0
    */
-  watchPosition(
-    options: PositionOptions,
-    callback: WatchPositionCallback,
-  ): Promise<CallbackID>;
+  watchPosition(options: PositionOptions, callback: WatchPositionCallback): Promise<CallbackID>;
 
   /**
    * Clear a given watch
@@ -73,11 +70,11 @@ export interface IGeolocationPlugin {
   /**
    * Request location permissions.  Will throw if system location services are disabled.
    *
+   * Not available on web.
+   *
    * @since 1.0.0
    */
-  requestPermissions(
-    permissions?: GeolocationPluginPermissions,
-  ): Promise<PermissionStatus>;
+  requestPermissions(permissions?: GeolocationPluginPermissions): Promise<PermissionStatus>;
 }
 
 export interface ClearWatchOptions {
@@ -166,7 +163,8 @@ export interface PositionOptions {
   /**
    * The maximum wait time in milliseconds for location updates.
    *
-   * In Android, since version 4.0.0 of the plugin, timeout gets ignored for getCurrentPosition.
+   * In Android, since version 7.1.0 of the plugin, it is also used to determine the
+   * interval of location updates for `watchPosition`.
    *
    * @default 10000
    * @since 1.0.0
@@ -195,10 +193,7 @@ export interface PositionOptions {
   minimumUpdateInterval?: number;
 }
 
-export type WatchPositionCallback = (
-  position: Position | null,
-  err?: any,
-) => void;
+export type WatchPositionCallback = (position: Position | null, err?: any) => void;
 
 /**
  * @deprecated Use `PositionOptions`.
