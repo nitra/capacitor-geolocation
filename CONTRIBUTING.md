@@ -17,15 +17,15 @@ This repository contains minimal code for native Android and iOS. The implementa
 2. If you plan to create a new feature or fix a bug, checkout `development` branch (in general Pull Requests should be open for that branch)
 3. Install the dependencies.
 
-    ```shell
-    npm install
-    ```
+   ```shell
+   npm install
+   ```
 
 4. Install SwiftLint if you're on macOS.
 
-    ```shell
-    brew install swiftlint
-    ```
+   ```shell
+   brew install swiftlint
+   ```
 
 ### Scripts
 
@@ -57,11 +57,11 @@ Commits and PR's should use the [conventional-commits](https://www.conventionalc
 
 Publishing is automated based on the branch committed to. When a commit or merge is made to a branch a release that corresponds with the branch will be created:
 
-| Branch Name | Build Type | NPM Tag | Example NPM Version |
-|---|---|---|---|
-| development | dev | dev | @capacitor/geolocation@7.1.0-dev.1 |
-| next | next (these are betas/alphas) | next | @capacitor/geolocation@7.1.0-next.1 |
-| main | latest | latest | @capacitor/geolocation@7.1.0 |
+| Branch Name | Build Type                    | NPM Tag | Example NPM Version             |
+| ----------- | ----------------------------- | ------- | ------------------------------- |
+| development | dev                           | dev     | @nitra/geolocation@7.1.0-dev.1  |
+| next        | next (these are betas/alphas) | next    | @nitra/geolocation@7.1.0-next.1 |
+| main        | latest                        | latest  | @nitra/geolocation@7.1.0        |
 
 - Dev work should be done by creating and merging PR's into the `development` branch until a feature set is complete enough to form a release.
 - When a feature set is complete enough to form a release, merge the `development` branch into the `next` branch where it becomes a beta/alpha tagged under `next` for testing teams to use before full release. In case a PR is opened from `development` to `next`, avoid squashing the commits, to keep the history.

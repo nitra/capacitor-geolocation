@@ -1,11 +1,11 @@
-# @capacitor/geolocation
+# @nitra/geolocation
 
 The Geolocation API provides simple methods for getting and tracking the current position of the device using GPS, along with altitude, heading, and speed information if available.
 
 ## Install
 
 ```bash
-npm install @capacitor/geolocation
+npm install @nitra/geolocation
 npx cap sync
 ```
 
@@ -215,7 +215,7 @@ Not available on web.
 
 ### Errors
 
-The plugin returns specific errors with specific codes on native Android and iOS. Web does not follow this standard for errors. 
+The plugin returns specific errors with specific codes on native Android and iOS. Web does not follow this standard for errors.
 
 The following table list all the plugin errors:
 

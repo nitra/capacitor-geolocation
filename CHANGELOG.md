@@ -3,13 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [7.1.1](https://github.com/ionic-team/capacitor-plugins/compare/@capacitor/geolocation@7.1.1...@capacitor/geolocation@7.1.0) (2025-02-21)
+# [7.1.1](https://github.com/ionic-team/capacitor-plugins/compare/@nitra/geolocation@7.1.1...@nitra/geolocation@7.1.0) (2025-02-21)
 
 ### Fixes
 
 - **ios:** properly resolving requestPermissions
 
-# [7.1.0](https://github.com/ionic-team/capacitor-plugins/compare/@capacitor/geolocation@7.1.0...@capacitor/geolocation@7.0.0) (2025-02-12)
+# [7.1.0](https://github.com/ionic-team/capacitor-plugins/compare/@nitra/geolocation@7.1.0...@nitra/geolocation@7.0.0) (2025-02-12)
 
 ### Chores
 
@@ -25,98 +25,98 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 - **getCurrentPosition** on Android now uses uses the **timeout** parameter.
 - **watchPosition** on Android now uses the **timeout** parameter to define the interval for position updates, and the **maximumAge** parameter for **setMaxUpdateAgeMillis**. More info [here](https://developers.google.com/android/reference/com/google/android/gms/location/LocationRequest.Builder#public-locationrequest.builder-setmaxupdateagemillis-long-maxupdateagemillis).
 
-# [7.0.0](https://github.com/ionic-team/capacitor-plugins/compare/@capacitor/geolocation@7.0.0-rc.0...@capacitor/geolocation@7.0.0) (2025-01-20)
+# [7.0.0](https://github.com/ionic-team/capacitor-plugins/compare/@nitra/geolocation@7.0.0-rc.0...@nitra/geolocation@7.0.0) (2025-01-20)
 
-**Note:** Version bump only for package @capacitor/geolocation
+**Note:** Version bump only for package @nitra/geolocation
 
-# [7.0.0-rc.0](https://github.com/ionic-team/capacitor-plugins/compare/@capacitor/geolocation@7.0.0-alpha.2...@capacitor/geolocation@7.0.0-rc.0) (2025-01-13)
+# [7.0.0-rc.0](https://github.com/ionic-team/capacitor-plugins/compare/@nitra/geolocation@7.0.0-alpha.2...@nitra/geolocation@7.0.0-rc.0) (2025-01-13)
 
-**Note:** Version bump only for package @capacitor/geolocation
+**Note:** Version bump only for package @nitra/geolocation
 
-# [7.0.0-alpha.2](https://github.com/ionic-team/capacitor-plugins/compare/@capacitor/geolocation@7.0.0-alpha.1...@capacitor/geolocation@7.0.0-alpha.2) (2024-12-19)
+# [7.0.0-alpha.2](https://github.com/ionic-team/capacitor-plugins/compare/@nitra/geolocation@7.0.0-alpha.1...@nitra/geolocation@7.0.0-alpha.2) (2024-12-19)
 
-**Note:** Version bump only for package @capacitor/geolocation
+**Note:** Version bump only for package @nitra/geolocation
 
-# [7.0.0-alpha.1](https://github.com/ionic-team/capacitor-plugins/compare/@capacitor/geolocation@6.0.1...@capacitor/geolocation@7.0.0-alpha.1) (2024-12-16)
+# [7.0.0-alpha.1](https://github.com/ionic-team/capacitor-plugins/compare/@nitra/geolocation@6.0.1...@nitra/geolocation@7.0.0-alpha.1) (2024-12-16)
 
 ### Features
 
 - **geolocation:** add `minimumUpdateInterval` parameter for `startWatch` ([#2272](https://github.com/ionic-team/capacitor-plugins/issues/2272)) ([c6ddc53](https://github.com/ionic-team/capacitor-plugins/commit/c6ddc53efb7eb2b3fc04fc9f2dc9660c9db1a464))
 
-## [6.0.1](https://github.com/ionic-team/capacitor-plugins/compare/@capacitor/geolocation@6.0.0...@capacitor/geolocation@6.0.1) (2024-08-08)
+## [6.0.1](https://github.com/ionic-team/capacitor-plugins/compare/@nitra/geolocation@6.0.0...@nitra/geolocation@6.0.1) (2024-08-08)
 
-**Note:** Version bump only for package @capacitor/geolocation
+**Note:** Version bump only for package @nitra/geolocation
 
-# [6.0.0](https://github.com/ionic-team/capacitor-plugins/compare/@capacitor/geolocation@6.0.0-rc.1...@capacitor/geolocation@6.0.0) (2024-04-15)
+# [6.0.0](https://github.com/ionic-team/capacitor-plugins/compare/@nitra/geolocation@6.0.0-rc.1...@nitra/geolocation@6.0.0) (2024-04-15)
 
-**Note:** Version bump only for package @capacitor/geolocation
+**Note:** Version bump only for package @nitra/geolocation
 
-# [6.0.0-rc.1](https://github.com/ionic-team/capacitor-plugins/compare/@capacitor/geolocation@6.0.0-rc.0...@capacitor/geolocation@6.0.0-rc.1) (2024-03-25)
+# [6.0.0-rc.1](https://github.com/ionic-team/capacitor-plugins/compare/@nitra/geolocation@6.0.0-rc.0...@nitra/geolocation@6.0.0-rc.1) (2024-03-25)
 
-**Note:** Version bump only for package @capacitor/geolocation
+**Note:** Version bump only for package @nitra/geolocation
 
-# [6.0.0-rc.0](https://github.com/ionic-team/capacitor-plugins/compare/@capacitor/geolocation@6.0.0-beta.1...@capacitor/geolocation@6.0.0-rc.0) (2024-02-07)
+# [6.0.0-rc.0](https://github.com/ionic-team/capacitor-plugins/compare/@nitra/geolocation@6.0.0-beta.1...@nitra/geolocation@6.0.0-rc.0) (2024-02-07)
 
-**Note:** Version bump only for package @capacitor/geolocation
+**Note:** Version bump only for package @nitra/geolocation
 
-# [6.0.0-beta.1](https://github.com/ionic-team/capacitor-plugins/compare/@capacitor/geolocation@6.0.0-beta.0...@capacitor/geolocation@6.0.0-beta.1) (2023-12-14)
+# [6.0.0-beta.1](https://github.com/ionic-team/capacitor-plugins/compare/@nitra/geolocation@6.0.0-beta.0...@nitra/geolocation@6.0.0-beta.1) (2023-12-14)
 
-**Note:** Version bump only for package @capacitor/geolocation
+**Note:** Version bump only for package @nitra/geolocation
 
-# [6.0.0-beta.0](https://github.com/ionic-team/capacitor-plugins/compare/@capacitor/geolocation@6.0.0-alpha.2...@capacitor/geolocation@6.0.0-beta.0) (2023-12-13)
+# [6.0.0-beta.0](https://github.com/ionic-team/capacitor-plugins/compare/@nitra/geolocation@6.0.0-alpha.2...@nitra/geolocation@6.0.0-beta.0) (2023-12-13)
 
-**Note:** Version bump only for package @capacitor/geolocation
+**Note:** Version bump only for package @nitra/geolocation
 
-# [6.0.0-alpha.2](https://github.com/ionic-team/capacitor-plugins/compare/@capacitor/geolocation@6.0.0-alpha.1...@capacitor/geolocation@6.0.0-alpha.2) (2023-11-15)
+# [6.0.0-alpha.2](https://github.com/ionic-team/capacitor-plugins/compare/@nitra/geolocation@6.0.0-alpha.1...@nitra/geolocation@6.0.0-alpha.2) (2023-11-15)
 
-**Note:** Version bump only for package @capacitor/geolocation
+**Note:** Version bump only for package @nitra/geolocation
 
-# [6.0.0-alpha.1](https://github.com/ionic-team/capacitor-plugins/compare/@capacitor/geolocation@5.0.6...@capacitor/geolocation@6.0.0-alpha.1) (2023-11-08)
+# [6.0.0-alpha.1](https://github.com/ionic-team/capacitor-plugins/compare/@nitra/geolocation@5.0.6...@nitra/geolocation@6.0.0-alpha.1) (2023-11-08)
 
-**Note:** Version bump only for package @capacitor/geolocation
+**Note:** Version bump only for package @nitra/geolocation
 
-## [5.0.6](https://github.com/ionic-team/capacitor-plugins/compare/@capacitor/geolocation@5.0.5...@capacitor/geolocation@5.0.6) (2023-07-12)
+## [5.0.6](https://github.com/ionic-team/capacitor-plugins/compare/@nitra/geolocation@5.0.5...@nitra/geolocation@5.0.6) (2023-07-12)
 
-**Note:** Version bump only for package @capacitor/geolocation
+**Note:** Version bump only for package @nitra/geolocation
 
-## [5.0.5](https://github.com/ionic-team/capacitor-plugins/compare/@capacitor/geolocation@5.0.4...@capacitor/geolocation@5.0.5) (2023-06-29)
+## [5.0.5](https://github.com/ionic-team/capacitor-plugins/compare/@nitra/geolocation@5.0.4...@nitra/geolocation@5.0.5) (2023-06-29)
 
-**Note:** Version bump only for package @capacitor/geolocation
+**Note:** Version bump only for package @nitra/geolocation
 
-## [5.0.4](https://github.com/ionic-team/capacitor-plugins/compare/@capacitor/geolocation@5.0.3...@capacitor/geolocation@5.0.4) (2023-06-08)
+## [5.0.4](https://github.com/ionic-team/capacitor-plugins/compare/@nitra/geolocation@5.0.3...@nitra/geolocation@5.0.4) (2023-06-08)
 
-**Note:** Version bump only for package @capacitor/geolocation
+**Note:** Version bump only for package @nitra/geolocation
 
-## [5.0.3](https://github.com/ionic-team/capacitor-plugins/compare/@capacitor/geolocation@5.0.2...@capacitor/geolocation@5.0.3) (2023-06-08)
+## [5.0.3](https://github.com/ionic-team/capacitor-plugins/compare/@nitra/geolocation@5.0.2...@nitra/geolocation@5.0.3) (2023-06-08)
 
-**Note:** Version bump only for package @capacitor/geolocation
+**Note:** Version bump only for package @nitra/geolocation
 
-## [5.0.2](https://github.com/ionic-team/capacitor-plugins/compare/@capacitor/geolocation@5.0.1...@capacitor/geolocation@5.0.2) (2023-05-09)
+## [5.0.2](https://github.com/ionic-team/capacitor-plugins/compare/@nitra/geolocation@5.0.1...@nitra/geolocation@5.0.2) (2023-05-09)
 
-**Note:** Version bump only for package @capacitor/geolocation
+**Note:** Version bump only for package @nitra/geolocation
 
-## [5.0.1](https://github.com/ionic-team/capacitor-plugins/compare/@capacitor/geolocation@5.0.0...@capacitor/geolocation@5.0.1) (2023-05-05)
+## [5.0.1](https://github.com/ionic-team/capacitor-plugins/compare/@nitra/geolocation@5.0.0...@nitra/geolocation@5.0.1) (2023-05-05)
 
 ### Bug Fixes
 
 - **android:** add appCompat libraries for maven releases ([#1577](https://github.com/ionic-team/capacitor-plugins/issues/1577)) ([8a2e0ea](https://github.com/ionic-team/capacitor-plugins/commit/8a2e0ea96538a46bde299a864dba760c6e2eba68))
 - Use Capacitor 5 final ([#1574](https://github.com/ionic-team/capacitor-plugins/issues/1574)) ([139c18b](https://github.com/ionic-team/capacitor-plugins/commit/139c18b86a11d31246e952d1a74335ff8ce5dbc2))
 
-# [5.0.0](https://github.com/ionic-team/capacitor-plugins/compare/@capacitor/geolocation@5.0.0-beta.1...@capacitor/geolocation@5.0.0) (2023-05-03)
+# [5.0.0](https://github.com/ionic-team/capacitor-plugins/compare/@nitra/geolocation@5.0.0-beta.1...@nitra/geolocation@5.0.0) (2023-05-03)
 
-**Note:** Version bump only for package @capacitor/geolocation
+**Note:** Version bump only for package @nitra/geolocation
 
-# [5.0.0-beta.1](https://github.com/ionic-team/capacitor-plugins/compare/@capacitor/geolocation@5.0.0-beta.0...@capacitor/geolocation@5.0.0-beta.1) (2023-04-21)
+# [5.0.0-beta.1](https://github.com/ionic-team/capacitor-plugins/compare/@nitra/geolocation@5.0.0-beta.0...@nitra/geolocation@5.0.0-beta.1) (2023-04-21)
 
 ### Features
 
 - Update gradle to 8.0.2 and gradle plugin to 8.0.0 ([#1542](https://github.com/ionic-team/capacitor-plugins/issues/1542)) ([e7210b4](https://github.com/ionic-team/capacitor-plugins/commit/e7210b47867644f5983e37acdbf0247214ec232d))
 
-# [5.0.0-beta.0](https://github.com/ionic-team/capacitor-plugins/compare/@capacitor/geolocation@5.0.0-alpha.1...@capacitor/geolocation@5.0.0-beta.0) (2023-03-31)
+# [5.0.0-beta.0](https://github.com/ionic-team/capacitor-plugins/compare/@nitra/geolocation@5.0.0-alpha.1...@nitra/geolocation@5.0.0-beta.0) (2023-03-31)
 
-**Note:** Version bump only for package @capacitor/geolocation
+**Note:** Version bump only for package @nitra/geolocation
 
-# [5.0.0-alpha.1](https://github.com/ionic-team/capacitor-plugins/compare/@capacitor/geolocation@4.1.0...@capacitor/geolocation@5.0.0-alpha.1) (2023-03-16)
+# [5.0.0-alpha.1](https://github.com/ionic-team/capacitor-plugins/compare/@nitra/geolocation@4.1.0...@nitra/geolocation@5.0.0-alpha.1) (2023-03-16)
 
 ### Bug Fixes
 
@@ -126,7 +126,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 - **android:** Removing enableJetifier ([d66f9cb](https://github.com/ionic-team/capacitor-plugins/commit/d66f9cbd9da7e3b1d8c64ca6a5b45156867d4a04))
 
-# [4.1.0](https://github.com/ionic-team/capacitor-plugins/compare/@capacitor/geolocation@1.3.1...@capacitor/geolocation@4.1.0) (2022-11-16)
+# [4.1.0](https://github.com/ionic-team/capacitor-plugins/compare/@nitra/geolocation@1.3.1...@nitra/geolocation@4.1.0) (2022-11-16)
 
 ## 4.0.1 (2022-07-28)
 
@@ -150,15 +150,15 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## [4.0.1](https://github.com/ionic-team/capacitor-plugins/compare/4.0.0...4.0.1) (2022-07-28)
 
-**Note:** Version bump only for package @capacitor/geolocation
+**Note:** Version bump only for package @nitra/geolocation
 
 # [4.0.0](https://github.com/ionic-team/capacitor-plugins/compare/4.0.0-beta.2...4.0.0) (2022-07-27)
 
-**Note:** Version bump only for package @capacitor/geolocation
+**Note:** Version bump only for package @nitra/geolocation
 
 # [4.0.0-beta.2](https://github.com/ionic-team/capacitor-plugins/compare/4.0.0-beta.0...4.0.0-beta.2) (2022-07-08)
 
-**Note:** Version bump only for package @capacitor/geolocation
+**Note:** Version bump only for package @nitra/geolocation
 
 # 4.0.0-beta.0 (2022-06-27)
 
@@ -189,111 +189,111 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 - add commonjs output format ([#179](https://github.com/ionic-team/capacitor-plugins/issues/179)) ([8e9e098](https://github.com/ionic-team/capacitor-plugins/commit/8e9e09862064b3f6771d7facbc4008e995d9b463))
 - Geolocation plugin ([#13](https://github.com/ionic-team/capacitor-plugins/issues/13)) ([911ae71](https://github.com/ionic-team/capacitor-plugins/commit/911ae71e6aef4cfa9fb3ab5b0c13f3c06ef6b15c))
 
-## [1.3.1](https://github.com/ionic-team/capacitor-plugins/compare/@capacitor/geolocation@1.3.0...@capacitor/geolocation@1.3.1) (2022-01-19)
+## [1.3.1](https://github.com/ionic-team/capacitor-plugins/compare/@nitra/geolocation@1.3.0...@nitra/geolocation@1.3.1) (2022-01-19)
 
 ### Bug Fixes
 
 - inline source code in esm map files ([#760](https://github.com/ionic-team/capacitor-plugins/issues/760)) ([a960489](https://github.com/ionic-team/capacitor-plugins/commit/a960489a19db0182b90d187a50deff9dfbe51038))
 
-# [1.3.0](https://github.com/ionic-team/capacitor-plugins/compare/@capacitor/geolocation@1.2.0...@capacitor/geolocation@1.3.0) (2021-12-08)
+# [1.3.0](https://github.com/ionic-team/capacitor-plugins/compare/@nitra/geolocation@1.2.0...@nitra/geolocation@1.3.0) (2021-12-08)
 
 ### Features
 
 - **geolocation:** Error if Google Play Services are not available ([#709](https://github.com/ionic-team/capacitor-plugins/issues/709)) ([fc79c43](https://github.com/ionic-team/capacitor-plugins/commit/fc79c4319c54cbcd5dbbb7221dfdd03d0515805b))
 
-# [1.2.0](https://github.com/ionic-team/capacitor-plugins/compare/@capacitor/geolocation@1.1.3...@capacitor/geolocation@1.2.0) (2021-11-17)
+# [1.2.0](https://github.com/ionic-team/capacitor-plugins/compare/@nitra/geolocation@1.1.3...@nitra/geolocation@1.2.0) (2021-11-17)
 
 ### Features
 
 - **geolocation:** Add new alias for coarse location ([#684](https://github.com/ionic-team/capacitor-plugins/issues/684)) ([7563040](https://github.com/ionic-team/capacitor-plugins/commit/7563040983ad397e28616246e7ed5ffce69727c2))
 
-## [1.1.3](https://github.com/ionic-team/capacitor-plugins/compare/@capacitor/geolocation@1.1.2...@capacitor/geolocation@1.1.3) (2021-11-03)
+## [1.1.3](https://github.com/ionic-team/capacitor-plugins/compare/@nitra/geolocation@1.1.2...@nitra/geolocation@1.1.3) (2021-11-03)
 
-**Note:** Version bump only for package @capacitor/geolocation
+**Note:** Version bump only for package @nitra/geolocation
 
-## [1.1.2](https://github.com/ionic-team/capacitor-plugins/compare/@capacitor/geolocation@1.1.1...@capacitor/geolocation@1.1.2) (2021-10-14)
+## [1.1.2](https://github.com/ionic-team/capacitor-plugins/compare/@nitra/geolocation@1.1.1...@nitra/geolocation@1.1.2) (2021-10-14)
 
 ### Bug Fixes
 
 - remove postpublish scripts ([#656](https://github.com/ionic-team/capacitor-plugins/issues/656)) ([ed6ac49](https://github.com/ionic-team/capacitor-plugins/commit/ed6ac499ebf4a47525071ccbfc36c27503e11f60))
 
-## [1.1.1](https://github.com/ionic-team/capacitor-plugins/compare/@capacitor/geolocation@1.1.0...@capacitor/geolocation@1.1.1) (2021-10-13)
+## [1.1.1](https://github.com/ionic-team/capacitor-plugins/compare/@nitra/geolocation@1.1.0...@nitra/geolocation@1.1.1) (2021-10-13)
 
 ### Bug Fixes
 
 - correct addListeners links ([#655](https://github.com/ionic-team/capacitor-plugins/issues/655)) ([f9871e7](https://github.com/ionic-team/capacitor-plugins/commit/f9871e7bd53478addb21155e148829f550c0e457))
 - **geolocation:** return cached location if newer than maximumAge ([#639](https://github.com/ionic-team/capacitor-plugins/issues/639)) ([7b08eea](https://github.com/ionic-team/capacitor-plugins/commit/7b08eea9729bbf2b2b6b881cc81389cf108b3a2c))
 
-# [1.1.0](https://github.com/ionic-team/capacitor-plugins/compare/@capacitor/geolocation@1.0.2...@capacitor/geolocation@1.1.0) (2021-09-01)
+# [1.1.0](https://github.com/ionic-team/capacitor-plugins/compare/@nitra/geolocation@1.0.2...@nitra/geolocation@1.1.0) (2021-09-01)
 
 ### Features
 
 - **geolocation:** Throw error if location is disabled ([#589](https://github.com/ionic-team/capacitor-plugins/issues/589)) ([14724c5](https://github.com/ionic-team/capacitor-plugins/commit/14724c5ec5b23bf94f6f3511bbe204482768d10f))
 
-## [1.0.2](https://github.com/ionic-team/capacitor-plugins/compare/@capacitor/geolocation@1.0.1...@capacitor/geolocation@1.0.2) (2021-06-23)
+## [1.0.2](https://github.com/ionic-team/capacitor-plugins/compare/@nitra/geolocation@1.0.1...@nitra/geolocation@1.0.2) (2021-06-23)
 
 ### Bug Fixes
 
 - **geolocation:** Make getCurrentPosition return only once ([#470](https://github.com/ionic-team/capacitor-plugins/issues/470)) ([c5f1ceb](https://github.com/ionic-team/capacitor-plugins/commit/c5f1ceb790910b92e3f64d0b7fa8c85d48ea9841))
 
-## [1.0.1](https://github.com/ionic-team/capacitor-plugins/compare/@capacitor/geolocation@1.0.0...@capacitor/geolocation@1.0.1) (2021-06-09)
+## [1.0.1](https://github.com/ionic-team/capacitor-plugins/compare/@nitra/geolocation@1.0.0...@nitra/geolocation@1.0.1) (2021-06-09)
 
-**Note:** Version bump only for package @capacitor/geolocation
+**Note:** Version bump only for package @nitra/geolocation
 
-# [1.0.0](https://github.com/ionic-team/capacitor-plugins/compare/@capacitor/geolocation@0.4.7...@capacitor/geolocation@1.0.0) (2021-05-19)
+# [1.0.0](https://github.com/ionic-team/capacitor-plugins/compare/@nitra/geolocation@0.4.7...@nitra/geolocation@1.0.0) (2021-05-19)
 
-**Note:** Version bump only for package @capacitor/geolocation
+**Note:** Version bump only for package @nitra/geolocation
 
-## [0.4.7](https://github.com/ionic-team/capacitor-plugins/compare/@capacitor/geolocation@0.4.6...@capacitor/geolocation@0.4.7) (2021-05-11)
+## [0.4.7](https://github.com/ionic-team/capacitor-plugins/compare/@nitra/geolocation@0.4.6...@nitra/geolocation@0.4.7) (2021-05-11)
 
-**Note:** Version bump only for package @capacitor/geolocation
+**Note:** Version bump only for package @nitra/geolocation
 
-## [0.4.6](https://github.com/ionic-team/capacitor-plugins/compare/@capacitor/geolocation@0.4.5...@capacitor/geolocation@0.4.6) (2021-05-10)
+## [0.4.6](https://github.com/ionic-team/capacitor-plugins/compare/@nitra/geolocation@0.4.5...@nitra/geolocation@0.4.6) (2021-05-10)
 
-**Note:** Version bump only for package @capacitor/geolocation
+**Note:** Version bump only for package @nitra/geolocation
 
-## [0.4.5](https://github.com/ionic-team/capacitor-plugins/compare/@capacitor/geolocation@0.4.4...@capacitor/geolocation@0.4.5) (2021-05-07)
+## [0.4.5](https://github.com/ionic-team/capacitor-plugins/compare/@nitra/geolocation@0.4.4...@nitra/geolocation@0.4.5) (2021-05-07)
 
 ### Bug Fixes
 
 - **geolocation:** Replace deprecated call.save with new keepAlive API ([#375](https://github.com/ionic-team/capacitor-plugins/issues/375)) ([e4e7cf4](https://github.com/ionic-team/capacitor-plugins/commit/e4e7cf4afd4a70bf48359c625fa7a548211876d5))
 - **geolocation:** Use the new APIs for handling/saving calls ([#374](https://github.com/ionic-team/capacitor-plugins/issues/374)) ([ebd5b52](https://github.com/ionic-team/capacitor-plugins/commit/ebd5b527cb7f8b6c0016e82d03a0e84287913d3e))
 
-## [0.4.4](https://github.com/ionic-team/capacitor-plugins/compare/@capacitor/geolocation@0.4.3...@capacitor/geolocation@0.4.4) (2021-04-29)
+## [0.4.4](https://github.com/ionic-team/capacitor-plugins/compare/@nitra/geolocation@0.4.3...@nitra/geolocation@0.4.4) (2021-04-29)
 
-**Note:** Version bump only for package @capacitor/geolocation
+**Note:** Version bump only for package @nitra/geolocation
 
-## [0.4.3](https://github.com/ionic-team/capacitor-plugins/compare/@capacitor/geolocation@0.4.2...@capacitor/geolocation@0.4.3) (2021-03-10)
+## [0.4.3](https://github.com/ionic-team/capacitor-plugins/compare/@nitra/geolocation@0.4.2...@nitra/geolocation@0.4.3) (2021-03-10)
 
-**Note:** Version bump only for package @capacitor/geolocation
+**Note:** Version bump only for package @nitra/geolocation
 
-## [0.4.2](https://github.com/ionic-team/capacitor-plugins/compare/@capacitor/geolocation@0.4.1...@capacitor/geolocation@0.4.2) (2021-03-02)
+## [0.4.2](https://github.com/ionic-team/capacitor-plugins/compare/@nitra/geolocation@0.4.1...@nitra/geolocation@0.4.2) (2021-03-02)
 
-**Note:** Version bump only for package @capacitor/geolocation
+**Note:** Version bump only for package @nitra/geolocation
 
-## [0.4.1](https://github.com/ionic-team/capacitor-plugins/compare/@capacitor/geolocation@0.4.0...@capacitor/geolocation@0.4.1) (2021-02-27)
+## [0.4.1](https://github.com/ionic-team/capacitor-plugins/compare/@nitra/geolocation@0.4.0...@nitra/geolocation@0.4.1) (2021-02-27)
 
-**Note:** Version bump only for package @capacitor/geolocation
+**Note:** Version bump only for package @nitra/geolocation
 
-# [0.4.0](https://github.com/ionic-team/capacitor-plugins/compare/@capacitor/geolocation@0.3.2...@capacitor/geolocation@0.4.0) (2021-02-10)
+# [0.4.0](https://github.com/ionic-team/capacitor-plugins/compare/@nitra/geolocation@0.3.2...@nitra/geolocation@0.4.0) (2021-02-10)
 
 ### Features
 
 - **android:** implements Activity Result API changes for permissions and activity results ([#222](https://github.com/ionic-team/capacitor-plugins/issues/222)) ([f671b9f](https://github.com/ionic-team/capacitor-plugins/commit/f671b9f4b472806ef43db6dcf302d4503cf1828c))
 
-## [0.3.2](https://github.com/ionic-team/capacitor-plugins/compare/@capacitor/geolocation@0.3.1...@capacitor/geolocation@0.3.2) (2021-02-05)
+## [0.3.2](https://github.com/ionic-team/capacitor-plugins/compare/@nitra/geolocation@0.3.1...@nitra/geolocation@0.3.2) (2021-02-05)
 
-**Note:** Version bump only for package @capacitor/geolocation
+**Note:** Version bump only for package @nitra/geolocation
 
-## [0.3.1](https://github.com/ionic-team/capacitor-plugins/compare/@capacitor/geolocation@0.3.0...@capacitor/geolocation@0.3.1) (2021-01-26)
+## [0.3.1](https://github.com/ionic-team/capacitor-plugins/compare/@nitra/geolocation@0.3.0...@nitra/geolocation@0.3.1) (2021-01-26)
 
-**Note:** Version bump only for package @capacitor/geolocation
+**Note:** Version bump only for package @nitra/geolocation
 
-# [0.3.0](https://github.com/ionic-team/capacitor-plugins/compare/@capacitor/geolocation@0.2.0...@capacitor/geolocation@0.3.0) (2021-01-14)
+# [0.3.0](https://github.com/ionic-team/capacitor-plugins/compare/@nitra/geolocation@0.2.0...@nitra/geolocation@0.3.0) (2021-01-14)
 
-**Note:** Version bump only for package @capacitor/geolocation
+**Note:** Version bump only for package @nitra/geolocation
 
-# [0.2.0](https://github.com/ionic-team/capacitor-plugins/compare/@capacitor/geolocation@0.1.3...@capacitor/geolocation@0.2.0) (2021-01-13)
+# [0.2.0](https://github.com/ionic-team/capacitor-plugins/compare/@nitra/geolocation@0.1.3...@nitra/geolocation@0.2.0) (2021-01-13)
 
 ### Bug Fixes
 
@@ -303,17 +303,17 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 - add commonjs output format ([#179](https://github.com/ionic-team/capacitor-plugins/issues/179)) ([8e9e098](https://github.com/ionic-team/capacitor-plugins/commit/8e9e09862064b3f6771d7facbc4008e995d9b463))
 
-## [0.1.3](https://github.com/ionic-team/capacitor-plugins/compare/@capacitor/geolocation@0.1.2...@capacitor/geolocation@0.1.3) (2021-01-13)
+## [0.1.3](https://github.com/ionic-team/capacitor-plugins/compare/@nitra/geolocation@0.1.2...@nitra/geolocation@0.1.3) (2021-01-13)
 
-**Note:** Version bump only for package @capacitor/geolocation
+**Note:** Version bump only for package @nitra/geolocation
 
-## [0.1.2](https://github.com/ionic-team/capacitor-plugins/compare/@capacitor/geolocation@0.1.1...@capacitor/geolocation@0.1.2) (2021-01-08)
+## [0.1.2](https://github.com/ionic-team/capacitor-plugins/compare/@nitra/geolocation@0.1.1...@nitra/geolocation@0.1.2) (2021-01-08)
 
-**Note:** Version bump only for package @capacitor/geolocation
+**Note:** Version bump only for package @nitra/geolocation
 
-## [0.1.1](https://github.com/ionic-team/capacitor-plugins/compare/@capacitor/geolocation@0.1.0...@capacitor/geolocation@0.1.1) (2020-12-27)
+## [0.1.1](https://github.com/ionic-team/capacitor-plugins/compare/@nitra/geolocation@0.1.0...@nitra/geolocation@0.1.1) (2020-12-27)
 
-**Note:** Version bump only for package @capacitor/geolocation
+**Note:** Version bump only for package @nitra/geolocation
 
 # 0.1.0 (2020-12-20)
 
