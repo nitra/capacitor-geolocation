@@ -42,10 +42,10 @@ jobs:
         #   token: ${{ secrets.CAP_GH_RELEASE_TOKEN }}
       - name: "Setup Tools"
         uses: ./.github/actions/setup-tools
-      - name: Release
-        working-directory: ./packages/capacitor-plugin
-        env:
-          GITHUB_TOKEN: ${{ secrets.CAP_GH_RELEASE_TOKEN }}
-          GH_TOKEN: ${{ secrets.CAP_GH_RELEASE_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
-        run: npx semantic-release
+
+      - uses: JS-DevTools/npm-publish@v2
+        with:
+          token: ${{ secrets.NPM_WRITE_TOKEN }}
+          access: public
+          strategy: upgrade
+          package: ./npm/package.json
