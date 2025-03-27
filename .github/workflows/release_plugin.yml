@@ -48,4 +48,4 @@ jobs:
           token: ${{ secrets.NPM_WRITE_TOKEN }}
           access: public
           strategy: upgrade
-          package: ./npm/package.json
+          package: ./packages/capacitor-plugin/package.json
