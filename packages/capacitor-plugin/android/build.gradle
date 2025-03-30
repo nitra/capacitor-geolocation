@@ -58,7 +58,8 @@ repositories {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation("io.ionic.libs:iongeolocation-android:1.0.0")
+    implementation 'com.github.nitra:ion-android-geolocation:fake-SNAPSHOT'
+    
     implementation project(':capacitor-android')
     implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
 
