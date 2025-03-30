@@ -259,7 +259,7 @@ class GeolocationPlugin : Plugin() {
             locationResult.altitudeAccuracy?.let { put("altitudeAccuracy", it) }
             put("speed", locationResult.speed)
             put("heading", locationResult.heading)
-            put("isMock", location.isMock);
+            put("isMock", locationResult.isMock)
         }
         return JSObject().apply {
             put("timestamp", locationResult.timestamp)
