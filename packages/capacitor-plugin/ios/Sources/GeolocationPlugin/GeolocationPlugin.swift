@@ -84,11 +84,11 @@ public class GeolocationPlugin: CAPPlugin, CAPBridgedPlugin {
 
 private extension GeolocationPlugin {
     func shouldSetupBindings() {
-        bindauthorisationStatusPublisher()
+        bindAuthorisationStatusPublisher()
         bindLocationPublisher()
     }
 
-    func bindauthorisationStatusPublisher() {
+    func bindAuthorisationStatusPublisher() {
         guard !statusInitialized else { return }
         statusInitialized = true
         locationService?.authorisationStatusPublisher
