@@ -5,7 +5,7 @@ on:
     branches:
       - development
       - next
-      - main
+      - nitra-main
   workflow_dispatch:
 
 permissions:
