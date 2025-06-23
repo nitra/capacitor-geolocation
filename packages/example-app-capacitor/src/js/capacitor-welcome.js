@@ -64,6 +64,12 @@ window.customElements.define(
         <button id="check-permission" class="button">Check permission</button>
         <button id="request-permission" class="button">Request permission</button>
         <br><br>
+        <label for="timeoutInput">timeout: </label>
+        <input type="number" id="timeoutInput" name="timeoutInput"><br>
+        <label for="ageInput">maximumAge: </label>
+        <input type="number" id="ageInput" name="ageInput"><br>
+        <input type="checkbox" id="highaccuracyCheck" name="highaccuracyCheck" checked="true"">
+        <label for="highaccuracyCheck">enableHighAccuracy</label><br><br>
         <button id="current-location" class="button">Get Current (single) position</button>
         <br><br>
         <button id="watch-location" class="button">Watch position (updates)</button>
@@ -103,35 +109,45 @@ window.customElements.define(
           alert(`Permissions are:\nlocation = ${permissionStatus.location}`);
         });
 
-      self.shadowRoot
-        .querySelector("#current-location")
-        .addEventListener("click", async function (e) {
-          try {
-            const currentLocation = await Geolocation.getCurrentPosition({
-              enableHighAccuracy: true,
-            });
-            const locationString = locationToString(currentLocation, "");
-            alert(locationString);
-          } catch (exception) {
-            alert(
-              `Error getting current position:\n\t code=${exception.code}\n\t message=\"${exception.message}\"`
-            );
-          }
-        });
+      self.shadowRoot.querySelector('#current-location').addEventListener('click', async function (e) {
+        try {
+          let options = createLocationOptions();
+          const currentLocation = await Geolocation.getCurrentPosition(
+            options
+          );
+          const locationString = locationToString(currentLocation, '')
+          alert(locationString)
+        } catch (exception) {
+          alert(`Error getting current position:\n\t code=${exception.code}\n\t message=\"${exception.message}\"`)
+        }
+      });
 
-      self.shadowRoot
-        .querySelector("#watch-location")
-        .addEventListener("click", async function (e) {
-          let watchId = "";
-          try {
-            let shouldAppendWatchId = true;
-            watchId = await Geolocation.watchPosition(
-              { enableHighAccuracy: true },
-              (position, err) => {
-                if (err) {
-                  alert(
-                    `Error getting current position:\n\t code=${err.code}\n\t message=\"${err.message}\"`
-                  );
+      self.shadowRoot.querySelector('#watch-location').addEventListener('click', async function (e) {
+        let watchId = ""
+        try {
+          let shouldAppendWatchId = true
+          let options = createLocationOptions()
+          watchId = await Geolocation.watchPosition(
+            options,
+            (position, err) => {
+              if (err) {
+                alert(`Error getting current position:\n\t code=${err.code}\n\t message=\"${err.message}\"`)
+              } else {
+                const locationString = locationToString(position, watchId)
+                if (shouldAppendWatchId && watchId) {
+                  shouldAppendWatchId = false
+                  onWatchAdded(watchId);
+                }
+                const positionUpdatesList = self.shadowRoot.querySelector('#watch-position-updates-list');
+                const newListItem = document.createElement('li');
+                newListItem.textContent = locationString;
+                 // 'pre-wrap' to make \n's count as line breaks
+                newListItem.style.whiteSpace = 'pre-wrap'; 
+                newListItem.style.padding = '10px';
+                newListItem.style.borderBottom = '1px solid #ddd';
+                // add to top of list
+                if (positionUpdatesList.firstChild) {
+                  positionUpdatesList.insertBefore(newListItem, positionUpdatesList.firstChild);
                 } else {
                   const locationString = locationToString(position, watchId);
                   if (shouldAppendWatchId && watchId) {
@@ -175,6 +191,20 @@ window.customElements.define(
           );
           wacthesList.innerHTML = "";
         });
+
+      function createLocationOptions() {
+        const enableHighAccuracyValue = self.shadowRoot.getElementById('highaccuracyCheck').checked;
+        let options = { enableHighAccuracy: enableHighAccuracyValue }
+        const timeoutValue = self.shadowRoot.getElementById('timeoutInput').value;
+        if (timeoutValue) {
+          options.timeout = Number(timeoutValue);
+        }
+        const ageValue = self.shadowRoot.getElementById('ageInput').value;
+        if (ageValue) {
+          options.maximumAge = Number(ageValue);
+        }
+        return options
+      }
 
       function onWatchAdded(watchId) {
         // Append the watchId as a button to the list

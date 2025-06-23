@@ -18,7 +18,8 @@ public class GeolocationPlugin: CAPPlugin, CAPBridgedPlugin {
     private var locationService: (any IONGLOCService)?
     private var cancellables = Set<AnyCancellable>()
     private var callbackManager: GeolocationCallbackManager?
-    private var isInitialised: Bool = false
+    private var statusInitialized = false
+    private var locationInitialized: Bool = false
 
     override public func load() {
         self.locationService = IONGLOCManagerWrapper()
@@ -83,12 +84,13 @@ public class GeolocationPlugin: CAPPlugin, CAPBridgedPlugin {
 
 private extension GeolocationPlugin {
     func shouldSetupBindings() {
-        guard !isInitialised else { return }
-        isInitialised = true
-        setupBindings()
+        bindAuthorisationStatusPublisher()
+        bindLocationPublisher()
     }
 
-    func setupBindings() {
+    func bindAuthorisationStatusPublisher() {
+        guard !statusInitialized else { return }
+        statusInitialized = true
         locationService?.authorisationStatusPublisher
             .sink(receiveValue: { [weak self] status in
                 guard let self else { return }
@@ -106,10 +108,16 @@ private extension GeolocationPlugin {
                 }
             })
             .store(in: &cancellables)
+    }
 
+    func bindLocationPublisher() {
+        guard !locationInitialized else { return }
+        locationInitialized = true
         locationService?.currentLocationPublisher
             .sink(receiveCompletion: { [weak self] completion in
                 if case .failure(let error) = completion {
+                    // publisher should be re-observed in the next plugin call
+                    self?.locationInitialized = false
                     print("An error was found while retrieving the location: \(error)")
                     self?.callbackManager?.sendError(.positionUnavailable)
                 }
@@ -128,10 +136,10 @@ private extension GeolocationPlugin {
 
     func checkIfLocationServicesAreEnabled(_ call: CAPPluginCall? = nil) -> Bool {
         guard locationService?.areLocationServicesEnabled() == true else {
-                call.map { callbackManager?.sendError($0, error: .locationServicesDisabled) }
-                    ?? callbackManager?.sendError(.locationServicesDisabled)
-                return false
-            }
+            call.map { callbackManager?.sendError($0, error: .locationServicesDisabled) }
+                ?? callbackManager?.sendError(.locationServicesDisabled)
+            return false
+        }
         return true
     }
 

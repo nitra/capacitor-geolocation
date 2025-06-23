@@ -3,7 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [7.1.1](https://github.com/ionic-team/capacitor-plugins/compare/@nitra/geolocation@7.1.1...@nitra/geolocation@7.1.0) (2025-02-21)
+# [7.1.2](https://github.com/ionic-team/capacitor-plugins/compare/@capacitor/geolocation@7.1.2...@capacitor/geolocation@7.1.1) (2025-02-21)
+
+### Fixes
+
+- **ios:** watchPosition after an error occurs
+- **android** properly parsing number parameters
+
+# [7.1.1](https://github.com/ionic-team/capacitor-plugins/compare/@capacitor/geolocation@7.1.1...@capacitor/geolocation@7.1.0) (2025-02-21)
 
 ### Fixes
 
