@@ -59,7 +59,7 @@ repositories {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.github.nitra:ion-android-geolocation:fake-SNAPSHOT'
+	implementation 'com.github.nitra:ion-android-geolocation:fake-fede1ce2b3-1'
     
     implementation project(':capacitor-android')
     implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"

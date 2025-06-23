@@ -260,6 +260,7 @@ class GeolocationPlugin : Plugin() {
             put("speed", locationResult.speed)
             put("heading", locationResult.heading)
             put("isMock", locationResult.isMock)
+            put("provider", locationResult.provider)
         }
         return JSObject().apply {
             put("timestamp", locationResult.timestamp)
