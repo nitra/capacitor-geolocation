@@ -1,0 +1,42 @@
+packages/capacitor-plugin/CapacitorGeolocation.podspec
+  s_3272fb4aeba81f::t_b9b9b89588801a 14,17
+packages/example-app-capacitor/android/build.gradle
+  s_3272fb4aeba81f::t_eb5a39081a8882 10-11
+packages/capacitor-plugin/Package.swift
+  s_3272fb4aeba81f::t_377ae8376a4662 13
+  s_3272fb4aeba81f::t_105bafa8ed5374 6
+packages/example-app-capacitor/package.json
+  s_3272fb4aeba81f::t_a4f8a13110d395 16-20,24
+packages/example-app-capacitor/android/variables.gradle
+  s_3272fb4aeba81f::t_a2b65675d00889 2-4
+packages/capacitor-plugin/android/gradle/wrapper/gradle-wrapper.properties
+  s_3272fb4aeba81f::t_8ec5c108ec6c42 3
+packages/capacitor-plugin/android/build.gradle
+  s_3272fb4aeba81f::t_ad5673519ae88e 16
+  s_3272fb4aeba81f::t_65eb6215d4a5c6 10
+  s_3272fb4aeba81f::t_d1791084100894 26,28-29
+packages/example-app-capacitor/android/gradle/wrapper/gradle-wrapper.properties
+  s_3272fb4aeba81f::t_1f9211ae864efd 3
+packages/example-app-capacitor/ios/App/Podfile
+  s_3272fb4aeba81f::t_d7a47aa6487d90 3
+packages/capacitor-plugin/package.json
+  s_3272fb4aeba81f::t_6a7ad273becea8 52-53,55
+  s_3272fb4aeba81f::t_1481b03d4a6281 74
+  s_3272fb4aeba81f::t_d29037e947baba 3
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "fe1723cec2b3df0a96b35f7860f79895c25c21b4",
+  "prompts": {},
+  "sessions": {
+    "s_3272fb4aeba81f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f27a51de-3df7-4e84-b74c-d18f5ca1020d",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Yurii <brechkoio@gmail.com>"
+    }
+  }
+}
