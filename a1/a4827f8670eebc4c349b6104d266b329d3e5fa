@@ -1,0 +1,19 @@
+CHANGELOG.md
+  s_3272fb4aeba81f::t_6664877f8d513f 6-23
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "a1a4827f8670eebc4c349b6104d266b329d3e5fa",
+  "prompts": {},
+  "sessions": {
+    "s_3272fb4aeba81f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f27a51de-3df7-4e84-b74c-d18f5ca1020d",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Yurii <brechkoio@gmail.com>"
+    }
+  }
+}
