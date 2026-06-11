@@ -1,0 +1,23 @@
+example-app/ios/App/Podfile
+  s_b4015b2d1439ec::t_e223a5b56bb071 20
+ios/Sources/GeolocationPlugin/IONGLOCPositionModel+JSONTransformer.swift
+  s_b4015b2d1439ec::t_5f1006ed5f408c 25
+example-app/ios/App/App.xcodeproj/project.pbxproj
+  s_b4015b2d1439ec::t_a2996dc84cb14c 356,375
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "329d24c529f3ffa5c34b095e99ab65d0ccdb1b7e",
+  "prompts": {},
+  "sessions": {
+    "s_b4015b2d1439ec": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "bbd82a12-b50a-4276-bed8-5c37f1828273",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Yurii <brechkoio@gmail.com>"
+    }
+  }
+}
