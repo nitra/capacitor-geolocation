@@ -22,8 +22,7 @@ extension IONGLOCPositionModel {
             Constants.Position.latitude: latitude,
             Constants.Position.longitude: longitude,
             Constants.Position.speed: speed,
-            Constants.Position.altitudeAccuracy: verticalAccuracy,
-            "isMock": isMock
+            Constants.Position.altitudeAccuracy: verticalAccuracy
         ]
     }
 }

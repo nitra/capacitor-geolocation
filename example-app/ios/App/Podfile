@@ -17,6 +17,7 @@ def capacitor_pods
 end
 
 target 'App' do
+  #pod 'IONGeolocationLib', :path => '../../../../ion-ios-geolocation'
   capacitor_pods
   # Add your Pods here
 end
