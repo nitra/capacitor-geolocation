@@ -1,0 +1,21 @@
+ios/Sources/GeolocationPlugin/IONGLOCPositionModel+JSONTransformer.swift
+  s_1a531d3c41073b::t_357c31f860c079 13,17-19
+src/definitions.ts
+  s_1a531d3c41073b::t_ba91b1fdfc2e98 189-203
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.7",
+  "base_commit_sha": "2f3aa912249c55b2488cf6f04060560b19fad66f",
+  "prompts": {},
+  "sessions": {
+    "s_1a531d3c41073b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9f03e645-a96a-4f5c-9ab3-93d07d0fa0b4",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Yurii <brechkoio@gmail.com>"
+    }
+  }
+}
