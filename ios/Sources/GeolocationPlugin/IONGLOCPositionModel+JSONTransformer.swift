@@ -10,13 +10,13 @@ extension IONGLOCPositionModel {
     }
 
     private var coordsJSObject: JSObject {
-        let headingValue: Double? = course != -1.0 ? course : nil
+        let headingValue = trueHeading ?? magneticHeading ?? (course != -1.0 ? course : nil)
         return [
             Constants.Position.altitude: altitude,
             Constants.Position.heading: headingValue ?? NSNull(),
-            Constants.Position.magneticHeading: NSNull(),
-            Constants.Position.trueHeading: NSNull(),
-            Constants.Position.headingAccuracy: NSNull(),
+            Constants.Position.magneticHeading: magneticHeading ?? NSNull(),
+            Constants.Position.trueHeading: trueHeading ?? NSNull(),
+            Constants.Position.headingAccuracy: headingAccuracy ?? NSNull(),
             Constants.Position.course: course != -1.0 ? course : NSNull(),
             Constants.Position.accuracy: horizontalAccuracy,
             Constants.Position.latitude: latitude,
