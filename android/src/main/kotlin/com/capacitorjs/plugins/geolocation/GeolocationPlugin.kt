@@ -11,7 +11,6 @@ import com.getcapacitor.PluginMethod
 import com.getcapacitor.annotation.CapacitorPlugin
 import com.getcapacitor.annotation.Permission
 import com.getcapacitor.annotation.PermissionCallback
-import com.google.android.gms.location.LocationServices
 import io.ionic.libs.iongeolocationlib.controller.IONGLOCController
 import io.ionic.libs.iongeolocationlib.model.IONGLOCException
 import io.ionic.libs.iongeolocationlib.model.IONGLOCLocationOptions
@@ -54,8 +53,7 @@ class GeolocationPlugin : Plugin() {
             }
         }
 
-        val fusedClient = LocationServices.getFusedLocationProviderClient(context)
-        this.controller = IONGLOCController(fusedClient, activityLauncher)
+        this.controller = IONGLOCController(context, activityLauncher)
     }
 
     override fun handleOnDestroy() {
@@ -79,7 +77,7 @@ class GeolocationPlugin : Plugin() {
      * @param onLocationEnabled lambda function to use in case location services are enabled
      */
     private fun checkLocationState(call: PluginCall, onLocationEnabled: () -> Unit) {
-        if (controller.areLocationServicesEnabled(context)) {
+        if (controller.areLocationServicesEnabled()) {
             onLocationEnabled()
         } else {
             call.sendError(GeolocationErrors.LOCATION_DISABLED)
@@ -291,6 +289,9 @@ class GeolocationPlugin : Plugin() {
             is IONGLOCException.IONGLOCLocationRetrievalTimeoutException -> {
                 call.sendError(GeolocationErrors.GET_LOCATION_TIMEOUT)
             }
+            is IONGLOCException.IONGLOCLocationAndNetworkDisabledException -> {
+                call.sendError(GeolocationErrors.NETWORK_LOCATION_DISABLED_ERROR)
+            }
             else -> {
                 call.sendError(GeolocationErrors.POSITION_UNAVAILABLE)
             }
@@ -331,9 +332,10 @@ class GeolocationPlugin : Plugin() {
         val minimumUpdateInterval = call.getNumber("minimumUpdateInterval", 5000)
 
         return IONGLOCLocationOptions(
-            timeout,
-            maximumAge,
-            enableHighAccuracy,
+            timeout = timeout,
+            maximumAge = maximumAge,
+            enableHighAccuracy = enableHighAccuracy,
+            enableLocationManagerFallback = true,
             minUpdateInterval = minimumUpdateInterval
         )
     }
