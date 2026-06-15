@@ -248,6 +248,8 @@ window.customElements.define(
         ) {
           stringRepresentation += `- Course: ${location.coords.course}\n`;
         }
+        stringRepresentation += `- isMock: ${location?.coords.isMock}\n`;
+        stringRepresentation += `- Provider: ${location?.coords.provider}\n`;
         return stringRepresentation;
       }
     }
