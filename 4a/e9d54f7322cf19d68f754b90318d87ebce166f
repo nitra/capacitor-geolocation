@@ -1,0 +1,19 @@
+example-app/src/js/capacitor-welcome.js
+  s_3e465190baa724::t_183c690b45e81a 251-252
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.7",
+  "base_commit_sha": "4ae9d54f7322cf19d68f754b90318d87ebce166f",
+  "prompts": {},
+  "sessions": {
+    "s_3e465190baa724": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0701964b-1c28-4ad7-bc44-639a0eaff33a",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Yurii <brechkoio@gmail.com>"
+    }
+  }
+}
