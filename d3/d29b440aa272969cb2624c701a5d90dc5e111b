@@ -1,0 +1,32 @@
+android/src/main/kotlin/com/capacitorjs/plugins/geolocation/GeolocationPlugin.kt
+  s_3e465190baa724::t_2823d7787bb543 292-294
+  s_3e465190baa724::t_7e5ff45e28678d 80
+  s_3e465190baa724::t_77e02f5f117222 56
+  s_3e465190baa724::t_480ace72876511 335-338
+NitraGeolocation.podspec
+  s_1a531d3c41073b::t_8b21ccd5d84156 16
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.7",
+  "base_commit_sha": "d3d29b440aa272969cb2624c701a5d90dc5e111b",
+  "prompts": {},
+  "sessions": {
+    "s_1a531d3c41073b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9f03e645-a96a-4f5c-9ab3-93d07d0fa0b4",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Yurii <brechkoio@gmail.com>"
+    },
+    "s_3e465190baa724": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0701964b-1c28-4ad7-bc44-639a0eaff33a",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Yurii <brechkoio@gmail.com>"
+    }
+  }
+}
