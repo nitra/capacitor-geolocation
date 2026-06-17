@@ -1,0 +1,24 @@
+package.json
+  s_d897b91c622244::t_6524417ea31973 34
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "48d41aa3bb494b738ab280ff8a31347b3ffdbf9c",
+  "prompts": {},
+  "humans": {
+    "h_0d835848e7aea2": {
+      "author": "Yurii <brechkoio@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_d897b91c622244": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "bd32c4b4-543b-419b-9954-855fa16742d8",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Yurii <brechkoio@gmail.com>"
+    }
+  }
+}
