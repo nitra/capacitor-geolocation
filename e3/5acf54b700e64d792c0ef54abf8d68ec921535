@@ -1,0 +1,24 @@
+example-app/android/build.gradle
+  s_45c42321135975::t_154607fe260bbf 24
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "e35acf54b700e64d792c0ef54abf8d68ec921535",
+  "prompts": {},
+  "humans": {
+    "h_0d835848e7aea2": {
+      "author": "Yurii <brechkoio@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_45c42321135975": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6a6efd5d-d9b2-4767-aae5-8e8d40ba93b9",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Yurii <brechkoio@gmail.com>"
+    }
+  }
+}
