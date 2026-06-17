@@ -1,0 +1,25 @@
+ios/Sources/GeolocationPlugin/GeolocationPlugin.swift
+  s_d897b91c622244::t_bf0338de0839ae 208,211
+  s_d897b91c622244::t_8c48918fdb4c41 48
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "488b57df0c7b8b30e0cfcd21fc8a940922940b52",
+  "prompts": {},
+  "humans": {
+    "h_0d835848e7aea2": {
+      "author": "Yurii <brechkoio@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_d897b91c622244": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "bd32c4b4-543b-419b-9954-855fa16742d8",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Yurii <brechkoio@gmail.com>"
+    }
+  }
+}
