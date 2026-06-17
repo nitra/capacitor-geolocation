@@ -45,7 +45,7 @@ public class GeolocationPlugin: CAPPlugin, CAPBridgedPlugin {
             locationInitialized = false
 
             locationService?.stopMonitoringLocation()
-            locationService?.startMonitoringLocation()
+            locationService?.startMonitoringLocation(options: IONGLOCRequestOptionsModel())
             bindLocationPublisher()
         }
     }
@@ -205,10 +205,10 @@ private extension GeolocationPlugin {
             callbackManager?.sendRequestPermissionsSuccess(Constants.AuthorisationStatus.Status.granted)
         }
         if shouldRequestCurrentPosition {
-            locationService?.requestSingleLocation()
+            locationService?.requestSingleLocation(options: IONGLOCRequestOptionsModel())
         }
         if shouldRequestLocationMonitoring {
-            locationService?.startMonitoringLocation()
+            locationService?.startMonitoringLocation(options: IONGLOCRequestOptionsModel())
         }
     }
 
