@@ -11,7 +11,7 @@ jobs:
     runs-on: 'ubuntu-24.04'
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
           token: ${{ secrets.THE_GH_RELEASE_TOKEN || github.token }}
@@ -23,13 +23,11 @@ jobs:
         run: cp README.md README.md.original
 
       - name: 'Build Packages'
-        working-directory: ./packages/capacitor-plugin
         run: npm run build
 
       - name: 'Check README.md changes'
-        working-directory: ./packages/capacitor-plugin
         run: |
-          if ! cmp --silent README.md ../../README.md.original; then
+          if ! cmp --silent README.md README.md.original; then
             echo "Detected README.md changes; Do 'npm run build' to update the docs."
             exit 1
           fi

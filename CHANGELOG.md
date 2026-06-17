@@ -1,16 +1,159 @@
-# Change Log
+# [8.2.0](https://github.com/ionic-team/capacitor-geolocation/compare/v8.1.0...v8.2.0) (2026-03-31)
 
-All notable changes to this project will be documented in this file.
-See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [7.1.2](https://github.com/ionic-team/capacitor-plugins/compare/@capacitor/geolocation@7.1.2...@capacitor/geolocation@7.1.1) (2025-02-21)
+### Features
+
+* add support for heading ([#78](https://github.com/ionic-team/capacitor-geolocation/issues/78)) ([ed20f3e](https://github.com/ionic-team/capacitor-geolocation/commit/ed20f3e3b77c9178b5ba2372a9d98c1759dae65d))
+
+# [8.1.0](https://github.com/ionic-team/capacitor-geolocation/compare/v8.0.0...v8.1.0) (2026-02-11)
+
+
+### Bug Fixes
+
+* **android:** AGP 9.0 no longer supporting `proguard-android.txt` ([#74](https://github.com/ionic-team/capacitor-geolocation/issues/74)) ([32961e1](https://github.com/ionic-team/capacitor-geolocation/commit/32961e1eb53106ba9004a9a1d0abb4b500a90dc8))
+
+
+### Features
+
+* **ci:** add Maven Central publishing workflow and Android publishing scripts ([#72](https://github.com/ionic-team/capacitor-geolocation/issues/72)) ([281d64f](https://github.com/ionic-team/capacitor-geolocation/commit/281d64fd038fbdfea15aa7a484ee0fb33370e35b))
+* **ci:** add publish-pod job to invoke CocoaPods publish workflow ([#70](https://github.com/ionic-team/capacitor-geolocation/issues/70)) ([e2387f4](https://github.com/ionic-team/capacitor-geolocation/commit/e2387f43c060ee5f1e5e7210fe9c3ef13237f2a4))
+* **ci:** add publish-pod job to invoke CocoaPods publish workflow ([#71](https://github.com/ionic-team/capacitor-geolocation/issues/71)) ([f9a4eca](https://github.com/ionic-team/capacitor-geolocation/commit/f9a4ecae97b944f739736ecc04f90b4c372232a5))
+
+# [8.0.0](https://github.com/ionic-team/capacitor-geolocation/compare/v7.1.6...v8.0.0) (2025-12-08)
+
+
+### Bug Fixes
+
+* **android:** use 'propName = value' assignment syntax in build.gradle files ([08f311a](https://github.com/ionic-team/capacitor-geolocation/commit/08f311a1f785f04eab8eec87a60cd5147488388b))
+* **ios:** added timeout implementation for both getCurrentPosition and watchPosition ([#55](https://github.com/ionic-team/capacitor-geolocation/issues/55)) ([4c22ac3](https://github.com/ionic-team/capacitor-geolocation/commit/4c22ac3c6facd4b628a38a668d66a7ea2f3ad44c))
+* peerDependency for pnpm compatibility ([a94839d](https://github.com/ionic-team/capacitor-geolocation/commit/a94839d1c51d7db2bdc39d123121920f8d0b883b))
+
+
+### Features
+
+* **android:** Fallback option for no network or Play Services ([#53](https://github.com/ionic-team/capacitor-geolocation/issues/53)) ([09277b7](https://github.com/ionic-team/capacitor-geolocation/commit/09277b7cf458b1625db444f4eb0a40bd7c7b3265))
+* **android:** New parameter `interval` in `watchPosition` ([#62](https://github.com/ionic-team/capacitor-geolocation/issues/62)) ([7fda0cf](https://github.com/ionic-team/capacitor-geolocation/commit/7fda0cf3f9de7254d67405689164c854ea09c84e))
+* Capacitor 8 support ([6ead26a](https://github.com/ionic-team/capacitor-geolocation/commit/6ead26a06dbfa727551214a0a58469d5195d8657))
+
+
+### BREAKING CHANGES
+
+* The `timeout` property now gets applied to all requests on Android on iOS, as opposed to just web and `getCurrentPosition` on Android. This aligns with what is documented in the plugin. If you are experiencing timeouts when requesting location in your app, consider using a higher `timeout` value. For `watchPosition` on Android, you may use the `interval` parameter introduced in version 8.0.0.
+* Capacitor major version update requires major version update on the plugin.
+
+# [8.0.0-next.6](https://github.com/ionic-team/capacitor-geolocation/compare/v8.0.0-next.5...v8.0.0-next.6) (2025-11-26)
+
+
+### Features
+
+* **android:** New parameter `interval` in `watchPosition` ([#62](https://github.com/ionic-team/capacitor-geolocation/issues/62)) ([7fda0cf](https://github.com/ionic-team/capacitor-geolocation/commit/7fda0cf3f9de7254d67405689164c854ea09c84e))
+
+
+### BREAKING CHANGES
+
+* **android:** The `timeout` property now gets applied to all requests on Android on iOS, as opposed to just web and `getCurrentPosition` on Android. This aligns with what is documented in the plugin. If you are experiencing timeouts when requesting location in your app, consider using a higher `timeout` value. For `watchPosition` on Android, you may use the `interval` parameter introduced in version 8.0.0.
+
+## [7.1.6](https://github.com/ionic-team/capacitor-geolocation/compare/v7.1.5...v7.1.6) (2025-11-25)
+
+
+### Bug Fixes
+
+* **ios:** Simplify SPM usage for native library ([#52](https://github.com/ionic-team/capacitor-geolocation/issues/52)) ([ad53dc6](https://github.com/ionic-team/capacitor-geolocation/commit/ad53dc654369db9c1c2ae57cefca798fc5283dc8))
+
+# [8.0.0-next.7](https://github.com/ionic-team/capacitor-geolocation/compare/v8.0.0-next.6...v8.0.0-next.7) (2025-11-21)
+
+
+### Features
+
+* **android:** New parameter `interval` in `watchPosition` ([#62](https://github.com/ionic-team/capacitor-geolocation/issues/62)) ([7fda0cf](https://github.com/ionic-team/capacitor-geolocation/commit/7fda0cf3f9de7254d67405689164c854ea09c84e))
+
+### BREAKING CHANGES
+
+* The `timeout` property now gets applied to all requests on Android on iOS, as opposed to just web and `getCurrentPosition` on Android. This aligns with what is documented in the plugin. If you are experiencing timeouts when requesting location in your app, consider using a higher `timeout` value. For `watchPosition` on Android, you may use the `interval` parameter introduced in version 8.0.0.
+
+# [8.0.0-next.6](https://github.com/ionic-team/capacitor-geolocation/compare/v8.0.0-next.5...v8.0.0-next.6) (2025-11-17)
+
+
+* **android:** Update gradle dependencies to latest versions ([#61](https://github.com/ionic-team/capacitor-geolocation/pull/61))
+* **ios:** Minor updates to Package.swift ([#60](https://github.com/ionic-team/capacitor-geolocation/pull/60))
+
+# [8.0.0-next.5](https://github.com/ionic-team/capacitor-geolocation/compare/v8.0.0-next.4...v8.0.0-next.5) (2025-11-10)
+
+
+### Bug Fixes
+
+* **android:** use 'propName = value' assignment syntax in build.gradle files ([08f311a](https://github.com/ionic-team/capacitor-geolocation/commit/08f311a1f785f04eab8eec87a60cd5147488388b))
+
+# [8.0.0-next.4](https://github.com/ionic-team/capacitor-geolocation/compare/v8.0.0-next.3...v8.0.0-next.4) (2025-11-04)
+
+
+### Bug Fixes
+
+* **ios:** added timeout implementation for both getCurrentPosition and watchPosition ([#55](https://github.com/ionic-team/capacitor-geolocation/issues/55)) ([4c22ac3](https://github.com/ionic-team/capacitor-geolocation/commit/4c22ac3c6facd4b628a38a668d66a7ea2f3ad44c))
+
+# [8.0.0-next.3](https://github.com/ionic-team/capacitor-geolocation/compare/v8.0.0-next.2...v8.0.0-next.3) (2025-10-06)
+
+
+### Features
+
+* **android:** Fallback option for no network or Play Services ([#53](https://github.com/ionic-team/capacitor-geolocation/issues/53)) ([09277b7](https://github.com/ionic-team/capacitor-geolocation/commit/09277b7cf458b1625db444f4eb0a40bd7c7b3265))
+
+# [8.0.0-next.2](https://github.com/ionic-team/capacitor-geolocation/compare/v8.0.0-next.1...v8.0.0-next.2) (2025-10-03)
+
+
+### Bug Fixes
+
+* **ios:** Simplify SPM usage for native library ([#52](https://github.com/ionic-team/capacitor-geolocation/issues/52)) ([ad53dc6](https://github.com/ionic-team/capacitor-geolocation/commit/ad53dc654369db9c1c2ae57cefca798fc5283dc8))
+
+# [8.0.0-next.1](https://github.com/ionic-team/capacitor-geolocation/compare/v7.1.5...v8.0.0-next.1) (2025-09-09)
+
+
+### Bug Fixes
+
+* peerDependency for pnpm compatibility ([a94839d](https://github.com/ionic-team/capacitor-geolocation/commit/a94839d1c51d7db2bdc39d123121920f8d0b883b))
+
+
+### Features
+
+* Capacitor 8 support ([6ead26a](https://github.com/ionic-team/capacitor-geolocation/commit/6ead26a06dbfa727551214a0a58469d5195d8657))
+
+
+### BREAKING CHANGES
+
+* Capacitor major version update requires major version update on the plugin.
+
+## [7.1.5](https://github.com/ionic-team/capacitor-geolocation/compare/v7.1.4...v7.1.5) (2025-08-12)
+
+### Fixes
+
+- **ios:** fixes an issue where the plugin stops receiving location updates after calling the clearWatch method. ([#38](https://github.com/ionic-team/capacitor-geolocation/pull/38))
+
+## [7.1.4](https://github.com/ionic-team/capacitor-geolocation/compare/v7.1.3...7.1.4) (2025-07-15)
+
+### Fixes
+
+- **ios:** Swift package name to be consistent with previous versions ([#34](https://github.com/ionic-team/capacitor-geolocation/pull/34))
+- **android** update Gradle and Kotlin configurations for compatibility with latest @capacitor/android ([#28](https://github.com/ionic-team/capacitor-geolocation/pull/28))
+
+### Docs
+
+- **ios** Add note about background usage description ([#29](https://github.com/ionic-team/capacitor-geolocation/pull/29))
+
+## [7.1.3](https://github.com/ionic-team/capacitor-geolocation/compare/7.1.2...v7.1.3) (2025-06-26)
+
+### Fixes
+
+- **ios:** handle location watch callbacks recovery after backgrounding. More info [here](https://github.com/ionic-team/capacitor-geolocation/issues/19).
+- Set dependency on @capacitor/synapse to 1.0.3 to fix ssr environments 
+
+## [7.1.2](https://github.com/ionic-team/capacitor-geolocation/compare/7.1.1...7.1.2) (2025-02-21)
 
 ### Fixes
 
 - **ios:** watchPosition after an error occurs
 - **android** properly parsing number parameters
 
-# [7.1.1](https://github.com/ionic-team/capacitor-plugins/compare/@capacitor/geolocation@7.1.1...@capacitor/geolocation@7.1.0) (2025-02-21)
+## [7.1.1](https://github.com/ionic-team/capacitor-geolocation/compare/v7.1.0...7.1.1) (2025-02-21)
 
 ### Fixes
 
