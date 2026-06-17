@@ -1,0 +1,26 @@
+.github/workflows/release_plugin.yml
+  s_d897b91c622244::t_027d6db417a198 6,10-12,27,31,33-36,38-43
+package.json
+  s_d897b91c622244::t_a98689de2bbb0f 2
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "3e23fc9e480d1b1be791ee61d6eba02a4009904f",
+  "prompts": {},
+  "humans": {
+    "h_0d835848e7aea2": {
+      "author": "Yurii <brechkoio@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_d897b91c622244": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "bd32c4b4-543b-419b-9954-855fa16742d8",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Yurii <brechkoio@gmail.com>"
+    }
+  }
+}
