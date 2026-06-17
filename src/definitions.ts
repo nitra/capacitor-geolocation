@@ -200,7 +200,6 @@ export interface Position {
      * Common values: `"gps"`, `"network"`, `"fused"`.
      */
     provider?: string;
-
   };
 }
 
