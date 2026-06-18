@@ -1,0 +1,29 @@
+android/src/main/kotlin/com/capacitorjs/plugins/geolocation/GeolocationPlugin.kt
+  s_3f8d7c59492cff::t_5ef5490ec3ae2a 333-337,343-344
+ios/Sources/GeolocationPlugin/GeolocationPlugin.swift
+  s_3f8d7c59492cff::t_e9dbdd9b4f4e54 152-153,158-161,164
+  s_3f8d7c59492cff::t_1b698e4a69833d 162-163
+  s_3f8d7c59492cff::t_8c8b93e3f2cb7d 206,209
+  s_3f8d7c59492cff::t_b185afe6b3f1b0 48
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "04b1ba2105ae9a6b9471fcfc86678c64d78055a4",
+  "prompts": {},
+  "humans": {
+    "h_0d835848e7aea2": {
+      "author": "Yurii <brechkoio@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_3f8d7c59492cff": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e4a91448-62a1-45bb-9aff-10ed10474825",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Yurii <brechkoio@gmail.com>"
+    }
+  }
+}
