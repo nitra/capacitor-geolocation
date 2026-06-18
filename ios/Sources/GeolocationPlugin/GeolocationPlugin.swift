@@ -45,7 +45,7 @@ public class GeolocationPlugin: CAPPlugin, CAPBridgedPlugin {
             locationInitialized = false
 
             locationService?.stopMonitoringLocation()
-            locationService?.startMonitoringLocation(options: IONGLOCRequestOptionsModel())
+            locationService?.startMonitoringLocation(options: IONGLOCRequestOptionsModel(timeout: callbackManager?.timeout))
             bindLocationPublisher()
         }
     }
@@ -149,22 +149,20 @@ private extension GeolocationPlugin {
         locationCancellable = locationService?.currentLocationPublisher
             .catch { [weak self] error -> AnyPublisher<IONGLOCPositionModel, Never> in
                 print("An error was found while retrieving the location: \(error)")
-
-                if case IONGLOCLocationError.locationUnavailable = error {
-                    print("Location unavailable (likely due to backgrounding). Keeping watch callbacks alive.")
-                    self?.callbackManager?.sendError(.positionUnavailable)
-                    return Empty<IONGLOCPositionModel, Never>()
-                        .eraseToAnyPublisher()
-                } else {
-                    self?.callbackManager?.sendError(.positionUnavailable)
-                    return Empty<IONGLOCPositionModel, Never>()
-                        .eraseToAnyPublisher()
-                }
+                self?.callbackManager?.sendError(.positionUnavailable)
+                return Empty<IONGLOCPositionModel, Never>().eraseToAnyPublisher()
             }
             .sink(receiveValue: { [weak self] position in
                 self?.callbackManager?.sendSuccess(with: position)
             })
-
+        timeoutCancellable = locationService?.locationTimeoutPublisher
+            .sink(receiveValue: { [weak self] error in
+                if case .timeout = error {
+                    self?.callbackManager?.sendError(.timeout)
+                } else {
+                    self?.callbackManager?.sendError(.positionUnavailable)
+                }
+            })
     }
 
     func requestLocationAuthorisation(type requestType: IONGLOCAuthorisationRequestType) {
@@ -205,10 +203,10 @@ private extension GeolocationPlugin {
             callbackManager?.sendRequestPermissionsSuccess(Constants.AuthorisationStatus.Status.granted)
         }
         if shouldRequestCurrentPosition {
-            locationService?.requestSingleLocation(options: IONGLOCRequestOptionsModel())
+            locationService?.requestSingleLocation(options: IONGLOCRequestOptionsModel(timeout: callbackManager?.timeout))
         }
         if shouldRequestLocationMonitoring {
-            locationService?.startMonitoringLocation(options: IONGLOCRequestOptionsModel())
+            locationService?.startMonitoringLocation(options: IONGLOCRequestOptionsModel(timeout: callbackManager?.timeout))
         }
     }
 
