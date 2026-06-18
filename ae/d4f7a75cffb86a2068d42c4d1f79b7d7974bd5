@@ -1,0 +1,29 @@
+example-app/ios/App/Podfile
+  s_3f8d7c59492cff::t_b4c25a9e9645a3 20
+README.md
+  s_3f8d7c59492cff::t_070c4fed3a9395 81,84,87,90
+  s_3f8d7c59492cff::t_4b3ffed6cd4f51 45-80,82-83,85-86,88-89,91,94-114
+  s_3f8d7c59492cff::t_4a70bbab5b0bb2 92
+  s_3f8d7c59492cff::t_745098ce0201d6 93
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "aed4f7a75cffb86a2068d42c4d1f79b7d7974bd5",
+  "prompts": {},
+  "humans": {
+    "h_0d835848e7aea2": {
+      "author": "Yurii <brechkoio@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_3f8d7c59492cff": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e4a91448-62a1-45bb-9aff-10ed10474825",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Yurii <brechkoio@gmail.com>"
+    }
+  }
+}
