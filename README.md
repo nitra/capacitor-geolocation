@@ -42,6 +42,76 @@ The first two permissions ask for location data, both fine and coarse, and the l
 Read about [Setting Permissions](https://capacitorjs.com/docs/android/configuration#setting-permissions) in the [Android Guide](https://capacitorjs.com/docs/android) for more information on setting Android permissions.
 
 
+## Running the Example App
+
+The `example-app` directory contains a Capacitor app for testing the plugin locally. It references the plugin via `file:../`, so any changes you build are immediately reflected.
+
+### 1. Build the plugin
+
+From the repo root:
+
+```bash
+npm install
+npm run build
+```
+
+### 2. Install example app dependencies
+
+```bash
+cd example-app
+npm install
+npm run build
+```
+
+### 3. Android
+
+```bash
+npx cap sync android
+npx cap run android
+```
+
+Or open in Android Studio:
+
+```bash
+npx cap open android
+```
+
+### 4. iOS
+
+The iOS plugin depends on [`ion-ios-geolocation`](https://github.com/nitra/ion-ios-geolocation). Clone it as `ios-lib` inside the repo root:
+
+```bash
+git clone https://github.com/nitra/ion-ios-geolocation ios-lib
+```
+
+Since `IONGeolocationLib` is not yet published to the public CocoaPods registry, uncomment the local pod path in `example-app/ios/App/Podfile` for local development:
+
+```ruby
+pod 'IONGeolocationLib', :path => '../../../ios-lib'
+```
+
+> **Note:** `ios-lib` is not committed — clone it manually. Do not commit the uncommented line.
+
+Sync and open in Xcode:
+
+```bash
+npx cap sync ios
+npx cap open ios
+```
+
+In Xcode, select your **Team** under **Signing & Capabilities** for the `App` target, then run on a device or simulator.
+
+### After plugin changes
+
+Every time you modify the plugin source, rebuild and re-sync before running:
+
+```bash
+# from repo root:
+npm run build
+# from example-app:
+npx cap sync android   # or ios
+```
+
 ## API
 
 <docgen-index>
