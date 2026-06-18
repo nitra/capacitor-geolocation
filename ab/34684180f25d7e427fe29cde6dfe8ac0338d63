@@ -1,0 +1,24 @@
+NitraGeolocation.podspec
+  s_3f8d7c59492cff::t_0d5b0b2522f00b 16
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "ab34684180f25d7e427fe29cde6dfe8ac0338d63",
+  "prompts": {},
+  "humans": {
+    "h_0d835848e7aea2": {
+      "author": "Yurii <brechkoio@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_3f8d7c59492cff": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e4a91448-62a1-45bb-9aff-10ed10474825",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Yurii <brechkoio@gmail.com>"
+    }
+  }
+}
