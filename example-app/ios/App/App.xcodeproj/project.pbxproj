@@ -14,7 +14,11 @@
 		504EC30F1FED79650016851F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 504EC30E1FED79650016851F /* Assets.xcassets */; };
 		504EC3121FED79650016851F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 504EC3101FED79650016851F /* LaunchScreen.storyboard */; };
 		50B271D11FEDC1A000F3C39B /* public in Resources */ = {isa = PBXBuildFile; fileRef = 50B271D01FEDC1A000F3C39B /* public */; };
-		A084ECDBA7D38E1E42DFC39D /* Pods_App.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF277DCFFFF123FFC6DF26C7 /* Pods_App.framework */; };
+		8B0C1C292C24DA4100B4B001 /* Capacitor in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0C1C282C24DA4100B4B001 /* Capacitor */; };
+		8B0C1C2B2C24DA4100B4B001 /* Cordova in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0C1C2A2C24DA4100B4B001 /* Cordova */; };
+		8B0C1C2D2C24DA4100B4B001 /* CapacitorGeolocation in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0C1C2C2C24DA4100B4B001 /* CapacitorGeolocation */; };
+		8B0C1C2F2C24DA4100B4B001 /* CapacitorCamera in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0C1C2E2C24DA4100B4B001 /* CapacitorCamera */; };
+		8B0C1C312C24DA4100B4B001 /* CapacitorSplashScreen in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0C1C302C24DA4100B4B001 /* CapacitorSplashScreen */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -27,9 +31,6 @@
 		504EC3111FED79650016851F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		504EC3131FED79650016851F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		50B271D01FEDC1A000F3C39B /* public */ = {isa = PBXFileReference; lastKnownFileType = folder; path = public; sourceTree = "<group>"; };
-		AF277DCFFFF123FFC6DF26C7 /* Pods_App.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_App.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		AF51FD2D460BCFE21FA515B2 /* Pods-App.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App.release.xcconfig"; path = "Pods/Target Support Files/Pods-App/Pods-App.release.xcconfig"; sourceTree = "<group>"; };
-		FC68EB0AF532CFC21C3344DD /* Pods-App.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App.debug.xcconfig"; path = "Pods/Target Support Files/Pods-App/Pods-App.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -37,7 +38,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A084ECDBA7D38E1E42DFC39D /* Pods_App.framework in Frameworks */,
+				8B0C1C2F2C24DA4100B4B001 /* CapacitorCamera in Frameworks */,
+				8B0C1C292C24DA4100B4B001 /* Capacitor in Frameworks */,
+				8B0C1C312C24DA4100B4B001 /* CapacitorSplashScreen in Frameworks */,
+				8B0C1C2D2C24DA4100B4B001 /* CapacitorGeolocation in Frameworks */,
+				8B0C1C2B2C24DA4100B4B001 /* Cordova in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -47,7 +52,6 @@
 		27E2DDA53C4D2A4D1A88CE4A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				AF277DCFFFF123FFC6DF26C7 /* Pods_App.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -57,7 +61,6 @@
 			children = (
 				504EC3061FED79650016851F /* App */,
 				504EC3051FED79650016851F /* Products */,
-				7F8756D8B27F46E3366F6CEA /* Pods */,
 				27E2DDA53C4D2A4D1A88CE4A /* Frameworks */,
 			);
 			sourceTree = "<group>";
@@ -85,15 +88,6 @@
 			path = App;
 			sourceTree = "<group>";
 		};
-		7F8756D8B27F46E3366F6CEA /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				FC68EB0AF532CFC21C3344DD /* Pods-App.debug.xcconfig */,
-				AF51FD2D460BCFE21FA515B2 /* Pods-App.release.xcconfig */,
-			);
-			name = Pods;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -101,17 +95,22 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 504EC3161FED79650016851F /* Build configuration list for PBXNativeTarget "App" */;
 			buildPhases = (
-				6634F4EFEBD30273BCE97C65 /* [CP] Check Pods Manifest.lock */,
 				504EC3001FED79650016851F /* Sources */,
 				504EC3011FED79650016851F /* Frameworks */,
 				504EC3021FED79650016851F /* Resources */,
-				9592DBEFFC6D2A0C8D5DEB22 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			name = App;
+			packageProductDependencies = (
+				8B0C1C282C24DA4100B4B001 /* Capacitor */,
+				8B0C1C2A2C24DA4100B4B001 /* Cordova */,
+				8B0C1C2C2C24DA4100B4B001 /* CapacitorGeolocation */,
+				8B0C1C2E2C24DA4100B4B001 /* CapacitorCamera */,
+				8B0C1C302C24DA4100B4B001 /* CapacitorSplashScreen */,
+			);
 			productName = App;
 			productReference = 504EC3041FED79650016851F /* App.app */;
 			productType = "com.apple.product-type.application";
@@ -141,6 +140,10 @@
 			);
 			mainGroup = 504EC2FB1FED79650016851F;
 			packageReferences = (
+				8B0C1C222C24DA4100B4B001 /* XCRemoteSwiftPackageReference "capacitor-swift-pm" */,
+				8B0C1C242C24DA4100B4B001 /* XCLocalSwiftPackageReference "../../.." */,
+				8B0C1C252C24DA4100B4B001 /* XCLocalSwiftPackageReference "../../node_modules/@capacitor/camera" */,
+				8B0C1C262C24DA4100B4B001 /* XCLocalSwiftPackageReference "../../node_modules/@capacitor/splash-screen" */,
 			);
 			productRefGroup = 504EC3051FED79650016851F /* Products */;
 			projectDirPath = "";
@@ -166,42 +169,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		6634F4EFEBD30273BCE97C65 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-App-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		9592DBEFFC6D2A0C8D5DEB22 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-App/Pods-App-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		504EC3001FED79650016851F /* Sources */ = {
@@ -343,7 +310,6 @@
 		};
 		504EC3171FED79650016851F /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = FC68EB0AF532CFC21C3344DD /* Pods-App.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
@@ -352,7 +318,6 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MARKETING_VERSION = 1.0;
-				OTHER_SWIFT_FLAGS = "$(inherited) \"-D\" \"COCOAPODS\" \"-DDEBUG\"";
 				PRODUCT_BUNDLE_IDENTIFIER = com.capacitorjs.exampleucapp.plugins.geolocation;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
@@ -363,7 +328,6 @@
 		};
 		504EC3181FED79650016851F /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = AF51FD2D460BCFE21FA515B2 /* Pods-App.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
@@ -402,6 +366,60 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		8B0C1C242C24DA4100B4B001 /* XCLocalSwiftPackageReference "../../.." */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = "../../..";
+		};
+		8B0C1C252C24DA4100B4B001 /* XCLocalSwiftPackageReference "../../node_modules/@capacitor/camera" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = "../../node_modules/@capacitor/camera";
+		};
+		8B0C1C262C24DA4100B4B001 /* XCLocalSwiftPackageReference "../../node_modules/@capacitor/splash-screen" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = "../../node_modules/@capacitor/splash-screen";
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		8B0C1C222C24DA4100B4B001 /* XCRemoteSwiftPackageReference "capacitor-swift-pm" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ionic-team/capacitor-swift-pm.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		8B0C1C282C24DA4100B4B001 /* Capacitor */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8B0C1C222C24DA4100B4B001 /* XCRemoteSwiftPackageReference "capacitor-swift-pm" */;
+			productName = Capacitor;
+		};
+		8B0C1C2A2C24DA4100B4B001 /* Cordova */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8B0C1C222C24DA4100B4B001 /* XCRemoteSwiftPackageReference "capacitor-swift-pm" */;
+			productName = Cordova;
+		};
+		8B0C1C2C2C24DA4100B4B001 /* CapacitorGeolocation */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8B0C1C242C24DA4100B4B001 /* XCLocalSwiftPackageReference "../../.." */;
+			productName = CapacitorGeolocation;
+		};
+		8B0C1C2E2C24DA4100B4B001 /* CapacitorCamera */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8B0C1C252C24DA4100B4B001 /* XCLocalSwiftPackageReference "../../node_modules/@capacitor/camera" */;
+			productName = CapacitorCamera;
+		};
+		8B0C1C302C24DA4100B4B001 /* CapacitorSplashScreen */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8B0C1C262C24DA4100B4B001 /* XCLocalSwiftPackageReference "../../node_modules/@capacitor/splash-screen" */;
+			productName = CapacitorSplashScreen;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 504EC2FC1FED79650016851F /* Project object */;
 }
