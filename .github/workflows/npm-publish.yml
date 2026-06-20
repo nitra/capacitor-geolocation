@@ -39,7 +39,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Publish package
-        uses: JS-DevTools/npm-publish@v4.1.5
-        with:
-          package: package.json
+      - name: Publish package (npm OIDC trusted publishing)
+        run: npm publish --access public
