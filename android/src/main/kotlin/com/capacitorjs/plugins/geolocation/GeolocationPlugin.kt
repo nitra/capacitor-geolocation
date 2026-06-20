@@ -1,6 +1,11 @@
 package com.capacitorjs.plugins.geolocation
 
 import android.Manifest
+import android.content.Context
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
+import android.location.OnNmeaMessageListener
 import android.os.Build
 import androidx.activity.result.contract.ActivityResultContracts
 import com.getcapacitor.JSObject
@@ -15,10 +20,18 @@ import io.ionic.libs.iongeolocationlib.controller.IONGLOCController
 import io.ionic.libs.iongeolocationlib.model.IONGLOCException
 import io.ionic.libs.iongeolocationlib.model.IONGLOCLocationOptions
 import io.ionic.libs.iongeolocationlib.model.IONGLOCLocationResult
+import kotlinx.coroutines.async
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withTimeout
+import java.util.Calendar
+import java.util.Locale
+import java.util.TimeZone
+import kotlin.coroutines.resume
+import org.json.JSONObject
 
 @CapacitorPlugin(
     name = "Geolocation",
@@ -36,9 +49,16 @@ class GeolocationPlugin : Plugin() {
     private lateinit var coroutineScope: CoroutineScope
     private val watchingCalls: MutableMap<String, PluginCall> = mutableMapOf()
 
+    private data class GnssTimeResult(
+        val timestamp: Long,
+        val status: String?,
+        val nmea: String
+    )
+
     companion object {
         const val LOCATION_ALIAS: String = "location"
         const val COARSE_LOCATION_ALIAS: String = "coarseLocation"
+        const val WATCH_SATELLITE_TIME_TIMEOUT_MS: Long = 1000
     }
 
     override fun load() {
@@ -160,6 +180,37 @@ class GeolocationPlugin : Plugin() {
     }
 
     /**
+     * Requests precise location permission. GNSS NMEA data should not be exposed through coarse permission.
+     * @param call the PluginCall to use in case we want to send an error
+     * @param callbackName a string identifying the callback to call once the permission prompt is answered
+     * @param onPermissionGranted lambda function to use in case the permission is enabled
+     */
+    private fun handlePrecisePermissionRequest(
+        call: PluginCall,
+        callbackName: String,
+        onPermissionGranted: () -> Unit
+    ) {
+        if (getPermissionState(LOCATION_ALIAS) != PermissionState.GRANTED) {
+            requestPermissionForAlias(LOCATION_ALIAS, call, callbackName)
+        } else {
+            onPermissionGranted()
+        }
+    }
+
+    /**
+     * Handles precise location permission results.
+     * @param call the PluginCall to use in case we want to send an error
+     * @param onPermissionGranted lambda function to use in case the permission was granted
+     */
+    private fun handlePrecisePermissionResult(call: PluginCall, onPermissionGranted: () -> Unit) {
+        if (getPermissionState(LOCATION_ALIAS) == PermissionState.GRANTED) {
+            onPermissionGranted()
+        } else {
+            call.sendError(GeolocationErrors.LOCATION_PERMISSIONS_DENIED)
+        }
+    }
+
+    /**
      * Clears the watch, removing location updates.
      * @param call the plugin call
      */
@@ -203,18 +254,150 @@ class GeolocationPlugin : Plugin() {
     private fun getPosition(call: PluginCall) {
         coroutineScope.launch {
             val locationOptions = createOptions(call)
+            val gnssTime = async {
+                getGnssTimeOrNull(locationOptions.timeout)
+            }
 
             // call getCurrentPosition method from controller
             val locationResult = controller.getCurrentPosition(activity, locationOptions)
 
             locationResult
                 .onSuccess { location ->
-                    call.sendSuccess(getJSObjectForLocation(location))
+                    call.sendSuccess(getJSObjectForLocation(location, gnssTime.await()))
                 }
                 .onFailure { exception ->
+                    gnssTime.cancel()
                     onLocationError(exception, call)
                 }
         }
+    }
+
+    /**
+     * Waits until the GNSS receiver emits an RMC NMEA sentence containing date and UTC time.
+     * @return satellite time parsed from NMEA
+     */
+    private suspend fun awaitSatelliteTime(): GnssTimeResult {
+        val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+
+        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            throw IllegalStateException("GPS provider is disabled.")
+        }
+
+        return suspendCancellableCoroutine { continuation ->
+            lateinit var listener: OnNmeaMessageListener
+            val locationListener = object : LocationListener {
+                override fun onLocationChanged(location: Location) = Unit
+            }
+
+            fun cleanup() {
+                locationManager.removeNmeaListener(listener)
+                locationManager.removeUpdates(locationListener)
+            }
+
+            listener = OnNmeaMessageListener { message, _ ->
+                val gnssTime = parseSatelliteTime(message)
+                if (gnssTime != null && continuation.isActive) {
+                    cleanup()
+                    continuation.resume(gnssTime)
+                }
+            }
+
+            val registered = locationManager.addNmeaListener(listener)
+            if (!registered && continuation.isActive) {
+                continuation.cancel(IllegalStateException("Unable to register NMEA listener."))
+                return@suspendCancellableCoroutine
+            }
+
+            try {
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000L, 0f, locationListener)
+            } catch (exception: Throwable) {
+                cleanup()
+                continuation.cancel(exception)
+                return@suspendCancellableCoroutine
+            }
+
+            continuation.invokeOnCancellation {
+                cleanup()
+            }
+        }
+    }
+
+    /**
+     * Returns satellite time if GNSS RMC NMEA data is available within the timeout.
+     * Position responses use null instead of failing when GNSS time is unavailable.
+     * @param timeout maximum wait time in milliseconds
+     * @return satellite time parsed from NMEA or null
+     */
+    private suspend fun getGnssTimeOrNull(timeout: Long): GnssTimeResult? {
+        if (timeout <= 0) {
+            return null
+        }
+
+        return try {
+            withTimeout(timeout) {
+                awaitSatelliteTime()
+            }
+        } catch (_: Throwable) {
+            null
+        }
+    }
+
+    /**
+     * Parses UTC date/time from RMC NMEA sentences such as GPRMC, GNRMC, or GARMC.
+     * @param message raw NMEA sentence
+     * @return satellite time parsed from NMEA, or null if the sentence does not contain time
+     */
+    private fun parseSatelliteTime(message: String): GnssTimeResult? {
+        val sentence = message.trim()
+        val withoutChecksum = sentence.substringBefore("*")
+        val fields = withoutChecksum.split(",")
+        if (fields.size <= 9 || !fields[0].endsWith("RMC")) {
+            return null
+        }
+
+        val time = fields[1]
+        val status = fields[2].ifBlank { null }
+        val date = fields[9]
+
+        if (status != "A") {
+            return null
+        }
+
+        if (time.length < 6 || date.length != 6) {
+            return null
+        }
+
+        val hour = time.substring(0, 2).toIntOrNull() ?: return null
+        val minute = time.substring(2, 4).toIntOrNull() ?: return null
+        val second = time.substring(4, 6).toIntOrNull() ?: return null
+        val millisecond = time.substringAfter(".", "").take(3).padEnd(3, '0').toIntOrNull() ?: 0
+        val day = date.substring(0, 2).toIntOrNull() ?: return null
+        val month = date.substring(2, 4).toIntOrNull() ?: return null
+        val yearSuffix = date.substring(4, 6).toIntOrNull() ?: return null
+        val year = if (yearSuffix >= 80) 1900 + yearSuffix else 2000 + yearSuffix
+
+        val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"), Locale.US).apply {
+            clear()
+            isLenient = false
+            set(Calendar.YEAR, year)
+            set(Calendar.MONTH, month - 1)
+            set(Calendar.DAY_OF_MONTH, day)
+            set(Calendar.HOUR_OF_DAY, hour)
+            set(Calendar.MINUTE, minute)
+            set(Calendar.SECOND, second)
+            set(Calendar.MILLISECOND, millisecond)
+        }
+
+        val timestamp = try {
+            calendar.timeInMillis
+        } catch (_: IllegalArgumentException) {
+            return null
+        }
+        return GnssTimeResult(
+            timestamp = timestamp,
+            status = status,
+            nmea = sentence
+        )
     }
 
     /**
@@ -231,8 +414,9 @@ class GeolocationPlugin : Plugin() {
             controller.addWatch(activity, locationOptions, watchId).collect { result ->
                 result.onSuccess { locationList ->
                     locationList.forEach { locationResult ->
+                        val gnssTime = getGnssTimeOrNull(WATCH_SATELLITE_TIME_TIMEOUT_MS)
                         call.sendSuccess(
-                            result = getJSObjectForLocation(locationResult),
+                            result = getJSObjectForLocation(locationResult, gnssTime),
                             keepCallback = true)
                     }
                 }
@@ -249,7 +433,10 @@ class GeolocationPlugin : Plugin() {
      * @param locationResult IONGLOCLocationResult object with the location to convert
      * @return JSObject with converted JSON object
      */
-    private fun getJSObjectForLocation(locationResult: IONGLOCLocationResult): JSObject {
+    private fun getJSObjectForLocation(
+        locationResult: IONGLOCLocationResult,
+        gnssTime: GnssTimeResult?
+    ): JSObject {
         val coords = JSObject().apply {
             put("latitude", locationResult.latitude)
             put("longitude", locationResult.longitude)
@@ -262,7 +449,7 @@ class GeolocationPlugin : Plugin() {
             put("provider", locationResult.provider)
         }
         return JSObject().apply {
-            put("timestamp", locationResult.timestamp)
+            put("timestamp", gnssTime?.timestamp ?: JSONObject.NULL)
             put("coords", coords)
         }
     }

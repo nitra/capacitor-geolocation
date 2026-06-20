@@ -224,7 +224,7 @@ window.customElements.define(
         } else {
           stringRepresentation += ':\n';
         }
-        const timeRepresentation = location.timestamp ? new Date(location.timestamp).toISOString() : '-';
+        const timeRepresentation = location.timestamp ? new Date(location.timestamp).toISOString() : null;
         stringRepresentation += `- Time: ${timeRepresentation}\n`;
         stringRepresentation += `- Latitude: ${location?.coords.latitude}\n- Longitude: ${location?.coords.longitude}\n`;
         stringRepresentation += `- Accuracy: ${location?.coords.accuracy}\n`;

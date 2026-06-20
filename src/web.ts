@@ -61,7 +61,7 @@ export class GeolocationWeb extends WebPlugin implements GeolocationPlugin {
       orientation?.trueHeading ?? orientation?.magneticHeading ?? (isWatch ? coords.heading : null) ?? null;
 
     return {
-      timestamp: pos.timestamp,
+      timestamp: null,
       coords: {
         latitude: coords.latitude,
         longitude: coords.longitude,

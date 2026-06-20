@@ -4,7 +4,7 @@ import IONGeolocationLib
 extension IONGLOCPositionModel {
     func toJSObject() -> JSObject {
         [
-            Constants.Position.timestamp: timestamp,
+            Constants.Position.timestamp: NSNull(),
             Constants.Position.coords: coordsJSObject
         ]
     }

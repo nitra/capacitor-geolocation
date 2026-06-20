@@ -83,11 +83,14 @@ export interface ClearWatchOptions {
 
 export interface Position {
   /**
-   * Creation timestamp for coords
+   * GNSS satellite timestamp for coords, in milliseconds since the Unix epoch.
+   *
+   * On Android, this is populated only when a GNSS RMC NMEA message is available.
+   * On iOS and web, this is always `null`.
    *
    * @since 1.0.0
    */
-  timestamp: number;
+  timestamp: number | null;
 
   /**
    * The GPS coordinates along with the accuracy of the data
