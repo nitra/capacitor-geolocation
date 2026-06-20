@@ -1,5 +1,4 @@
 import { Capacitor } from '@capacitor/core';
-import { SplashScreen } from '@capacitor/splash-screen';
 import { Geolocation } from '@nitra/geolocation';
 
 window.customElements.define(
@@ -7,8 +6,6 @@ window.customElements.define(
   class extends HTMLElement {
     constructor() {
       super();
-
-      SplashScreen.hide();
 
       const root = this.attachShadow({ mode: 'open' });
 

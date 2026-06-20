@@ -35,10 +35,4 @@ jobs:
         run: |
           npm install
           npm run build
-
-      - uses: JS-DevTools/npm-publish@v2
-        with:
-          token: ${{ secrets.NPM_WRITE_TOKEN }}
-          access: public
-          strategy: upgrade
-          package: ./package.json
+      # Публікація винесена в .github/workflows/npm_publish.yml

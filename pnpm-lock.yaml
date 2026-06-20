@@ -74,9 +74,6 @@ importers:
       "@capacitor/android":
         specifier: next
         version: 7.0.0-rc.0(@capacitor/core@7.0.0-rc.0)
-      "@capacitor/camera":
-        specifier: next
-        version: 7.0.0-rc.0(@capacitor/core@7.0.0-rc.0)
       "@capacitor/core":
         specifier: next
         version: 7.0.0-rc.0
@@ -84,9 +81,6 @@ importers:
         specifier: file:../capacitor-plugin
         version: link:../capacitor-plugin
       "@capacitor/ios":
-        specifier: next
-        version: 7.0.0-rc.0(@capacitor/core@7.0.0-rc.0)
-      "@capacitor/splash-screen":
         specifier: next
         version: 7.0.0-rc.0(@capacitor/core@7.0.0-rc.0)
     devDependencies:
@@ -120,14 +114,6 @@ packages:
     peerDependencies:
       "@capacitor/core": ^7.0.0-rc.0
 
-  "@capacitor/camera@7.0.0-rc.0":
-    resolution:
-      {
-        integrity: sha512-W6bbJtvcRwy7Kbgspw36FUcV40V8eb/GPs2T1KCglr8FJfdyH7AU2lokuferdWBHv6XBt88pdAuGhhJfi3QsGA==,
-      }
-    peerDependencies:
-      "@capacitor/core": ">=7.0.0-rc.0"
-
   "@capacitor/cli@7.0.0-rc.0":
     resolution:
       {
@@ -157,14 +143,6 @@ packages:
       }
     peerDependencies:
       "@capacitor/core": ^7.0.0-rc.0
-
-  "@capacitor/splash-screen@7.0.0-rc.0":
-    resolution:
-      {
-        integrity: sha512-6GrHK5TJGYN1v0NCxzK+Myhu/WYY6lXFw94easplbCWjQwmvV9Q8LGgVlwou7Z0m6bZU7bs8JOthwmuuK3M/QA==,
-      }
-    peerDependencies:
-      "@capacitor/core": ">=7.0.0-rc.0"
 
   "@capacitor/synapse@1.0.1":
     resolution:
@@ -5936,10 +5914,6 @@ snapshots:
     dependencies:
       "@capacitor/core": 7.0.0-rc.0
 
-  "@capacitor/camera@7.0.0-rc.0(@capacitor/core@7.0.0-rc.0)":
-    dependencies:
-      "@capacitor/core": 7.0.0-rc.0
-
   "@capacitor/cli@7.0.0-rc.0":
     dependencies:
       "@ionic/cli-framework-output": 2.2.8
@@ -5975,10 +5949,6 @@ snapshots:
       typescript: 4.2.4
 
   "@capacitor/ios@7.0.0-rc.0(@capacitor/core@7.0.0-rc.0)":
-    dependencies:
-      "@capacitor/core": 7.0.0-rc.0
-
-  "@capacitor/splash-screen@7.0.0-rc.0(@capacitor/core@7.0.0-rc.0)":
     dependencies:
       "@capacitor/core": 7.0.0-rc.0
 

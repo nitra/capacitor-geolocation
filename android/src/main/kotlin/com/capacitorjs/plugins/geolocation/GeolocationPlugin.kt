@@ -7,6 +7,8 @@ import android.location.LocationListener
 import android.location.LocationManager
 import android.location.OnNmeaMessageListener
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import androidx.activity.result.contract.ActivityResultContracts
 import com.getcapacitor.JSObject
 import com.getcapacitor.PermissionState
@@ -302,7 +304,7 @@ class GeolocationPlugin : Plugin() {
                 }
             }
 
-            val registered = locationManager.addNmeaListener(listener)
+            val registered = locationManager.addNmeaListener(listener, Handler(Looper.getMainLooper()))
             if (!registered && continuation.isActive) {
                 continuation.cancel(IllegalStateException("Unable to register NMEA listener."))
                 return@suspendCancellableCoroutine
