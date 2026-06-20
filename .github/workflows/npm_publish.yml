@@ -36,6 +36,8 @@ jobs:
 
       - name: Release (bump + CHANGELOG + tag)
         run: bunx semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish package
         uses: JS-DevTools/npm-publish@v4.1.5
