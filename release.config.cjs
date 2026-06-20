@@ -1,15 +1,15 @@
 module.exports = {
   branches: [
-    { name: 'main', channel: 'latest' },
+    { name: 'nitra-main', channel: 'latest' },
     { name: 'next', channel: 'next', prerelease: true },
     { name: 'development', channel: 'dev', prerelease: true }
   ],
-  repositoryUrl: 'https://github.com/ionic-team/capacitor-geolocation.git',
+  repositoryUrl: 'https://github.com/nitra/capacitor-geolocation.git',
   plugins: [
     '@semantic-release/commit-analyzer',
     '@semantic-release/release-notes-generator',
     '@semantic-release/changelog',
-    '@semantic-release/npm',
+    ['@semantic-release/npm', { npmPublish: false }],
     [
       '@semantic-release/github',
       {
