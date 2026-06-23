@@ -16,7 +16,7 @@
 		50B271D11FEDC1A000F3C39B /* public in Resources */ = {isa = PBXBuildFile; fileRef = 50B271D01FEDC1A000F3C39B /* public */; };
 		8B0C1C292C24DA4100B4B001 /* Capacitor in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0C1C282C24DA4100B4B001 /* Capacitor */; };
 		8B0C1C2B2C24DA4100B4B001 /* Cordova in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0C1C2A2C24DA4100B4B001 /* Cordova */; };
-		8B0C1C2D2C24DA4100B4B001 /* CapacitorGeolocation in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0C1C2C2C24DA4100B4B001 /* CapacitorGeolocation */; };
+		8B0C1C2D2C24DA4100B4B001 /* NitraGeolocation in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0C1C2C2C24DA4100B4B001 /* NitraGeolocation */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -37,7 +37,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8B0C1C292C24DA4100B4B001 /* Capacitor in Frameworks */,
-				8B0C1C2D2C24DA4100B4B001 /* CapacitorGeolocation in Frameworks */,
+				8B0C1C2D2C24DA4100B4B001 /* NitraGeolocation in Frameworks */,
 				8B0C1C2B2C24DA4100B4B001 /* Cordova in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -103,7 +103,7 @@
 			packageProductDependencies = (
 				8B0C1C282C24DA4100B4B001 /* Capacitor */,
 				8B0C1C2A2C24DA4100B4B001 /* Cordova */,
-				8B0C1C2C2C24DA4100B4B001 /* CapacitorGeolocation */,
+				8B0C1C2C2C24DA4100B4B001 /* NitraGeolocation */,
 			);
 			productName = App;
 			productReference = 504EC3041FED79650016851F /* App.app */;
@@ -388,10 +388,10 @@
 			package = 8B0C1C222C24DA4100B4B001 /* XCRemoteSwiftPackageReference "capacitor-swift-pm" */;
 			productName = Cordova;
 		};
-		8B0C1C2C2C24DA4100B4B001 /* CapacitorGeolocation */ = {
+		8B0C1C2C2C24DA4100B4B001 /* NitraGeolocation */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 8B0C1C242C24DA4100B4B001 /* XCLocalSwiftPackageReference "../../.." */;
-			productName = CapacitorGeolocation;
+			productName = NitraGeolocation;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

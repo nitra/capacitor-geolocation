@@ -2,11 +2,11 @@
 import PackageDescription
 
 let package = Package(
-    name: "CapacitorGeolocation",
+    name: "NitraGeolocation",
     platforms: [.iOS(.v15)],
     products: [
         .library(
-            name: "CapacitorGeolocation",
+            name: "NitraGeolocation",
             targets: ["GeolocationPlugin"])
     ],
     dependencies: [
