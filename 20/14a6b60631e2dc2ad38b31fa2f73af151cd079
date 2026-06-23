@@ -1,0 +1,23 @@
+.github/workflows/npm-publish.yml
+  s_daa3d641f8fbe3::t_55a2724ef8df1f 38-45,50-61
+package.json
+  s_daa3d641f8fbe3::t_a1c1261a7674b2 3
+CHANGELOG.md
+  s_daa3d641f8fbe3::t_98a15f420e0573 1-7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.10",
+  "base_commit_sha": "2014a6b60631e2dc2ad38b31fa2f73af151cd079",
+  "prompts": {},
+  "sessions": {
+    "s_daa3d641f8fbe3": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "355bee30-7fca-429e-9808-a6dcbf0f723e",
+        "model": "default"
+      },
+      "human_author": "Yurii <brechkoio@gmail.com>"
+    }
+  }
+}
