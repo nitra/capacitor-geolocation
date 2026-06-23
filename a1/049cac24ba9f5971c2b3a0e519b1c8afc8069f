@@ -1,0 +1,26 @@
+example-app/ios/App/App.xcodeproj/project.pbxproj
+  s_daa3d641f8fbe3::t_2d71071b7a8fe2 19,40,106,391,394
+Package.swift
+  s_daa3d641f8fbe3::t_a76acb29a10010 5,9
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.10",
+  "base_commit_sha": "a1049cac24ba9f5971c2b3a0e519b1c8afc8069f",
+  "prompts": {},
+  "humans": {
+    "h_0d835848e7aea2": {
+      "author": "Yurii <brechkoio@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_daa3d641f8fbe3": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "355bee30-7fca-429e-9808-a6dcbf0f723e",
+        "model": "default"
+      },
+      "human_author": "Yurii <brechkoio@gmail.com>"
+    }
+  }
+}
