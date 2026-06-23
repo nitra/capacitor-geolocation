@@ -1,3 +1,10 @@
+## [8.2.1](https://github.com/nitra/capacitor-geolocation/compare/v8.2.0...v8.2.1) (2026-06-23)
+
+
+### Bug Fixes
+
+* **ios:** rename SPM package to NitraGeolocation ([a1049ca](https://github.com/nitra/capacitor-geolocation/commit/a1049cac24ba9f5971c2b3a0e519b1c8afc8069f))
+
 # [8.2.0](https://github.com/ionic-team/capacitor-geolocation/compare/v8.1.0...v8.2.0) (2026-03-31)
 
 

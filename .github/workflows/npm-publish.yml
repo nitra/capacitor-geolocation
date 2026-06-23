@@ -35,9 +35,27 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Release (bump + CHANGELOG + tag)
-        run: bunx semantic-release
+        run: |
+          LATEST=$(npm view @nitra/geolocation version)
+          PKG=$(node -p "require('./package.json').version")
+          if [ "$(printf '%s\n' "$PKG" "$LATEST" | sort -V | tail -1)" = "$PKG" ] && [ "$PKG" != "$LATEST" ]; then
+            echo "package.json version $PKG is ahead of npm latest $LATEST — skipping semantic-release"
+            exit 0
+          fi
+          bunx semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish package (npm OIDC trusted publishing)
-        run: npm publish --access public
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          if npm view @nitra/geolocation@"$VERSION" version 2>/dev/null; then
+            echo "Version $VERSION is already published."
+            exit 0
+          fi
+          LATEST=$(npm view @nitra/geolocation version)
+          if [ "$(printf '%s\n' "$VERSION" "$LATEST" | sort -V | tail -1)" != "$VERSION" ]; then
+            echo "Refusing to publish $VERSION because npm latest is $LATEST"
+            exit 1
+          fi
+          npm publish --access public
