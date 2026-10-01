@@ -37,5 +37,6 @@ enum Constants {
         static let trueHeading: String = "trueHeading"
         static let headingAccuracy: String = "headingAccuracy"
         static let course: String = "course"
+        static let isMock: String = "isMock"
     }
 }
